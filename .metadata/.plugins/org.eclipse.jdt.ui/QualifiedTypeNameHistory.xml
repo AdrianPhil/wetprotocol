@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="oldStuff.DummyPane"/>
+<fullyQualifiedTypeName name="javax.swing.tree.TreeCellRenderer"/>
+<fullyQualifiedTypeName name="java.awt.Color"/>
+<fullyQualifiedTypeName name="javax.swing.tree.DefaultTreeCellRenderer"/>
+<fullyQualifiedTypeName name="org.apache.jena.ontology.Individual"/>
+<fullyQualifiedTypeName name="org.apache.jena.ontology.OntClass"/>
+<fullyQualifiedTypeName name="org.apache.jena.ontology.OntProperty"/>
+<fullyQualifiedTypeName name="org.apache.jena.rdf.model.RDFNode"/>
+<fullyQualifiedTypeName name="org.apache.jena.ontology.OntResource"/>
+<fullyQualifiedTypeName name="javax.swing.JComboBox"/>
+<fullyQualifiedTypeName name="java.awt.Component"/>
+<fullyQualifiedTypeName name="javax.swing.tree.DefaultMutableTreeNode"/>
+<fullyQualifiedTypeName name="javax.swing.JTextField"/>
+<fullyQualifiedTypeName name="javax.swing.tree.TreeCellEditor"/>
+<fullyQualifiedTypeName name="ont.OntologyManager"/>
+<fullyQualifiedTypeName name="ont.PropertyValue"/>
+<fullyQualifiedTypeName name="java.lang.Override"/>
+<fullyQualifiedTypeName name="javax.swing.JPanel"/>
+<fullyQualifiedTypeName name="resources.ResourceFindingDummyClass"/>
+<fullyQualifiedTypeName name="javax.swing.ImageIcon"/>
+<fullyQualifiedTypeName name="javax.swing.Icon"/>
+</qualifiedTypeNameHistroy>

@@ -1,0 +1,44 @@
+package ui;
+
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import resources.ResourceFindingDummyClass;
+
+public class EditRenderPanel extends JPanel {
+
+	static final ImageIcon createImageIcon = ResourceFindingDummyClass.createImageIcon("labcoat.png");
+
+	JLabel imageLabel = new JLabel(" ");
+	JLabel localName = new JLabel(" ");
+	JLabel propertyAndIndividualValue = new JLabel("value:?");
+	JLabel propertyAndIndividualRange = new JLabel(" ");
+	JLabel propertyAndIndividualDomain = new JLabel(" ");
+
+	public EditRenderPanel() {
+		imageLabel.setIcon(createImageIcon);
+		add(localName);
+		add(propertyAndIndividualValue);
+		add(propertyAndIndividualRange);
+		add(propertyAndIndividualDomain);
+		add(imageLabel);
+		setBorder(null);
+	}
+
+	public String getLocalName() {
+		return localName.getText();
+	}
+
+	public String getValue() {
+		return propertyAndIndividualValue.getText();
+	}
+
+	public String getRange() {
+		return propertyAndIndividualRange.getText();
+	}
+
+	public String getDomain() {
+		return propertyAndIndividualDomain.getText();
+	}
+}

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workingSetManager>
+<workingSet editPageId="org.eclipse.ui.resourceWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1523114166920_1" label="rootbuilder" name="rootbuilder">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/dist" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/parent" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/rdf2go.impl.sesame" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/rdf2go.impl.jena" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/rdf2go.impl.rdf4j" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/rdfreactor-maven-plugin" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/rdfreactor.runtime" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/rdfreactor.dist" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/rdfreactor.generator" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/bom" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/rdf2go.dist" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/skin" type="4"/>
+</workingSet>
+<workingSet aggregate="true" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1522807578420_0" label="Window Working Set" name="Aggregate for window 1522807578420"/>
+</workingSetManager>

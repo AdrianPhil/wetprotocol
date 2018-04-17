@@ -1,0 +1,5 @@
+package ont;
+
+public class PropertyValue {
+
+}

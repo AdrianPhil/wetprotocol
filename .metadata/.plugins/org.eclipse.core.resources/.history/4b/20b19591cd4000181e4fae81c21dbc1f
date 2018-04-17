@@ -1,0 +1,87 @@
+package ui;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreeCellRenderer;
+
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontology.OntProperty;
+
+import resources.ResourceFindingDummyClass;
+
+import java.awt.Color;
+import java.awt.Component;
+
+import javax.swing.*;
+
+public class PropertiesCellRenderer implements TreeCellRenderer {
+	JLabel localName = new JLabel(" ");
+	JLabel ontPropertyValue = new JLabel("value:?");
+	JLabel ontPropertyRange = new JLabel(" ");
+	JLabel ontPropertyDomain = new JLabel(" ");
+	JLabel imageLabel = new JLabel();
+	JPanel renderer = new JPanel();
+
+	DefaultTreeCellRenderer defaultRenderer = new DefaultTreeCellRenderer();
+	Color backgroundSelectionColor;
+	Color backgroundNonSelectionColor;
+	// ImageIcon createImageIcon = ResourceFindingDummyClass.createImageIcon("pipette.png");
+	Icon iconDataProperty = UIManager.getIcon("Tree.leafIcon");// http://en-human-begin.blogspot.ca/2007/11/javas-icons-by-default.html
+	Icon iconObjectProperty = UIManager.getIcon("FileChooser.detailsViewIcon");// http://en-human-begin.blogspot.ca/2007/11/javas-icons-by-default.html
+
+	public PropertiesCellRenderer() {
+		renderer.add(imageLabel);
+		
+		localName.setForeground(Color.BLACK);
+		renderer.add(localName);
+		
+		ontPropertyValue.setForeground(Color.BLACK);
+		renderer.add(ontPropertyValue);
+		
+		ontPropertyRange.setForeground(Color.BLACK);
+		renderer.add(ontPropertyRange);
+		
+		ontPropertyDomain.setForeground(Color.BLACK);
+		renderer.add(ontPropertyRange);
+		
+		renderer.setBorder(null);		
+		backgroundSelectionColor = defaultRenderer.getBackgroundSelectionColor();
+		backgroundNonSelectionColor = defaultRenderer.getBackgroundNonSelectionColor();
+	}
+
+	@Override
+	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+		Component returnValue = null;
+		if ((value != null) && (value instanceof DefaultMutableTreeNode)) {
+			Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
+			if (userObject instanceof OntProperty) {
+
+				OntProperty ontProperty = (OntProperty) userObject;
+				localName.setText(ontProperty.getLocalName());
+				ontPropertyDomain.setText(" Domain:" + ontProperty.getDomain());
+				ontPropertyRange.setText(" Range:" + ontProperty.getRange());
+				ontPropertyValue.setText(" value:" + ontProperty.get());
+				if (selected) {
+					renderer.setBackground(backgroundSelectionColor);
+				} else {
+					renderer.setBackground(backgroundNonSelectionColor);
+				}
+				if (ontProperty.isObjectProperty()) {
+					imageLabel.setIcon(iconDataProperty);
+				} else if (userObject instanceof OntProperty) {
+					imageLabel.setIcon(iconDataProperty);
+				} else {
+					UiUtils.showDialog(tree, "This property is not a data property nor an object property");
+				}
+				renderer.setEnabled(tree.isEnabled());
+				returnValue = renderer;
+			}
+		}
+		if (returnValue == null) {
+			UiUtils.showDialog(tree, "The value to be rendered for:" + ((DefaultMutableTreeNode) value).getUserObject() + " is null. Using default renderer");
+			returnValue = defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+		}
+		return returnValue;
+	}
+}

@@ -1,0 +1,32 @@
+package ont;
+
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntProperty;
+import org.apache.jena.rdf.model.RDFNode;
+
+public class PropertyValue {
+	OntProperty ontProperty;
+	Individual individual;
+
+	public PropertyValue(OntProperty ontProperty, Individual individual) {
+		this.ontProperty=ontProperty;
+		this.individual=individual;
+	}
+
+	public OntProperty getOntProperty() {
+		return ontProperty;
+	}
+
+	public void setOntProperty(OntProperty ontProperty) {
+		this.ontProperty = ontProperty;
+	}
+
+	public RDFNode getValue() {
+		return value;
+	}
+
+	public void setValue(RDFNode value) {
+		this.value = value;
+	}
+
+}

@@ -1,0 +1,5 @@
+package protocol.game;
+
+public class Scene {
+
+}

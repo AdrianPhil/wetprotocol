@@ -1,0 +1,19 @@
+package ui;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+public class EditRenderPanel extends JPanel{
+	
+	JLabel localName = new JLabel(" ");
+	JLabel propertyValueValue = new JLabel("value:?");
+	JLabel propertyValueRange = new JLabel(" ");
+	JLabel propertyValueDomain = new JLabel(" ");
+	JLabel imageLabel = new JLabel();
+	public EditRenderPanel() {
+		add(localName);
+		add(propertyValueValue);
+		add(propertyValueValue);
+	}
+
+}
