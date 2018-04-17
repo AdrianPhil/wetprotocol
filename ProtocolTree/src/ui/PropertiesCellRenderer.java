@@ -23,10 +23,10 @@ public class PropertiesCellRenderer implements TreeCellRenderer {
 
 	DefaultTreeCellRenderer defaultRenderer = new DefaultTreeCellRenderer();
 	Color backgroundSelectionColor;
-	Color backgroundNonSelectionColor;
+	Color backgroundNonSelectionColor;//
 	//ImageIcon createImageIcon = ResourceFindingDummyClass.createImageIcon("pipette.png");
 	Icon iconObjectProperty = UIManager.getIcon("FileChooser.detailsViewIcon");// http://en-human-begin.blogspot.ca/2007/11/javas-icons-by-default.html
-	Icon iconDataProperty = UIManager.getIcon("Tree.leafIcon");// http://en-human-begin.blogspot.ca/2007/11/javas-icons-by-default.html
+	Icon iconDataProperty = UIManager.getIcon("Tree.leafIcon");     // http://en-human-begin.blogspot.ca/2007/11/javas-icons-by-default.html
 
 	public PropertiesCellRenderer() {
 		backgroundSelectionColor = defaultRenderer.getBackgroundSelectionColor();
