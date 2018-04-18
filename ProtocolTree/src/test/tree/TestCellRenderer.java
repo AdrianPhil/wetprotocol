@@ -15,7 +15,7 @@ import java.awt.Component;
 import javax.swing.*;
 
 public class TestCellRenderer implements TreeCellRenderer {
-	Controller controller = new Controller();
+	TestController controller = new TestController();
 
 	DefaultTreeCellRenderer defaultRenderer = new DefaultTreeCellRenderer();
 	Color backgroundSelectionColor = defaultRenderer.getBackgroundNonSelectionColor();
@@ -32,11 +32,11 @@ public class TestCellRenderer implements TreeCellRenderer {
 			return defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 		}
 		Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
-		if (!(userObject instanceof NodeContent)) {
+		if (!(userObject instanceof TestNodeContent)) {
 			UiUtils.showDialog(tree, "In Protocol. The value to be rendered not NodeContent. Using default renderer");
 			return defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 		}
-		NodeContent nodeContent = (NodeContent) userObject;
+		TestNodeContent nodeContent = (TestNodeContent) userObject;
 		System.out.println("in renderer getTreeCellRendererComponent and node content:"+nodeContent);
 		controller.setModel(nodeContent);
 		controller.fillUiFromModel();

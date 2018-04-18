@@ -15,7 +15,7 @@ import ui.UiUtils;
 
 public class TestCellEditor extends AbstractCellEditor implements TreeCellEditor {
 	private JTextField val;
-	private Controller controller = new Controller();
+	private TestController controller = new TestController();
 	private PropertyAndIndividual propertyAndIndividual;
 
 	TestCellEditor() {
@@ -31,8 +31,8 @@ public class TestCellEditor extends AbstractCellEditor implements TreeCellEditor
 		controller.setMode(Mode.EDIT);
 		if (value != null && value instanceof DefaultMutableTreeNode) {
 			Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
-			if (userObject instanceof NodeContent) {
-				NodeContent nodeContent = (NodeContent) userObject;
+			if (userObject instanceof TestNodeContent) {
+				TestNodeContent nodeContent = (TestNodeContent) userObject;
 				controller.setModel(nodeContent);
 				controller.fillUiFromModel();
 			} else {

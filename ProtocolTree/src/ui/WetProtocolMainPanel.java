@@ -1,6 +1,7 @@
 package ui;
 
 import resources.ResourceFindingDummyClass;
+import ui.property.ClassPropertyEditorPanel;
 
 import javax.swing.*;
 import javax.swing.tree.*;

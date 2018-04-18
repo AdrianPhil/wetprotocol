@@ -1,4 +1,4 @@
-package ui;
+package ui.property;
 
 import java.awt.Component;
 
@@ -8,6 +8,7 @@ import javax.swing.tree.TreeCellEditor;
 
 import ont.OntologyManager;
 import ont.PropertyAndIndividual;
+import ui.UiUtils;
 
 public class PropertyCellEditor extends AbstractCellEditor implements TreeCellEditor {
 	private JTextField val;
@@ -40,7 +41,7 @@ public class PropertyCellEditor extends AbstractCellEditor implements TreeCellEd
 	public Object getCellEditorValue() {
 		System.out.println("getCellEditorValue called");
 		System.out.println();
-		System.out.println("getCellEditoValue returns :" + val.getText());//TODO here the vl is null
+		System.out.println("getCellEditoValue returns :" + val);//TODO here the vl is null
 		propertyAndIndividual.setValue(OntologyManager.getInstance().getTypedLiteral(val.getText()));
 		return propertyAndIndividual;
 	}

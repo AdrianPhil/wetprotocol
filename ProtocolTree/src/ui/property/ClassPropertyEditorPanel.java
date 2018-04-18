@@ -1,8 +1,9 @@
-package ui;
+package ui.property;
 
 //root nodes) after tree.setRootVisible(false) call tree.setShowsRootHandles(true).
 import ont.OntologyManager;
 import ont.PropertyAndIndividual;
+import ui.UiUtils;
 
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
@@ -93,7 +94,7 @@ public class ClassPropertyEditorPanel extends JPanel implements TreeSelectionLis
 		createNodes();
 		expandTree(jPropertyAndIndividualTree);
 		// jPropertyAndIndividualTree.setCellRenderer(new SimpleTreeCellRenderer());
-		jPropertyAndIndividualTree.setCellRenderer(new PropertiesCellRenderer());
+		jPropertyAndIndividualTree.setCellRenderer(new PropertyCellRenderer());
 		jPropertyAndIndividualTree.setEditable(true);
 		jPropertyAndIndividualTree.setCellEditor(new PropertyCellEditor());
 		// Enable tool tips.

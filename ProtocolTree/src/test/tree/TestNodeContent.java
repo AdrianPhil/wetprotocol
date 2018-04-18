@@ -1,11 +1,11 @@
 package test.tree;
 
-public class NodeContent{
+public class TestNodeContent{
 
 
 	String field1;
 	String field2="DUMMY STRING";
-	NodeContent(String s){
+	TestNodeContent(String s){
 		field1 =s;
 	}
 	public String getString1() {

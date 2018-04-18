@@ -27,7 +27,7 @@ public class SwingTestPanel extends JPanel implements TreeSelectionListener {
 	// renderer.getUploadButton().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));       renderer.getDownloadButton().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
 	private JTree jProtocolTree;
-	private DefaultTreeModel protocolTreeModel = new DefaultTreeModel(new DefaultMutableTreeNode(new NodeContent("Just a string")));
+	private DefaultTreeModel protocolTreeModel = new DefaultTreeModel(new DefaultMutableTreeNode(new TestNodeContent("Just a string")));
 
 	private SwingTestPanel() {
 		super(new GridLayout(1, 1));
@@ -61,7 +61,7 @@ public class SwingTestPanel extends JPanel implements TreeSelectionListener {
 	}
 
 	private void createDummyNodes(DefaultMutableTreeNode defaultMutableTreeNode) {
-		((DefaultMutableTreeNode) (protocolTreeModel.getRoot())).add(new DefaultMutableTreeNode(new NodeContent("second string value")));
+		((DefaultMutableTreeNode) (protocolTreeModel.getRoot())).add(new DefaultMutableTreeNode(new TestNodeContent("second string value")));
 	}
 
 	/**
