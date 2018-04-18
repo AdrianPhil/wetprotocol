@@ -4,10 +4,6 @@ import ont.OntologyManager;
 
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
-import org.protege.owl.codegeneration.WrappedIndividual;
-import org.protege.owl.codegeneration.impl.WrappedIndividualImpl;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLOntology;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -29,7 +25,7 @@ public class UiUtils {
 	 * Create the GUI and show it. For thread safety, this method should be invoked
 	 * from the event-dispatching thread.
 	 */
-	static void createAndShowNewFrameGUI(JPanel whatPanel, String title) {
+	public static void createAndShowNewFrameGUI(JPanel whatPanel, String title) {
 		JFrame frame = new JFrame(title);
 		frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		whatPanel.setOpaque(true); // content panes must be opaque

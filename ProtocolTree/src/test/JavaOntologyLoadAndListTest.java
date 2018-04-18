@@ -1,13 +1,6 @@
 package test;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-
-import ont.OntologyManager;
-
-import org.apache.jena.ontology.Individual;
-import org.semanticweb.owlapi.model.*;
 
 //see also vocabulary
 public class JavaOntologyLoadAndListTest {

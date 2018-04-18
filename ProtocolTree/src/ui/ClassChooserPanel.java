@@ -1,8 +1,6 @@
 package ui;
 
 import ont.OntologyManager;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLOntology;
 import resources.ResourceFindingDummyClass;
 
 import javax.swing.*;
@@ -16,12 +14,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Set;
-
-import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 import static ui.UiUtils.createEmpyIndividualNodes;
 import static ui.UiUtils.expandTree;
-import static ui.WetProtocolMainPanel.WITH_OF_PROTOCOL_TREE;
 
 public class ClassChooserPanel extends JPanel implements TreeSelectionListener {
     private JEditorPane htmlPane;
@@ -87,7 +81,7 @@ public class ClassChooserPanel extends JPanel implements TreeSelectionListener {
         //Enable tool tips.
         ToolTipManager.sharedInstance().registerComponent(jClassTree);
         //jClassTree.setCellRenderer(new MyRenderer());
-        jClassTree.setCellRenderer(new InstanceCellRenderer());
+        jClassTree.setCellRenderer(new ProtocolInstanceCellRenderer());
         //Listen for when the selection changes.
         jClassTree.addTreeSelectionListener(this);
         addTreeNodeMouseListeners();
@@ -130,7 +124,8 @@ public class ClassChooserPanel extends JPanel implements TreeSelectionListener {
     /**
      * Required by TreeSelectionListener interface.
      */
-    public void valueChanged(TreeSelectionEvent e) {
+    @Override
+	public void valueChanged(TreeSelectionEvent e) {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) jClassTree.getLastSelectedPathComponent();
 //        if (node == null) return;
 //        Object nodeInfo = node.getUserObject();
@@ -150,7 +145,8 @@ public class ClassChooserPanel extends JPanel implements TreeSelectionListener {
 
     private void addTreeNodeMouseListeners() {
         jClassTree.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
+            @Override
+			public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
                     DefaultMutableTreeNode node = (DefaultMutableTreeNode) jClassTree.getLastSelectedPathComponent();
                     if (node == null) return;

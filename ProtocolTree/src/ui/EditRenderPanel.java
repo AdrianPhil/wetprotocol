@@ -8,11 +8,9 @@ import javax.swing.JPanel;
 import resources.ResourceFindingDummyClass;
 
 public class EditRenderPanel extends JPanel {
-
 	static final ImageIcon createImageIcon = ResourceFindingDummyClass.createImageIcon("labcoat.png");
-
 	JLabel imageLabel = new JLabel(" ");
-	JLabel localNameLabel = new JLabel(" ");
+	JLabel localNameLabel = new JLabel("L");
 	JLabel propertyAndIndividualValue = new JLabel("value:?");
 	JLabel propertyAndIndividualRangeLabel = new JLabel(" ");
 	JLabel propertyAndIndividualDomainLabel = new JLabel(" ");
@@ -40,7 +38,7 @@ public class EditRenderPanel extends JPanel {
 	}
 
 	public void setValue(String valueText) {
-		localNameLabel.setText(valueText);
+		propertyAndIndividualValue.setText(valueText);
 	}
 
 	public String getRange() {
@@ -56,10 +54,9 @@ public class EditRenderPanel extends JPanel {
 	}
 
 	public void setDomain(String domainText) {
-		propertyAndIndividualRangeLabel.setText(domainText);
+		propertyAndIndividualDomainLabel.setText(domainText);
 	}
-	
-	
+
 	public void setIcon(Icon icon) {
 		imageLabel.setIcon(icon);
 	}

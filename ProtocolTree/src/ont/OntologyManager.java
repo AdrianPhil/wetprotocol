@@ -1,35 +1,16 @@
 package ont;
 
 import resources.ResourceFindingDummyClass;
-import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
-import uk.ac.manchester.cs.owl.owlapi.OWLObjectImpl;
-
-import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
-import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
-import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.util.iterator.ExtendedIterator;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.*;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.swing.tree.DefaultMutableTreeNode;
 
 public class OntologyManager {
 	private static OntologyManager instance;
@@ -37,7 +18,7 @@ public class OntologyManager {
 	private static String ONTOLOGY_LOCATION = ResourceFindingDummyClass.getResource("AdrianProtocol.owl").getFile();
 	public static String NS = "http://www.wet.protocol#";// namespace and #
 	private static Individual topProtocolInstance;
-	private static PropertyAndIndividual topPropertyANdIndividual;
+	private static PropertyAndIndividual topPropertyAndIndividual;
 	//
 
 	public static final OntologyManager getInstance() {
@@ -68,14 +49,14 @@ public class OntologyManager {
 	}
 
 	public PropertyAndIndividual getTopPropertyAndIndividual() {
-		if (topPropertyANdIndividual == null) {
+		if (topPropertyAndIndividual == null) {
 			Individual dummyIndividual = ontologyModel.getIndividual(NS + "dummyIndividual");
-			topPropertyANdIndividual = new PropertyAndIndividual(ontologyModel.getOntProperty(NS + "dummyDataProperty"), dummyIndividual);
+			topPropertyAndIndividual = new PropertyAndIndividual(ontologyModel.getOntProperty(NS + "dummyDataProperty"), dummyIndividual);
 			// the value will be null
 			// no values for properties as this ode will be invisible
 		}
 		//System.out.println("topPropertyInstance:" + topPropertyInstance);
-		return topPropertyANdIndividual;
+		return topPropertyAndIndividual;
 	}
 
 	public void printStringClassNames() {
@@ -95,7 +76,6 @@ public class OntologyManager {
 	}
 
 	public Individual createIndividual(String instanceName, String className) {
-		// TODO Auto-generated method stub
 		OntClass ontClass = OntologyManager.getInstance().getStringClass(className);
 		return ontologyModel.createIndividual(instanceName, ontClass);
 	}

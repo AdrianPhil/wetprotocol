@@ -11,7 +11,6 @@ public class DummyPane extends JPanel{
 	}
 @Override
 public void setBackground(Color bg) {
-	// TODO Auto-generated method stub
 	super.setBackground(Color.BLUE);
 }
 }
