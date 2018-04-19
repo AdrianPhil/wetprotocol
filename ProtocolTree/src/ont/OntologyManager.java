@@ -7,6 +7,7 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
 import java.util.Collections;
 import java.util.Set;
@@ -195,7 +196,7 @@ public class OntologyManager {
 
 	}
 
-	public Literal getRandomLiteral(String newValue) {
+	public Literal createValueAsStringLiteral(String newValue) {
 		return ontologyModel.createTypedLiteral(newValue);
 	}
 
@@ -248,5 +249,15 @@ public class OntologyManager {
 
 	public Individual getProtejeCreatedMicrocetrifugeTube() {
 		return ontologyModel.getIndividual(NS + "myProtejeCreatedMicroCentrifugeTube");
+	}
+
+	public static boolean isPrimitive(PropertyAndIndividual propertyAndIndividual) {
+		return propertyAndIndividual.getOntProperty().isDatatypeProperty();
+//		RDFNode
+//		createValue
+//		ontologyModel.createTypedLiteral(v)
+//	if (propertyAndIndividual.getOntProperty().getRange().isLiteral()) {
+//			
+//		}
 	}
 }

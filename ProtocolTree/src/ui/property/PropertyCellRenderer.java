@@ -4,6 +4,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
+import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntProperty;
 
 import ont.PropertyAndIndividual;
@@ -28,7 +29,7 @@ public class PropertyCellRenderer implements TreeCellRenderer {
 
 	@Override // gets the user object returns the panel
 	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-		System.out.println("getTreeCell RENDERER Component called");
+		// System.out.println("getTreeCell RENDERER Component called");
 		if ((((DefaultMutableTreeNode) value).getUserObject() instanceof String))// for the dummy string
 		{
 			return defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
@@ -39,22 +40,25 @@ public class PropertyCellRenderer implements TreeCellRenderer {
 		}
 		Component returnComponent = null;
 		Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
+		if ((userObject instanceof OntClass)) {
+			return defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+		}
 		if (!(userObject instanceof PropertyAndIndividual)) {
 			UiUtils.showDialog(tree, "The propertyAndIndividual (userObject is NOT instanceof propertyAndIndividual:" + userObject.toString());
-			returnComponent = defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+			return defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 		}
 		PropertyAndIndividual propertyAndIndividual = (PropertyAndIndividual) userObject;
 		OntProperty ontProperty = propertyAndIndividual.getOntProperty();
-		EditRenderPanel editRenderPanel = new EditRenderPanel(ontProperty.getLocalName(), "" + propertyAndIndividual.getIndividual().getPropertyValue(ontProperty), ontProperty.getRange().getLocalName().toString(), ontProperty.getDomain().getLocalName().toString());
+		RenderCellPanel editRenderPanel = new RenderCellPanel(ontProperty.getLocalName(), "" + propertyAndIndividual.getIndividual().getPropertyValue(ontProperty), ontProperty.getRange().getLocalName().toString(), ontProperty.getDomain().getLocalName().toString());
 		if (selected) {
 			editRenderPanel.setBackground(backgroundSelectionColor);
 		} else {
 			editRenderPanel.setBackground(backgroundNonSelectionColor);
 		}
 		if (propertyAndIndividual.getOntProperty().isObjectProperty()) {
-			editRenderPanel.setIcon(EditRenderPanel.iconObjectProperty);
+			editRenderPanel.setIcon(EditCellPanel.iconObjectProperty);
 		} else if (propertyAndIndividual.getOntProperty().isDatatypeProperty()) {
-			editRenderPanel.setIcon(EditRenderPanel.iconDataProperty);
+			editRenderPanel.setIcon(EditCellPanel.iconDataProperty);
 		} else {
 			UiUtils.showDialog(tree, "This property is not a data property nor an object property");
 		}
@@ -68,7 +72,6 @@ public class PropertyCellRenderer implements TreeCellRenderer {
 		case LITERAL:
 			editRenderPanel.setBackground(Color.GREEN);
 			break;
-
 		}
 		editRenderPanel.setEnabled(tree.isEnabled());
 		returnComponent = editRenderPanel;
@@ -78,5 +81,4 @@ public class PropertyCellRenderer implements TreeCellRenderer {
 		}
 		return returnComponent;
 	}
-
 }

@@ -6,6 +6,7 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellEditor;
 
+import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.rdf.model.Literal;
 
@@ -14,30 +15,37 @@ import ont.PropertyAndIndividual;
 import ui.UiUtils;
 
 public class PropertyCellEditor extends AbstractCellEditor implements TreeCellEditor {
-	private EditRenderPanel editPanel;
+	private EditCellPanel editPanel;
 	private PropertyAndIndividual propertyAndIndividual;
-	String thevalue;
 
-	@Override
-	public Object getCellEditorValue() { // builds and returns propertyAndIndividual from field EditRenderPanel
+	@Override // I think it's called when somebody from outside want the edited value. Maybe when clicking outside
+	public Object getCellEditorValue() { // builds and returns propertyAndIndividual from field EditRenderPanel, Returns the value contained in the editor.
 		System.out.println("In EDITOR getCellEditorValue called");
-		editPanel.getSaveButton().addActionListener(e -> {
-			stopCellEditing();
-		});
 		// fillPropertyAndIndividual
-		Literal literalPropertyValue = OntologyManager.getInstance().getRandomLiteral(editPanel.getValue());
+		Literal literalPropertyValue = OntologyManager.getInstance().createValueAsStringLiteral(editPanel.getValue());
 		propertyAndIndividual.getIndividual().setPropertyValue(propertyAndIndividual.getOntProperty(), literalPropertyValue);
 		return propertyAndIndividual;
 	}
 
-	@Override
+	// clearly this is called first of the 2 methods to show the display panel
+	@Override // when we finish editing?
 	public Component getTreeCellEditorComponent(JTree tree, Object propertyAndIndividualObject, boolean isSelected, boolean expanded, boolean leaf, int row) {
-		System.out.println("In EDITOR getTreeCellEditorComponent called");
+		System.out.print("In EDITOR getTreeCellEditorComponent called on property:");
 		if (propertyAndIndividualObject != null && propertyAndIndividualObject instanceof DefaultMutableTreeNode) {
 			Object userObject = ((DefaultMutableTreeNode) propertyAndIndividualObject).getUserObject();
+			if (userObject instanceof OntClass) {
+					return null;//new  DefaultCellEditor().getTreeCellEditorComponent( tree,  propertyAndIndividualObject,  isSelected,  expanded,  leaf,  row);
+			}
 			if (userObject instanceof PropertyAndIndividual) {
 				propertyAndIndividual = (PropertyAndIndividual) userObject;
-				editPanel = new EditRenderPanel(propertyAndIndividual);
+				System.out.println("on property:" + propertyAndIndividual.getOntProperty().getLocalName());
+				editPanel = new EditCellPanel(propertyAndIndividual);
+				if (propertyAndIndividual.getOntProperty().isDatatypeProperty()) {
+					editPanel.getSaveButton().addActionListener(e -> {
+						stopCellEditing();
+					});
+				}
+				System.out.println();
 			}
 		} else {
 			UiUtils.showDialog(tree, "Uknown object type:" + propertyAndIndividualObject);
@@ -57,5 +65,4 @@ public class PropertyCellEditor extends AbstractCellEditor implements TreeCellEd
 		System.out.println("fireEditingStopped called");
 		super.fireEditingStopped();
 	}
-
 }

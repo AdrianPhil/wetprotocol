@@ -57,8 +57,6 @@ public class TestCellEditor extends AbstractCellEditor implements TreeCellEditor
 
 	@Override
 	protected void fireEditingStopped() {
-		controller.setMode(Mode.RENDER);
-		System.out.println("fireEditingStopped called");
 		super.fireEditingStopped();
 	}
 }

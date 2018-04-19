@@ -1,4 +1,4 @@
-package ui.property;
+package oldStuff;
 
 public class NodeContentModel {
 

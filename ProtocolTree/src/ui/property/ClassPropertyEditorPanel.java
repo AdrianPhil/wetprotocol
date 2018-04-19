@@ -87,14 +87,11 @@ public class ClassPropertyEditorPanel extends JPanel implements TreeSelectionLis
 	}
 
 	private void initiateTree() {
-		// Operation topOperation = (Operation) root.getUserObject();
-		// jClassTree.setEditable(true);
 		jPropertyAndIndividualTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		jPropertyAndIndividualTree.setShowsRootHandles(true);
 		createNodes();
 		expandTree(jPropertyAndIndividualTree);
-		// jPropertyAndIndividualTree.setCellRenderer(new SimpleTreeCellRenderer());
-		//jPropertyAndIndividualTree.setCellRenderer(new PropertyCellRenderer());
+		jPropertyAndIndividualTree.setCellRenderer(new PropertyCellRenderer());
 		jPropertyAndIndividualTree.setEditable(true);
 		jPropertyAndIndividualTree.setCellEditor(new PropertyCellEditor());
 		// Enable tool tips.
@@ -212,13 +209,22 @@ public class ClassPropertyEditorPanel extends JPanel implements TreeSelectionLis
 		currentTopNode = newChild;
 		// break down this object property
 		OntResource range = ontProperty.getRange();
-		System.out.println("range is :" + range);
-		for (OntClass subclass : range.asClass().listSubClasses(false).toSet()) {
-			Set<OntProperty> props = OntologyManager.getInstance().dumpCalculatedPropertiesForAClass(subclass);
+		System.out.println("\trange:" + range);
+		for (OntClass subclassFromRange : range.asClass().listSubClasses(false).toSet()) {
+			System.out.println("\t\t dealing with range subclass:"+subclassFromRange.getLocalName());
+			DefaultMutableTreeNode newClassChild = new DefaultMutableTreeNode(subclassFromRange);
+			DefaultMutableTreeNode rangeLevelNode=currentTopNode;
+			currentTopNode.add(newClassChild);// would be Read Only as it's an object property
+			currentTopNode = newClassChild;
+			Set<OntProperty> props = OntologyManager.getInstance().dumpCalculatedPropertiesForAClass(subclassFromRange);
 			for (OntProperty p : props) {
-				createNode(ontProperty, currentTopNode, true);
+				System.out.println("\t\t\t dealing with range property:"+p.getLocalName());
+				createNode(p, currentTopNode, true);
 			}
+			currentTopNode=rangeLevelNode;
+			System.out.println("\t\t finished dealing with range subclass:"+subclassFromRange.getLocalName());
 		}
+		System.out.println("\tfinished with range :" + range);
 		// describe the property itself even if it do
 		Set<OntProperty> rangeProps = OntologyManager.getInstance().dumpCalculatedPropertiesForAClass(range.asClass());
 		for (OntProperty rangeProperty : rangeProps) {
