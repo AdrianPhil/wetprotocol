@@ -15,8 +15,6 @@ import java.awt.Component;
 import javax.swing.*;
 
 public class PropertyCellRenderer implements TreeCellRenderer {
-	Controller controller = new Controller();// creates the panel internally
-
 	DefaultTreeCellRenderer defaultRenderer = new DefaultTreeCellRenderer();
 	Color backgroundSelectionColor;
 	Color backgroundNonSelectionColor;
@@ -28,68 +26,57 @@ public class PropertyCellRenderer implements TreeCellRenderer {
 		backgroundNonSelectionColor = defaultRenderer.getBackgroundNonSelectionColor();
 	}
 
-	@Override // gets the userobject retuns the panel
-	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
-			boolean leaf, int row, boolean hasFocus) {
+	@Override // gets the user object returns the panel
+	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
 		System.out.println("getTreeCell RENDERER Component called");
 		if ((((DefaultMutableTreeNode) value).getUserObject() instanceof String))// for the dummy string
 		{
 			return defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 		}
 		if (value == null || !(value instanceof DefaultMutableTreeNode)) {
-			UiUtils.showDialog(tree,
-					"The tree value is null or not a value instanceof DefaultMutableTreeNode. Using default renderer");
+			UiUtils.showDialog(tree, "The tree value is null or not a value instanceof DefaultMutableTreeNode. Using default renderer");
 			return defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);// ----------------->
 		}
 		Component returnComponent = null;
 		Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
 		if (!(userObject instanceof PropertyAndIndividual)) {
-			UiUtils.showDialog(tree, "The propertyAndIndividual (userObject is NOT instanceof propertyAndIndividual:"
-					+ userObject.toString());
-			returnComponent = defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row,
-					hasFocus);
+			UiUtils.showDialog(tree, "The propertyAndIndividual (userObject is NOT instanceof propertyAndIndividual:" + userObject.toString());
+			returnComponent = defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 		}
 		PropertyAndIndividual propertyAndIndividual = (PropertyAndIndividual) userObject;
 		OntProperty ontProperty = propertyAndIndividual.getOntProperty();
-		controller.setModel(new NodeContentModel(ontProperty.getLocalName(),
-				":" + String.valueOf(propertyAndIndividual.getIndividual().getPropertyValue(ontProperty)),
-				ontProperty.getRange().toString(), ontProperty.getDomain().toString()));
-		controller.fillModelFromUi();
+		EditRenderPanel editRenderPanel = new EditRenderPanel(ontProperty.getLocalName(), "" + propertyAndIndividual.getIndividual().getPropertyValue(ontProperty), ontProperty.getRange().getLocalName().toString(), ontProperty.getDomain().getLocalName().toString());
 		if (selected) {
-			controller.getPanel().setBackground(backgroundSelectionColor);
+			editRenderPanel.setBackground(backgroundSelectionColor);
 		} else {
-			controller.getPanel().setBackground(backgroundNonSelectionColor);
+			editRenderPanel.setBackground(backgroundNonSelectionColor);
 		}
 		if (propertyAndIndividual.getOntProperty().isObjectProperty()) {
-			controller.getPanel().setIcon(EditRenderPanel.iconObjectProperty);
+			editRenderPanel.setIcon(EditRenderPanel.iconObjectProperty);
 		} else if (propertyAndIndividual.getOntProperty().isDatatypeProperty()) {
-			controller.getPanel().setIcon(EditRenderPanel.iconDataProperty);
+			editRenderPanel.setIcon(EditRenderPanel.iconDataProperty);
 		} else {
 			UiUtils.showDialog(tree, "This property is not a data property nor an object property");
 		}
 		switch (propertyAndIndividual.getDisplayType()) {
 		case FROM_RANGE_SUPERCLASS_PROPERTY_OBJECT:
-			controller.getPanel().setBackground(Color.YELLOW);
+			editRenderPanel.setBackground(Color.YELLOW);
 			break;
 		case IN_CLASS_PROPERTY_OBJECT:
-			controller.getPanel().setBackground(Color.CYAN);
+			editRenderPanel.setBackground(Color.CYAN);
 			break;// todo should fix this
 		case LITERAL:
-			controller.getPanel().setBackground(Color.GREEN);
+			editRenderPanel.setBackground(Color.GREEN);
 			break;
 
 		}
-
-		controller.getPanel().setEnabled(tree.isEnabled());
-		returnComponent = controller.getPanel();
+		editRenderPanel.setEnabled(tree.isEnabled());
+		returnComponent = editRenderPanel;
 		if (returnComponent == null) {
-			UiUtils.showDialog(tree,
-					"The propertyAndIndividual to be rendered for:"
-							+ ((PropertyAndIndividual) userObject).getOntProperty().getLocalName()
-							+ " is wrong!!. Using default renderer");
-			returnComponent = defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row,
-					hasFocus);
+			UiUtils.showDialog(tree, "The propertyAndIndividual to be rendered for:" + ((PropertyAndIndividual) userObject).getOntProperty().getLocalName() + " is wrong!!. Using default renderer");
+			returnComponent = defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 		}
 		return returnComponent;
 	}
+
 }

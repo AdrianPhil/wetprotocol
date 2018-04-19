@@ -6,43 +6,56 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellEditor;
 
+import org.apache.jena.ontology.OntProperty;
+import org.apache.jena.rdf.model.Literal;
+
 import ont.OntologyManager;
 import ont.PropertyAndIndividual;
 import ui.UiUtils;
 
 public class PropertyCellEditor extends AbstractCellEditor implements TreeCellEditor {
-	private JTextField val;
-	private JLabel label;
-	private JPanel editPanel=new JPanel();
+	private EditRenderPanel editPanel;
 	private PropertyAndIndividual propertyAndIndividual;
+	String thevalue;
 
 	@Override
-	public Component getTreeCellEditorComponent(JTree tree, Object value, boolean isSelected, boolean expanded, boolean leaf, int row) {
-		System.out.println("getTreeCellEditorComponent called");
-		if (value != null && value instanceof DefaultMutableTreeNode) {
-			Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
+	public Object getCellEditorValue() { // builds and returns propertyAndIndividual from field EditRenderPanel
+		System.out.println("In EDITOR getCellEditorValue called");
+		editPanel.getSaveButton().addActionListener(e -> {
+			stopCellEditing();
+		});
+		// fillPropertyAndIndividual
+		Literal literalPropertyValue = OntologyManager.getInstance().getRandomLiteral(editPanel.getValue());
+		propertyAndIndividual.getIndividual().setPropertyValue(propertyAndIndividual.getOntProperty(), literalPropertyValue);
+		return propertyAndIndividual;
+	}
+
+	@Override
+	public Component getTreeCellEditorComponent(JTree tree, Object propertyAndIndividualObject, boolean isSelected, boolean expanded, boolean leaf, int row) {
+		System.out.println("In EDITOR getTreeCellEditorComponent called");
+		if (propertyAndIndividualObject != null && propertyAndIndividualObject instanceof DefaultMutableTreeNode) {
+			Object userObject = ((DefaultMutableTreeNode) propertyAndIndividualObject).getUserObject();
 			if (userObject instanceof PropertyAndIndividual) {
 				propertyAndIndividual = (PropertyAndIndividual) userObject;
-				if (propertyAndIndividual.getOntProperty().isDatatypeProperty() && propertyAndIndividual.getOntProperty().isLiteral()) {
-					System.out.println("	if (propertyAndIndividual.getOntProperty().isDatatypeProperty() && propertyAndIndividual.getOntProperty().isLiteral()) {");
-					label.setText(propertyAndIndividual.getValue().toString());// to check usage of the tostring
-					val.setText(propertyAndIndividual.getValue().toString());
-					editPanel.add(label);
-					editPanel.add(val);
-				}
-			} else {
-				UiUtils.showDialog(tree, "Uknown object type:" + value);
+				editPanel = new EditRenderPanel(propertyAndIndividual);
 			}
+		} else {
+			UiUtils.showDialog(tree, "Uknown object type:" + propertyAndIndividualObject);
 		}
 		return editPanel;
 	}
 
 	@Override
-	public Object getCellEditorValue() {
-		System.out.println("getCellEditorValue called");
-		System.out.println();
-		System.out.println("getCellEditoValue returns :" + val);//TODO here the vl is null
-		propertyAndIndividual.setValue(OntologyManager.getInstance().getTypedLiteral(val.getText()));
-		return propertyAndIndividual;
+	public boolean stopCellEditing() {
+		System.out.println("stopCellEditing called");
+		return super.stopCellEditing();
 	}
+
+	@Override
+	protected void fireEditingStopped() {
+		// controller.setMode(Mode.RENDER);
+		System.out.println("fireEditingStopped called");
+		super.fireEditingStopped();
+	}
+
 }

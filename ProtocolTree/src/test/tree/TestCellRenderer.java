@@ -15,7 +15,6 @@ import java.awt.Component;
 import javax.swing.*;
 
 public class TestCellRenderer implements TreeCellRenderer {
-	TestController controller = new TestController();
 
 	DefaultTreeCellRenderer defaultRenderer = new DefaultTreeCellRenderer();
 	Color backgroundSelectionColor = defaultRenderer.getBackgroundNonSelectionColor();
@@ -37,15 +36,17 @@ public class TestCellRenderer implements TreeCellRenderer {
 			return defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 		}
 		TestNodeContent nodeContent = (TestNodeContent) userObject;
-		System.out.println("in renderer getTreeCellRendererComponent and node content:"+nodeContent);
-		controller.setModel(nodeContent);
-		controller.fillUiFromModel();
-		if (selected) {
-			controller.getPanel().setBackground(backgroundSelectionColor);
+		System.out.println("in renderer getTreeCellRendererComponent and node content:" + nodeContent);
+		TestEditRenderPanel testEditRenderPanel = new TestEditRenderPanel();
+		testEditRenderPanel.setField1LabelText(nodeContent.getString1());
+		testEditRenderPanel.setField2LabelText(nodeContent.getString2());
+		if (selected)
+		{
+			testEditRenderPanel.setBackground(backgroundSelectionColor);
 		} else {
-			controller.getPanel().setBackground(backgroundNonSelectionColor);
+			testEditRenderPanel.setBackground(backgroundNonSelectionColor);
 		}
-		controller.getPanel().setEnabled(tree.isEnabled());
-		return controller.getPanel();
+		testEditRenderPanel.setEnabled(tree.isEnabled());
+		return testEditRenderPanel;
 	}
 }

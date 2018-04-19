@@ -14,7 +14,6 @@ import ont.PropertyAndIndividual;
 import ui.UiUtils;
 
 public class TestCellEditor extends AbstractCellEditor implements TreeCellEditor {
-	private JTextField val;
 	private TestController controller = new TestController();
 	private PropertyAndIndividual propertyAndIndividual;
 

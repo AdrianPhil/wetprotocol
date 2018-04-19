@@ -55,7 +55,7 @@ public class OntologyManager {
 			// the value will be null
 			// no values for properties as this ode will be invisible
 		}
-		//System.out.println("topPropertyInstance:" + topPropertyInstance);
+		// System.out.println("topPropertyInstance:" + topPropertyInstance);
 		return topPropertyAndIndividual;
 	}
 
@@ -168,7 +168,7 @@ public class OntologyManager {
 	}
 
 	public void dumpCalculatedPropertiesForAClass(OntClass ontClass, final Set<OntProperty> collected) {
-		//System.out.println("calculated for class:" + ontClass.getLocalName());
+		// System.out.println("calculated for class:" + ontClass.getLocalName());
 		collected.addAll(ontologyModel.listAllOntProperties().toSet().stream().filter(dataTypeProperty -> {
 			return dataTypeProperty.hasDomain(ontClass);
 		}).collect(Collectors.toSet()));
@@ -184,7 +184,7 @@ public class OntologyManager {
 		// https://jena.apache.org/documentation/notes/typed-literals.html
 
 		// will create a typed literal with the lexical value "2", of type xsd:int.
-		// Could use model.createTypedLiteral(value, datatype).
+		// Could use model.createTypedLiteral(value, datatype). 
 		// model.createLiteral(25); still works but is deprecated because it does string
 		// conversions
 		Literal literalPropertyValue = ontologyModel.createTypedLiteral("QIGEN");
@@ -193,6 +193,10 @@ public class OntologyManager {
 		dumpPropertiesAndValuesInIndividual(newlyCreatedIndividual);
 		System.out.println("-------------");
 
+	}
+
+	public Literal getRandomLiteral(String newValue) {
+		return ontologyModel.createTypedLiteral(newValue);
 	}
 
 	private void testCreateIndividualAndAssignLiteralPropertyValues() {

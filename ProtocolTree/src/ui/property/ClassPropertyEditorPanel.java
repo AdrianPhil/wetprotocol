@@ -94,7 +94,7 @@ public class ClassPropertyEditorPanel extends JPanel implements TreeSelectionLis
 		createNodes();
 		expandTree(jPropertyAndIndividualTree);
 		// jPropertyAndIndividualTree.setCellRenderer(new SimpleTreeCellRenderer());
-		jPropertyAndIndividualTree.setCellRenderer(new PropertyCellRenderer());
+		//jPropertyAndIndividualTree.setCellRenderer(new PropertyCellRenderer());
 		jPropertyAndIndividualTree.setEditable(true);
 		jPropertyAndIndividualTree.setCellEditor(new PropertyCellEditor());
 		// Enable tool tips.

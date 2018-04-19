@@ -17,7 +17,7 @@ public class TestEditRenderPanel extends JPanel {
 
 	static final ImageIcon createImageIcon = ResourceFindingDummyClass.createImageIcon("labcoat.png");
 	JButton saveButton = new JButton("Save");
-	JTextField field1Component = new JTextField("");
+	JLabel field1Component = new JLabel("");
 	JTextField field2Component = new JTextField(" ");
 
 	public TestEditRenderPanel() {
