@@ -1,6 +1,8 @@
 package ont;
 
 import resources.ResourceFindingDummyClass;
+import ui.property.ClassPropertyEditorPanel.NodeType;
+
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
@@ -8,6 +10,7 @@ import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import java.util.Collections;
 import java.util.Set;
@@ -20,7 +23,8 @@ public class OntologyManager {
 	public static String NS = "http://www.wet.protocol#";// namespace and #
 	public static OntProperty STANDALONE;
 	private static Individual topProtocolInstance;
-	private static PropertyAndIndividual topPropertyAndIndividual;
+	private static PropertyAndIndividual TOP_PROPERTY_AND_INDIVIDUAL;
+	public static Resource NOTHING_SUBCLASS ;
 	//
 
 	public static final OntologyManager getInstance() {
@@ -29,6 +33,7 @@ public class OntologyManager {
 			ontologyModel = ModelFactory.createOntologyModel();// full? hierarchy reasoner
 			ontologyModel.read(ONTOLOGY_LOCATION);
 			STANDALONE = ontologyModel.getOntProperty(NS + "standalone");
+			NOTHING_SUBCLASS= ontologyModel.getOntClass("owl:Nothing");
 		}
 		return instance;
 	}
@@ -52,14 +57,14 @@ public class OntologyManager {
 	}
 
 	public PropertyAndIndividual getTopPropertyAndIndividual() {
-		if (topPropertyAndIndividual == null) {
+		if (TOP_PROPERTY_AND_INDIVIDUAL == null) {
 			Individual dummyIndividual = ontologyModel.getIndividual(NS + "dummyIndividual");
-			topPropertyAndIndividual = new PropertyAndIndividual(ontologyModel.getOntProperty(NS + "dummyDataProperty"), dummyIndividual);
+			TOP_PROPERTY_AND_INDIVIDUAL = new PropertyAndIndividual(ontologyModel.getOntProperty(NS + "dummyDataProperty"), dummyIndividual, NodeType.DUMMY_INDIVIDUAL);
 			// the value will be null
 			// no values for properties as this ode will be invisible
 		}
 		// System.out.println("topPropertyInstance:" + topPropertyInstance);
-		return topPropertyAndIndividual;
+		return TOP_PROPERTY_AND_INDIVIDUAL;
 	}
 
 	public void printStringClassNames() {
@@ -244,7 +249,7 @@ public class OntologyManager {
 		return ontologyModel.getIndividual(NS + "myProtejeCreatedMicroCentrifugeTube");
 	}
 
-	public static boolean isStandalone(OntProperty ontProperty) {XXX
+	public static boolean isStandalone(OntProperty ontProperty) {
 		return ontProperty.hasSuperProperty(OntologyManager.STANDALONE, true);
 	}
 }

@@ -4,14 +4,18 @@ import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.rdf.model.RDFNode;
 
+import ui.property.ClassPropertyEditorPanel.NodeType;
+
 public class PropertyAndIndividual {
 	OntProperty ontProperty;
 	Individual individual;
 	boolean fromRangeSuperclasses = false;
+	NodeType nodeType;
 
-	public PropertyAndIndividual(OntProperty ontProperty, Individual individual) {
+	public PropertyAndIndividual(OntProperty ontProperty, Individual individual, NodeType nodeType) {
 		this.ontProperty = ontProperty;
 		this.individual = individual;
+		this.nodeType = nodeType;
 	}
 
 	public PropertyAndIndividual(OntProperty ontProperty, Individual individual, boolean fromRangeSuperclasses) {
