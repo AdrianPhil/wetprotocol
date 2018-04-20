@@ -2,14 +2,14 @@
 <catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
     <uri id="User Entered Import Resolution" name="http://ontofox.hegroup.org/ztx3ioxo.owl" uri="EXACT2.owl"/>
     <group id="Folder Repository, directory=, recursive=true, Auto-Update=true, version=2" prefer="public" xml:base="">
-        <uri id="Automatically generated entry, Timestamp=1524173482395" name="http://ontofox.hegroup.org/9haqwnok.owl" uri="owls/ro-import.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1524173482395" name="http://ontofox.hegroup.org/cuq3yg8u.owl" uri="owls/pato-import.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1524173482395" name="http://ontofox.hegroup.org/mrh5qabf.owl" uri="owls/obi-import.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1524173482395" name="http://ontofox.hegroup.org/ztx3ioxo.owl" uri="owls/obi-rel.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1524173482395" name="duplicate:http://www.owl-ontologies.com/Ontology1184060740.owl" uri="EXACT2.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1524173482395" name="duplicate:http://www.owl-ontologies.com/Ontology1184060740.owl" uri="EXACT2test.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1524173482395" name="http://www.semanticweb.org/ad/ontologies/2018/3/untitled-ontology-6" uri="AdrianProtocol.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1524173482395" name="shadowed:http://www.owl-ontologies.com/Ontology1184060740.owl" uri="owls/EXACT-v2.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1524173482395" name="shadowed:http://www.owl-ontologies.com/Ontology1184060740.owl" uri="owls/EXACT2.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1524194777162" name="http://ontofox.hegroup.org/9haqwnok.owl" uri="owls/ro-import.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1524194777162" name="http://ontofox.hegroup.org/cuq3yg8u.owl" uri="owls/pato-import.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1524194777162" name="http://ontofox.hegroup.org/mrh5qabf.owl" uri="owls/obi-import.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1524194777162" name="http://ontofox.hegroup.org/ztx3ioxo.owl" uri="owls/obi-rel.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1524194777162" name="duplicate:http://www.owl-ontologies.com/Ontology1184060740.owl" uri="EXACT2.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1524194777162" name="duplicate:http://www.owl-ontologies.com/Ontology1184060740.owl" uri="EXACT2test.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1524194777162" name="http://www.semanticweb.org/ad/ontologies/2018/3/untitled-ontology-6" uri="AdrianProtocol.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1524194777162" name="shadowed:http://www.owl-ontologies.com/Ontology1184060740.owl" uri="owls/EXACT-v2.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1524194777162" name="shadowed:http://www.owl-ontologies.com/Ontology1184060740.owl" uri="owls/EXACT2.owl"/>
     </group>
 </catalog>

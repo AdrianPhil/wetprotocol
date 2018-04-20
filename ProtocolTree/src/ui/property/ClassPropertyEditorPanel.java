@@ -115,8 +115,7 @@ public class ClassPropertyEditorPanel extends JPanel implements TreeSelectionLis
 	}
 
 	/**
-	 * Todo need to update the protocol tree node with the value of the properties
-	 * and maybe change it's icon and refresh to show the changes
+	 * Todo need to update the protocol tree node with the value of the properties and maybe change it's icon and refresh to show the changes
 	 */
 	private void acceptPropertiesResponse(Component splitPane) {
 		// DefaultMutableTreeNode selectedClassNode = (DefaultMutableTreeNode)
@@ -176,14 +175,6 @@ public class ClassPropertyEditorPanel extends JPanel implements TreeSelectionLis
 		});
 	}
 
-	// private void initHelp() {
-	// String s = "TreeDemoHelp.html";
-	// helpURL = ResourceFindingDummyClass.getResource(s);
-	// if (helpURL == null) {
-	// System.err.println("Couldn't open help file: " + s);
-	// }
-	// displayURL(helpURL);
-	// }
 	public void createNodes() {
 		Object userObject = protocolTreeNode.getUserObject();// in protocol we have individuals
 		assert userObject instanceof Individual;
@@ -210,26 +201,28 @@ public class ClassPropertyEditorPanel extends JPanel implements TreeSelectionLis
 		// break down this object property
 		OntResource range = ontProperty.getRange();
 		System.out.println("\trange:" + range);
-		for (OntClass subclassFromRange : range.asClass().listSubClasses(false).toSet()) {
-			System.out.println("\t\t dealing with range subclass:"+subclassFromRange.getLocalName());
-			DefaultMutableTreeNode newClassChild = new DefaultMutableTreeNode(subclassFromRange);
-			DefaultMutableTreeNode rangeLevelNode=currentTopNode;
-			currentTopNode.add(newClassChild);// would be Read Only as it's an object property
-			currentTopNode = newClassChild;
-			Set<OntProperty> props = OntologyManager.getInstance().dumpCalculatedPropertiesForAClass(subclassFromRange);
-			for (OntProperty p : props) {
-				System.out.println("\t\t\t dealing with range property:"+p.getLocalName());
-				createNode(p, currentTopNode, true);
-			}
-			currentTopNode=rangeLevelNode;
-			System.out.println("\t\t finished dealing with range subclass:"+subclassFromRange.getLocalName());
-		}
+		// for (OntClass subclassFromRange : range.asClass().listSubClasses(false).toSet()) {
+		// System.out.println("\t\t dealing with range subclass:"+subclassFromRange.getLocalName());
+		// DefaultMutableTreeNode newClassChild = new DefaultMutableTreeNode(subclassFromRange);
+		// DefaultMutableTreeNode rangeLevelNode=currentTopNode;
+		// currentTopNode.add(newClassChild);// would be Read Only as it's an object property
+		// currentTopNode = newClassChild;
+		// Set<OntProperty> props = OntologyManager.getInstance().dumpCalculatedPropertiesForAClass(subclassFromRange);
+		// for (OntProperty p : props) {
+		// System.out.println("\t\t\t dealing with range property:"+p.getLocalName());
+		// createNode(p, currentTopNode, true);
+		// }
+		// currentTopNode=rangeLevelNode;
+		// System.out.println("\t\t finished dealing with range subclass:"+subclassFromRange.getLocalName());
+		// }
 		System.out.println("\tfinished with range :" + range);
 		// describe the property itself even if it do
-		Set<OntProperty> rangeProps = OntologyManager.getInstance().dumpCalculatedPropertiesForAClass(range.asClass());
-		for (OntProperty rangeProperty : rangeProps) {
-			System.out.println("creating first level prop node for " + rangeProperty.getLocalName());
-			createNode(rangeProperty, currentTopNode, false);
+		if (!OntologyManager.isStandalone(ontProperty)) {
+			Set<OntProperty> rangeProps = OntologyManager.getInstance().dumpCalculatedPropertiesForAClass(range.asClass());
+			for (OntProperty rangeProperty : rangeProps) {
+				System.out.println("creating first level prop node for " + rangeProperty.getLocalName());
+				createNode(rangeProperty, currentTopNode, false);
+			}
 		}
 		return currentTopNode;
 	}

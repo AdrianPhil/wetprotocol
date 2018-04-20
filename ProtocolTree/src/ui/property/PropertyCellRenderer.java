@@ -7,6 +7,7 @@ import javax.swing.tree.TreeCellRenderer;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntProperty;
 
+import ont.OntologyManager;
 import ont.PropertyAndIndividual;
 import ui.UiUtils;
 
@@ -49,7 +50,7 @@ public class PropertyCellRenderer implements TreeCellRenderer {
 		}
 		PropertyAndIndividual propertyAndIndividual = (PropertyAndIndividual) userObject;
 		OntProperty ontProperty = propertyAndIndividual.getOntProperty();
-		RenderCellPanel editRenderPanel = new RenderCellPanel(ontProperty.getLocalName(), "" + propertyAndIndividual.getIndividual().getPropertyValue(ontProperty), ontProperty.getRange().getLocalName().toString(), ontProperty.getDomain().getLocalName().toString());
+		RenderCellPanel editRenderPanel = new RenderCellPanel(OntologyManager.isStandalone(ontProperty) ? "STANDALONE" + ontProperty.getLocalName() : "XXX" + ontProperty.getLocalName(), "" + propertyAndIndividual.getIndividual().getPropertyValue(ontProperty), ontProperty.getRange().getLocalName().toString(), ontProperty.getDomain().getLocalName().toString());
 		if (selected) {
 			editRenderPanel.setBackground(backgroundSelectionColor);
 		} else {

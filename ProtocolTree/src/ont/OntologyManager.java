@@ -18,6 +18,7 @@ public class OntologyManager {
 	private static OntModel ontologyModel;
 	private static String ONTOLOGY_LOCATION = ResourceFindingDummyClass.getResource("AdrianProtocol.owl").getFile();
 	public static String NS = "http://www.wet.protocol#";// namespace and #
+	public static OntProperty STANDALONE;
 	private static Individual topProtocolInstance;
 	private static PropertyAndIndividual topPropertyAndIndividual;
 	//
@@ -27,6 +28,7 @@ public class OntologyManager {
 			instance = new OntologyManager();
 			ontologyModel = ModelFactory.createOntologyModel();// full? hierarchy reasoner
 			ontologyModel.read(ONTOLOGY_LOCATION);
+			STANDALONE = ontologyModel.getOntProperty(NS + "standalone");
 		}
 		return instance;
 	}
@@ -82,14 +84,11 @@ public class OntologyManager {
 	}
 
 	public void dumpPropertiesAndValuesInIndividual(Individual individual) {
-
 		Set<Statement> objectProperties = individual.listProperties().toSet();
 		// show the properties of this individual
 		System.out.println("dumpProperties and values for individual:" + individual);
-
 		objectProperties.forEach(prop -> {
 			System.out.print("    " + prop.getPredicate().getLocalName() + " -> ");
-
 			if (prop.getObject().isLiteral()) {
 				System.out.println("Literal " + prop.getLiteral().getLexicalForm());
 			} else if (prop.getObject().isAnon()) {
@@ -123,7 +122,6 @@ public class OntologyManager {
 		// System.out.println("class listed props");
 		// dumpPropertiesAndValuesForClass(getStringClass(NS + "CentrifugeTube"));//
 		// dumpPropertiesForClass(getStringClass(NS + "Pipette"));
-
 		// test top protocol
 		// dumpPropertiesAndValues(getTopProtocol());
 	}
@@ -176,16 +174,14 @@ public class OntologyManager {
 		ontClass.listSuperClasses(true).toSet().forEach(superClass -> {
 			dumpCalculatedPropertiesForAClass(superClass, collected);
 		});
-
 	}
 
 	private void testCreateIndividualAndAssignLiteralAndClassPropertyValues() {
 		Individual newlyCreatedIndividual = createIndividual("myCodeCreatedMicroCentrifugeTube", NS + "MicroCentrifugeTube");
 		System.out.println(newlyCreatedIndividual);
 		// https://jena.apache.org/documentation/notes/typed-literals.html
-
 		// will create a typed literal with the lexical value "2", of type xsd:int.
-		// Could use model.createTypedLiteral(value, datatype). 
+		// Could use model.createTypedLiteral(value, datatype).
 		// model.createLiteral(25); still works but is deprecated because it does string
 		// conversions
 		Literal literalPropertyValue = ontologyModel.createTypedLiteral("QIGEN");
@@ -193,7 +189,6 @@ public class OntologyManager {
 		newlyCreatedIndividual.setPropertyValue(stringValueProperty, literalPropertyValue);
 		dumpPropertiesAndValuesInIndividual(newlyCreatedIndividual);
 		System.out.println("-------------");
-
 	}
 
 	public Literal createValueAsStringLiteral(String newValue) {
@@ -204,7 +199,6 @@ public class OntologyManager {
 		Individual createdIndividual = createIndividual("nanoCodeCreatedVolume", NS + "Volume");
 		System.out.println(createdIndividual);
 		// https://jena.apache.org/documentation/notes/typed-literals.html
-
 		// will create a typed literal with the lexical value "2", of type xsd:int.
 		// Could use model.createTypedLiteral(value, datatype).
 		// model.createLiteral(25); still works but is deprecated because it does string
@@ -230,7 +224,6 @@ public class OntologyManager {
 
 	public static void main(String[] args) {
 		getInstance().testStuff();
-
 	}
 
 	public static void printSet(Set<?> set, int indent) {
@@ -251,13 +244,7 @@ public class OntologyManager {
 		return ontologyModel.getIndividual(NS + "myProtejeCreatedMicroCentrifugeTube");
 	}
 
-	public static boolean isPrimitive(PropertyAndIndividual propertyAndIndividual) {
-		return propertyAndIndividual.getOntProperty().isDatatypeProperty();
-//		RDFNode
-//		createValue
-//		ontologyModel.createTypedLiteral(v)
-//	if (propertyAndIndividual.getOntProperty().getRange().isLiteral()) {
-//			
-//		}
+	public static boolean isStandalone(OntProperty ontProperty) {XXX
+		return ontProperty.hasSuperProperty(OntologyManager.STANDALONE, true);
 	}
 }
