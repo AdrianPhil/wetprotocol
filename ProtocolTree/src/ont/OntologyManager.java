@@ -20,10 +20,9 @@ public class OntologyManager {
 	private static OntologyManager instance;
 	private static OntModel ontologyModel;
 	private static String ONTOLOGY_LOCATION = ResourceFindingDummyClass.getResource("AdrianProtocol.owl").getFile();
-	public static String NS = "http://www.wet.protocol#";// namespace and #
+	public static final String NS = "http://www.wet.protocol#";// namespace and #
 	public static OntProperty STANDALONE;
 	private static Individual topProtocolInstance;
-	private static PropertyAndIndividual TOP_PROPERTY_AND_INDIVIDUAL;
 	public static Resource NOTHING_SUBCLASS ;
 	//
 
@@ -43,9 +42,6 @@ public class OntologyManager {
 		return ontologyModel.listClasses().toSet();
 	}
 
-	public Literal getTypedLiteral(String text) {
-		return ontologyModel.createTypedLiteral(text);
-	}
 
 	public Individual getTopProtocoInstancel() {
 		if (topProtocolInstance == null) {
@@ -56,28 +52,8 @@ public class OntologyManager {
 		return topProtocolInstance;
 	}
 
-	public PropertyAndIndividual getTopPropertyAndIndividual() {
-		if (TOP_PROPERTY_AND_INDIVIDUAL == null) {
-			Individual dummyIndividual = ontologyModel.getIndividual(NS + "dummyIndividual");
-			TOP_PROPERTY_AND_INDIVIDUAL = new PropertyAndIndividual(ontologyModel.getOntProperty(NS + "dummyDataProperty"), dummyIndividual, NodeType.DUMMY_INDIVIDUAL);
-			// the value will be null
-			// no values for properties as this ode will be invisible
-		}
-		// System.out.println("topPropertyInstance:" + topPropertyInstance);
-		return TOP_PROPERTY_AND_INDIVIDUAL;
-	}
 
-	public void printStringClassNames() {
-		getClassesInSignature().forEach(System.out::println);
-		// for (OWLClass owlClass : classesInSignature) {
-		// System.out.println("Class Name:" + owlClass.getIRI().getFragment());
-		// //showSetSuperclasses(owlClass.getSuperClasses(myOntology));
-		// }
-	}
 
-	public OntClass getStringClass(String clazz) {
-		return ontologyModel.getOntClass(clazz);
-	}
 
 	public Individual createIndividual(String instanceName, OntClass ontClass) {
 		return ontologyModel.createIndividual(NS + instanceName, ontClass);
@@ -86,6 +62,10 @@ public class OntologyManager {
 	public Individual createIndividual(String instanceName, String className) {
 		OntClass ontClass = OntologyManager.getInstance().getStringClass(className);
 		return ontologyModel.createIndividual(instanceName, ontClass);
+	}
+
+	public OntClass getStringClass(String clazz) {
+		return ontologyModel.getOntClass(clazz);
 	}
 
 	public void dumpPropertiesAndValuesInIndividual(Individual individual) {
@@ -109,27 +89,6 @@ public class OntologyManager {
 		// printSet(instance.getPropertiesInIndividual(tinyValueIndividual));
 	}
 
-	public void testStuff() {
-		// testDumpExistingIndividualPropertiesAndValues();
-		dumpCalculatedPropertiesForAClass(getStringClass(NS + "CentrifugeTube"));
-		// dumpPropertiesForAllClasses();
-		// Individual tinyValueIndividual = ontologyModel.getIndividual(NS +
-		// "tinyVolume");
-		// System.out.println(tinyValueIndividual);
-		// testDumpExistingIndividualPropertiesAndValues(tinyValueIndividual);
-		// Individual myProtejeCreatedMicroCentrifugeTube =
-		// ontologyModel.getIndividual(NS +
-		// "myProtejeCreatedMicroCentrifugeTube");//existing
-		// testDumpExistingIndividualPropertiesAndValues(myProtejeCreatedMicroCentrifugeTube);
-		// testCreateIndividualAndAssignLiteralPropertyValues();
-		// testCreateIndividualAndAssignLiteralAndClassPropertyValues();
-		// //class listed props
-		// System.out.println("class listed props");
-		// dumpPropertiesAndValuesForClass(getStringClass(NS + "CentrifugeTube"));//
-		// dumpPropertiesForClass(getStringClass(NS + "Pipette"));
-		// test top protocol
-		// dumpPropertiesAndValues(getTopProtocol());
-	}
 
 	private void dumpPropertiesForAllClasses() {
 		Set<OntClass> classesSet = ontologyModel.listClasses().toSet();
@@ -160,7 +119,7 @@ public class OntologyManager {
 		System.out.println("class:" + ontClass.getLocalName());
 	}
 
-	public Set<OntProperty> dumpCalculatedPropertiesForAClass(OntClass ontClass) {
+	public Set<OntProperty> calculateHierarchicalPropertiesForAClass(OntClass ontClass) {
 		Set<OntProperty> collected = ontologyModel.listAllOntProperties().toSet().stream().filter(dataTypeProperty -> {
 			return dataTypeProperty.hasDomain(ontClass);
 		}).collect(Collectors.toSet());
@@ -181,55 +140,11 @@ public class OntologyManager {
 		});
 	}
 
-	private void testCreateIndividualAndAssignLiteralAndClassPropertyValues() {
-		Individual newlyCreatedIndividual = createIndividual("myCodeCreatedMicroCentrifugeTube", NS + "MicroCentrifugeTube");
-		System.out.println(newlyCreatedIndividual);
-		// https://jena.apache.org/documentation/notes/typed-literals.html
-		// will create a typed literal with the lexical value "2", of type xsd:int.
-		// Could use model.createTypedLiteral(value, datatype).
-		// model.createLiteral(25); still works but is deprecated because it does string
-		// conversions
-		Literal literalPropertyValue = ontologyModel.createTypedLiteral("QIGEN");
-		OntProperty stringValueProperty = ontologyModel.getOntProperty(NS + "manufacturer");
-		newlyCreatedIndividual.setPropertyValue(stringValueProperty, literalPropertyValue);
-		dumpPropertiesAndValuesInIndividual(newlyCreatedIndividual);
-		System.out.println("-------------");
-	}
 
 	public Literal createValueAsStringLiteral(String newValue) {
 		return ontologyModel.createTypedLiteral(newValue);
 	}
 
-	private void testCreateIndividualAndAssignLiteralPropertyValues() {
-		Individual createdIndividual = createIndividual("nanoCodeCreatedVolume", NS + "Volume");
-		System.out.println(createdIndividual);
-		// https://jena.apache.org/documentation/notes/typed-literals.html
-		// will create a typed literal with the lexical value "2", of type xsd:int.
-		// Could use model.createTypedLiteral(value, datatype).
-		// model.createLiteral(25); still works but is deprecated because it does string
-		// conversions
-		Literal literalPropertyValue = ontologyModel.createTypedLiteral(new Integer(2));
-		OntProperty numericValueProperty = ontologyModel.getOntProperty(NS + "numericValue");
-		createdIndividual.setPropertyValue(numericValueProperty, literalPropertyValue);
-		dumpPropertiesAndValuesInIndividual(createdIndividual);
-		System.out.println("-------------");
-	}
-
-	private void testDumpExistingIndividualPropertiesAndValues() {
-		Individual individual = getProtejeCreatedMicrocetrifugeTube();
-		System.out.println("individual using properties");
-		dumpPropertiesAndValuesInIndividual(individual);
-		System.out.println("-------------");
-		System.out.println("individual using listDeclaredProperties from class only");
-		dumpAllPropertiesForAClass(individual.getOntClass());
-		// dumpAllPropertiesForAClass(getStringClass(NS+"Container"));
-		System.out.println("-------dumpCalculatedPropertiesForAClass-----");
-		dumpCalculatedPropertiesForAClass(individual.getOntClass());
-	}
-
-	public static void main(String[] args) {
-		getInstance().testStuff();
-	}
 
 	public static void printSet(Set<?> set, int indent) {
 		set.forEach(elem -> System.out.println(String.join("", Collections.nCopies(indent, "\t")) + elem));
@@ -251,5 +166,9 @@ public class OntologyManager {
 
 	public static boolean isStandalone(OntProperty ontProperty) {
 		return ontProperty.hasSuperProperty(OntologyManager.STANDALONE, true);
+	}
+
+	public static OntModel getOntologyModel() {
+		return ontologyModel;
 	}
 }

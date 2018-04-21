@@ -28,6 +28,7 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 	JFormattedTextField valueComponent = new JFormattedTextField("dummy value ");
 	JLabel rangeComponent = new JLabel("dummy range");
 	JLabel domainComponent = new JLabel("dummy domain");
+	JLabel debug = new JLabel("debug");
 
 	void setTextAndAddComponents(String local, String value, String range, String domain) {
 		localComponent.setText(local + ":");
@@ -40,6 +41,7 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 		add(valueComponent);
 		add(rangeComponent);
 		add(domainComponent);
+		add(debug);
 	}
 
 	public void fillPropertyAndIndividual(PropertyAndIndividual propertyAndIndividual) {
