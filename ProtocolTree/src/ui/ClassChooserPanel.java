@@ -1,6 +1,6 @@
 package ui;
 
-import ont.OntologyManager;
+import ont.OntManager;
 import resources.ResourceFindingDummyClass;
 
 import javax.swing.*;
@@ -27,7 +27,7 @@ public class ClassChooserPanel extends JPanel implements TreeSelectionListener {
     private DefaultMutableTreeNode protocolTreeParentNode;
     //most below could be cached
     private JTree jProtocolTree;
-    private DefaultTreeModel classTreeModel = new DefaultTreeModel(new DefaultMutableTreeNode(OntologyManager.getInstance().getTopProtocoInstancel()));
+    private DefaultTreeModel classTreeModel = new DefaultTreeModel(new DefaultMutableTreeNode(OntManager.getInstance().getTopProtocoInstancel()));
     private JTree jClassTree = new JTree(classTreeModel);
     private static boolean DEBUG = true; //adrian
 
@@ -76,7 +76,7 @@ public class ClassChooserPanel extends JPanel implements TreeSelectionListener {
         //jClassTree.setEditable(true);
         jClassTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         jClassTree.setShowsRootHandles(true);
-        createEmpyIndividualNodes(jClassTree,  OntologyManager.getInstance().getClassesInSignature());// this should be cached or we could cache the whole chooser
+        createEmpyIndividualNodes(jClassTree,  OntManager.getInstance().getClassesInSignature());// this should be cached or we could cache the whole chooser
         expandTree(jClassTree);
         //Enable tool tips.
         ToolTipManager.sharedInstance().registerComponent(jClassTree);

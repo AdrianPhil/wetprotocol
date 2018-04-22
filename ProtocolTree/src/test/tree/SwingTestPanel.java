@@ -11,7 +11,7 @@ import org.apache.jena.ontology.OntResource;
 
 import oldStuff.DummyPane;
 import oldStuff.TreeNodeEditor;
-import ont.OntologyManager;
+import ont.OntManager;
 
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;

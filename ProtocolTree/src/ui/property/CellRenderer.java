@@ -7,7 +7,7 @@ import javax.swing.tree.TreeCellRenderer;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntProperty;
 
-import ont.OntologyManager;
+import ont.OntManager;
 import ont.PropertyAndIndividual;
 import ui.UiUtils;
 
@@ -49,8 +49,8 @@ public class CellRenderer implements TreeCellRenderer {
 			return defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 		}
 		PropertyAndIndividual propertyAndIndividual = (PropertyAndIndividual) userObject;
-		OntProperty ontProperty = propertyAndIndividual.getOntProperty();
-		RenderCellPanel renderPanel = new RenderCellPanel(OntologyManager.isStandalone(ontProperty) ? "STANDALONE" + ontProperty.getLocalName() : "XXX" + ontProperty.getLocalName(), "" + propertyAndIndividual.getIndividual().getPropertyValue(ontProperty), ontProperty.getRange().getLocalName().toString(), ontProperty.getDomain().getLocalName().toString());
+		//OntProperty ontProperty = propertyAndIndividual.getOntProperty();
+		RenderCellPanel renderPanel = new RenderCellPanel(propertyAndIndividual);
 		if (selected) {
 			renderPanel.setBackground(backgroundSelectionColor);
 		} else {
@@ -62,17 +62,6 @@ public class CellRenderer implements TreeCellRenderer {
 			renderPanel.setIcon(EditCellPanel.iconDataProperty);
 		} else {
 			UiUtils.showDialog(tree, "This property is not a data property nor an object property");
-		}
-		switch (propertyAndIndividual.getDisplayType()) {
-		case FROM_RANGE_SUPERCLASS_PROPERTY_OBJECT:
-			renderPanel.setBackground(Color.YELLOW);
-			break;
-		case IN_CLASS_PROPERTY_OBJECT:
-			renderPanel.setBackground(Color.CYAN);
-			break;// todo should fix this
-		case LITERAL:
-			renderPanel.setBackground(Color.GREEN);
-			break;
 		}
 		renderPanel.setEnabled(tree.isEnabled());
 		returnComponent = renderPanel;

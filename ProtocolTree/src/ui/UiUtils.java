@@ -1,6 +1,6 @@
 package ui;
 
-import ont.OntologyManager;
+import ont.OntManager;
 
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
@@ -63,7 +63,7 @@ public class UiUtils {
 			return;  // tree is already populated
 		}
 		classesInSignature.stream().forEach(ontClass -> {
-			Individual emptyIndividual=  OntologyManager.getInstance().createIndividual("myEmpty"+ontClass.getLocalName()+"Individual",ontClass);
+			Individual emptyIndividual=  OntManager.getInstance().createIndividual("myEmpty"+ontClass.getLocalName()+"Individual",ontClass);
 			DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(emptyIndividual);
 			// model.insertNodeInto(new DefaultMutableTreeNode(new Operation(className,"tutorial.html")), root, root.getChildCount());
 			root.add(newNode);
@@ -73,7 +73,7 @@ public class UiUtils {
 
 	public static void createInstanceNodes(DefaultMutableTreeNode topProtocolNode) {
 		DefaultMutableTreeNode firstStepNode;
-		Individual myProtejeCreatedMicroCentrifugeTube = OntologyManager.getInstance().getProtejeCreatedMicrocetrifugeTube();
+		Individual myProtejeCreatedMicroCentrifugeTube = OntManager.getInstance().getProtejeCreatedMicrocetrifugeTube();
 		 firstStepNode = new DefaultMutableTreeNode(myProtejeCreatedMicroCentrifugeTube);
 		 topProtocolNode.add(firstStepNode);
 		// JFC Swing Tutorial

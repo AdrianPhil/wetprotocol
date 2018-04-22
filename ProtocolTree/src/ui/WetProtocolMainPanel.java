@@ -6,7 +6,7 @@ import ui.property.ClassPropertyEditorPanel;
 import javax.swing.*;
 import javax.swing.tree.*;
 
-import ont.OntologyManager;
+import ont.OntManager;
 
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -22,7 +22,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 	private JButton addChildNodeButton = new JButton("New Substep");
 	private JButton expandTreeButton = new JButton("Expand Tree");
 	private JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-	private DefaultTreeModel protocolTreeModel = new DefaultTreeModel(new DefaultMutableTreeNode(OntologyManager.getInstance().getTopProtocoInstancel()));//todo we might not need this
+	private DefaultTreeModel protocolTreeModel = new DefaultTreeModel(new DefaultMutableTreeNode(OntManager.getInstance().getTopProtocoInstancel()));//todo we might not need this
 	private JTree jProtocolTree;
 	private static boolean DEBUG = true; // adrian
 	public static final int WITH_OF_PROTOCOL_TREE = 300;
@@ -68,7 +68,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		jProtocolTree.setCellRenderer(new ProtocolInstanceCellRenderer());//todo reinstate
 		// Listen for when the selection changes.
 		jProtocolTree.addTreeSelectionListener(this);
-		jProtocolTree.setSelectionRow(0);//select root
+		jProtocolTree.setSelectionRow(1);//select first after root
 	}
 
 	private void AddTreeButtonListeners(JSplitPane splitPane) {

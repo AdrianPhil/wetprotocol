@@ -9,7 +9,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellEditor;
 
-import ont.OntologyManager;
+import ont.OntManager;
 import ont.PropertyAndIndividual;
 import ui.UiUtils;
 

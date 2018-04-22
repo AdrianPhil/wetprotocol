@@ -14,14 +14,17 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import org.apache.jena.ontology.OntProperty;
+
+import ont.OntManager;
 import ont.PropertyAndIndividual;
 import resources.ResourceFindingDummyClass;
 
 public class RenderCellPanel extends AbstractTreeCellPanel {
 
 	// called from Renderer
-	public RenderCellPanel(String local, String value, String range, String domain) {
-		super.setTextAndAddComponents(local, value, range, domain);
+	public RenderCellPanel(PropertyAndIndividual propertyAndIndividual) {
+		//should be OntManager.isStandalone(ontProperty) ? "STANDALONE" + ontProperty.getLocalName() : "XXX" + ontProperty.getLocalName(), "" + propertyAndIndividual.getIndividual().getPropertyValue(ontProperty), ontProperty.getRange().getLocalName().toString(), ontProperty.getDomain().getLocalName().toString()
+		super.setTextAndAddComponents(propertyAndIndividual);
 	}
 
 }

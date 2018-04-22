@@ -1,28 +1,38 @@
 package ui.property;
 
+import static ui.UiUtils.expandTree;
+
 import java.awt.Component;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellEditor;
 
+import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.rdf.model.Literal;
 
-import ont.OntologyManager;
+import ont.OntManager;
 import ont.PropertyAndIndividual;
 import ui.UiUtils;
+import ui.property.ClassPropertyEditorPanel.NodeType;
 
 public class CellEditor extends AbstractCellEditor implements TreeCellEditor {
 	private EditCellPanel editPanel;
 	private PropertyAndIndividual propertyAndIndividual;
+	private DefaultMutableTreeNode currentTopNode;
+	JTree jTree;
+
+	public CellEditor(JTree jTree) {
+		this.jTree = jTree;
+	}
 
 	@Override // I think it's called when somebody from outside want the edited value. Maybe when clicking outside
 	public Object getCellEditorValue() { // builds and returns propertyAndIndividual from field EditRenderPanel, Returns the value contained in the editor.
 		System.out.println("In EDITOR getCellEditorValue called");
 		// fillPropertyAndIndividual
-		Literal literalPropertyValue = OntologyManager.getInstance().createValueAsStringLiteral(editPanel.getValue());
+		Literal literalPropertyValue = OntManager.getInstance().createValueAsStringLiteral(editPanel.getValue());
 		propertyAndIndividual.getIndividual().setPropertyValue(propertyAndIndividual.getOntProperty(), literalPropertyValue);
 		return propertyAndIndividual;
 	}
@@ -33,16 +43,20 @@ public class CellEditor extends AbstractCellEditor implements TreeCellEditor {
 		System.out.print("In EDITOR getTreeCellEditorComponent called on property:");
 		if (propertyAndIndividualObject != null && propertyAndIndividualObject instanceof DefaultMutableTreeNode) {
 			Object userObject = ((DefaultMutableTreeNode) propertyAndIndividualObject).getUserObject();
-//			if (userObject instanceof OntClass) {
-//					return null;//new  DefaultCellEditor().getTreeCellEditorComponent( tree,  propertyAndIndividualObject,  isSelected,  expanded,  leaf,  row);
-//			}
+			// if (userObject instanceof OntClass) {
+			// return null;//new DefaultCellEditor().getTreeCellEditorComponent( tree, propertyAndIndividualObject, isSelected, expanded, leaf, row);
+			// }
 			if (userObject instanceof PropertyAndIndividual) {
 				propertyAndIndividual = (PropertyAndIndividual) userObject;
 				System.out.println("on property:" + propertyAndIndividual.getOntProperty().getLocalName());
 				editPanel = new EditCellPanel(propertyAndIndividual);
-				if (propertyAndIndividual.getOntProperty().isDatatypeProperty()) {
+				if (propertyAndIndividual.getNodeType() == NodeType.DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS || propertyAndIndividual.getNodeType() == NodeType.DATA_TYPE_NODE_FOR_CHOICE_STANDALONE_OBJECT) {
 					editPanel.getSaveButton().addActionListener(e -> {
 						stopCellEditing();
+						OntClass ontClass = editPanel.getComboSelection();
+						ClassPropertyEditorPanel.createNodesForClass(ontClass, (DefaultMutableTreeNode) propertyAndIndividualObject, propertyAndIndividual.getIndividual());
+						expandTree(jTree);
+						//jTree.expandRow(currentTopNode.getLevel());
 					});
 				}
 				System.out.println();

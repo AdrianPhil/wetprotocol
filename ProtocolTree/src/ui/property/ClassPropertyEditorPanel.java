@@ -1,7 +1,7 @@
 package ui.property;
 
 //root nodes) after tree.setRootVisible(false) call tree.setShowsRootHandles(true).
-import ont.OntologyManager;
+import ont.OntManager;
 import ont.PropertyAndIndividual;
 import ui.UiUtils;
 
@@ -93,7 +93,7 @@ public class ClassPropertyEditorPanel extends JPanel implements TreeSelectionLis
 		expandTree(jPropertyAndIndividualTree);
 		jPropertyAndIndividualTree.setCellRenderer(new CellRenderer());
 		jPropertyAndIndividualTree.setEditable(true);
-		jPropertyAndIndividualTree.setCellEditor(new CellEditor());
+		jPropertyAndIndividualTree.setCellEditor(new CellEditor(jPropertyAndIndividualTree));
 		// Enable tool tips.
 		ToolTipManager.sharedInstance().registerComponent(jPropertyAndIndividualTree);
 		// Listen for when the selection changes.
@@ -112,6 +112,90 @@ public class ClassPropertyEditorPanel extends JPanel implements TreeSelectionLis
 		expandTreeButton.addActionListener(e -> {
 			expandTree(jPropertyAndIndividualTree);
 		});
+	}
+
+	/**
+	 * Required by TreeSelectionListener interface.
+	 */
+	@Override
+	public void valueChanged(TreeSelectionEvent e) {
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) jPropertyAndIndividualTree.getLastSelectedPathComponent();
+		if (node == null)
+			return;
+		Object nodeInfo = node.getUserObject();
+		// displayURL(null);
+		System.out.println(" PropertyTreeSelectionChanged");
+	}
+
+	private void addTreeNodeMouseListeners() {
+		jPropertyAndIndividualTree.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					DefaultMutableTreeNode node = (DefaultMutableTreeNode) jPropertyAndIndividualTree.getLastSelectedPathComponent();
+					if (node == null)
+						return;
+					acceptPropertiesResponse(jPropertyAndIndividualTree);
+				}
+			}
+		});
+	}
+
+	public void createNodes() {
+		Object userObject = protocolTreeNode.getUserObject();// in protocol we have individuals
+		assert userObject instanceof Individual;
+		Individual individual = ((Individual) userObject);
+		createNodesForClass(individual.getOntClass(), topNodeAsPropertyHolder, individual);
+	}
+
+	public static void createNodesForClass(OntClass ontClass, DefaultMutableTreeNode currentTopNode, Individual individual) {
+		Set<OntProperty> props = OntManager.getInstance().calculateHierarchicalPropertiesForAClass(ontClass);
+		for (OntProperty ontProperty : props) {
+			System.out.println("creating first level prop node for " + ontProperty.getLocalName());
+			createNode(ontProperty, currentTopNode, individual);
+		}
+	}
+
+	// recursive
+	private static DefaultMutableTreeNode createNode(OntProperty ontProperty, DefaultMutableTreeNode currentTopNode, Individual individual) {
+		if (ontProperty.isDatatypeProperty()) {
+			System.out.println("\tcreating literal prop node for " + ontProperty.getLocalName());
+			currentTopNode.add(new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individual, NodeType.LITERAL_NODE)));
+			return currentTopNode;
+		} else {// object type property
+			System.out.println("\tcreating object type prop node for " + ontProperty.getLocalName());
+			if (OntManager.isStandalone(ontProperty)) { // standalone takes precedence
+				DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individual, NodeType.DATA_TYPE_NODE_FOR_CHOICE_STANDALONE_OBJECT));// Pop up
+				currentTopNode.add(newChild);// would be Read Only as it's an object property
+				// return createNode(ontProperty, newChild);
+			} // else it must be an object property
+			OntResource range = ontProperty.getRange();
+			System.out.println("\trange:" + range);
+			if (range.asClass().listSubClasses().toList().isEmpty()) {// subClass(OntologyManager.NOTHING_SUBCLASS)) { // no subclasses like volume for instance //todo use subclass for speed
+				DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individual, NodeType.DATA_TYPE_NODE_FOR_LEAF_CLASS));// Pop up
+				currentTopNode.add(newChild);// would be Read Only as it's an object property
+				Set<OntProperty> rangeProps = OntManager.getInstance().calculateHierarchicalPropertiesForAClass(range.asClass());
+				for (OntProperty rageProperty : rangeProps) {
+					System.out.println("creating range property for " + ontProperty.getLocalName());
+					createNode(rageProperty, newChild, individual);// ---------------------> recursion
+				}
+				return newChild;
+			} else {
+				System.out.println("nasty case where the property could be ANY number of classes coming from range subclasses");
+				DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individual, NodeType.DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS));// , ontProperty.getRange().asClass().listSubClasses(false).toSet()));// Pop up
+				currentTopNode.add(newChild);// would be Read Only as it's an object property
+				return currentTopNode;
+			}
+		}
+	}
+
+	@Override
+	public void setBackground(Color bg) {
+		super.setBackground(Color.RED);
+	}
+
+	public enum NodeType {
+		LITERAL_NODE, DATA_TYPE_NODE_FOR_CHOICE_STANDALONE_OBJECT, DATA_TYPE_NODE_FOR_LEAF_CLASS, DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS, TOP_PROPERTY_AND_INDIVIDUAL
 	}
 
 	/**
@@ -146,87 +230,5 @@ public class ClassPropertyEditorPanel extends JPanel implements TreeSelectionLis
 		// jProtocolTree.updateUI();
 		// ((JFrame) ClassPropertyEditorPanel.this.getTopLevelAncestor()).dispose();
 		// }
-	}
-
-	/**
-	 * Required by TreeSelectionListener interface.
-	 */
-	@Override
-	public void valueChanged(TreeSelectionEvent e) {
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) jPropertyAndIndividualTree.getLastSelectedPathComponent();
-		if (node == null)
-			return;
-		Object nodeInfo = node.getUserObject();
-		// displayURL(null);
-		System.out.println(" PropertyTreeSelectionChanged");
-	}
-
-	private void addTreeNodeMouseListeners() {
-		jPropertyAndIndividualTree.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {
-					DefaultMutableTreeNode node = (DefaultMutableTreeNode) jPropertyAndIndividualTree.getLastSelectedPathComponent();
-					if (node == null)
-						return;
-					acceptPropertiesResponse(jPropertyAndIndividualTree);
-				}
-			}
-		});
-	}
-
-	public void createNodes() {
-		Object userObject = protocolTreeNode.getUserObject();// in protocol we have individuals
-		assert userObject instanceof Individual;
-		Individual individual = ((Individual) userObject);
-		OntClass ontClass = individual.getOntClass();
-		DefaultMutableTreeNode currentTopNode = topNodeAsPropertyHolder;
-		Set<OntProperty> props = OntologyManager.getInstance().calculateHierarchicalPropertiesForAClass(ontClass);
-		for (OntProperty ontProperty : props) {
-			System.out.println("creating first level prop node for " + ontProperty.getLocalName());
-			createNode(ontProperty, currentTopNode);
-		}
-	}
-
-	// recursive
-	private DefaultMutableTreeNode createNode(OntProperty ontProperty, DefaultMutableTreeNode currentTopNode) {
-		if (ontProperty.isDatatypeProperty()) {
-			System.out.println("\tcreating literal prop node for " + ontProperty.getLocalName());
-			currentTopNode.add(new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individual, NodeType.LITERAL_NODE)));
-			return currentTopNode;
-		} else {// object type property
-			System.out.println("\tcreating object type prop node for " + ontProperty.getLocalName());
-			if (OntologyManager.isStandalone(ontProperty)) {
-				DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individual, NodeType.DATA_TYPE_NODE_FOR_STANDALONE_OBJECT));// Pop up
-				currentTopNode.add(newChild);// would be Read Only as it's an object property
-				 return createNode( ontProperty,  newChild);//---------------------> recursion
-			} // else it must be an object property
-			OntResource range = ontProperty.getRange();
-			System.out.println("\trange:" + range);			
-			if (range.asClass().listSubClasses().toList().isEmpty()) {// subClass(OntologyManager.NOTHING_SUBCLASS)) { // no subclasses like volume for instance //todo use subclass for speed
-				DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individual, NodeType.DATA_TYPE_NODE_FOR_LEAF_CLASS));// Pop up
-				currentTopNode.add(newChild);// would be Read Only as it's an object property
-				Set<OntProperty> rangeProps = OntologyManager.getInstance().calculateHierarchicalPropertiesForAClass(range.asClass());
-				for (OntProperty rageProperty : rangeProps) {
-					System.out.println("creating range property for " + ontProperty.getLocalName());
-					createNode(rageProperty, newChild);
-				}
-				return newChild ;
-			} else {
-				System.out.println("nasty case where the property cold be ANY number of classes coming from range subclasses");
-				DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individual, NodeType.DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS));// , ontProperty.getRange().asClass().listSubClasses(false).toSet()));// Pop up
-				currentTopNode.add(newChild);// would be Read Only as it's an object property
-				return currentTopNode;
-			}
-		}
-	}
-
-	@Override
-	public void setBackground(Color bg) {
-		super.setBackground(Color.RED);
-	}
-
-	public enum NodeType {
-		LITERAL_NODE, DATA_TYPE_NODE_FOR_STANDALONE_OBJECT, DATA_TYPE_NODE_FOR_, DUMMY_INDIVIDUAL, DATA_TYPE_NODE_FOR_LEAF_CLASS, DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS
 	}
 }
