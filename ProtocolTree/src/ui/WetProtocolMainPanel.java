@@ -25,7 +25,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 	private DefaultTreeModel protocolTreeModel = new DefaultTreeModel(new DefaultMutableTreeNode(OntManager.getInstance().getTopProtocoInstancel()));//todo we might not need this
 	private JTree jProtocolTree;
 	private static boolean DEBUG = true; // adrian
-	public static final int WITH_OF_PROTOCOL_TREE = 300;
+	public static final int WITH_OF_PROTOCOL_TREE = 200;
 
 	private WetProtocolMainPanel() {
 		super(new GridLayout(1, 1));
@@ -47,10 +47,10 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		// of Swing. bug 4101306
 		// workaround for bug 4101306:
 		// treeView.setPreferredSize(new Dimension(100, 100));
-		splitPane.setPreferredSize(new Dimension(900, 400));
+		splitPane.setPreferredSize(new Dimension(1200, 400));
 		// Add the split pane to this panel.
 		add(splitPane);
-		this.setLocation(200, this.getX());// todo remove
+		this.setLocation(100, this.getX());// todo remove
 		AddTreeButtonListeners(splitPane);
 	}
 

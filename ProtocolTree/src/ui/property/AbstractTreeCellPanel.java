@@ -23,11 +23,14 @@ import org.apache.jena.ontology.OntProperty;
 import ont.OntManager;
 import ont.PropertyAndIndividual;
 import resources.ResourceFindingDummyClass;
+import ui.UiUtils;
 
 public abstract class AbstractTreeCellPanel extends JPanel {
-	public static final Icon iconObjectProperty = UIManager.getIcon("FileChooser.detailsViewIcon");// http://en-human-begin.blogspot.ca/2007/11/javas-icons-by-default.html
-	public static final Icon iconDataProperty = UIManager.getIcon("Tree.leafIcon");// http://en-human-begin.blogspot.ca/2007/11/javas-icons-by-default.html
-	static final ImageIcon createImageIcon = ResourceFindingDummyClass.createImageIcon("labcoat.png");
+	public static final Icon ICON_LEAF_CLASS = UIManager.getIcon("FileChooser.detailsViewIcon");// http://en-human-begin.blogspot.ca/2007/11/javas-icons-by-default.html
+	// maybe next is application_edit
+	public static final Icon ICON_LITERAL = UIManager.getIcon("Tree.leafIcon");// http://en-human-begin.blogspot.ca/2007/11/javas-icons-by-default.html
+	static final ImageIcon ICON_STANDALONE_OBJECT = ResourceFindingDummyClass.createImageIcon("barometer.png");//"/icons/brick_add.png");
+	static final ImageIcon ICON_CHOICE_SUBCLASS = ResourceFindingDummyClass.createImageIcon("/icons/page_whte_ruby.png");
 	JLabel icon = new JLabel("");
 	JLabel localComponent = new JLabel("dummy local");
 	JFormattedTextField valueComponent = new JFormattedTextField("dummy value ");
@@ -64,9 +67,11 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 		switch (propertyAndIndividual.getNodeType()) {
 		case LITERAL_NODE:
 			localComponent.setForeground(Color.GREEN);
+			icon.setIcon(EditCellPanel.ICON_LITERAL);
 			break;
 		case DATA_TYPE_NODE_FOR_LEAF_CLASS:
 			localComponent.setForeground(Color.CYAN);
+			icon.setIcon(EditCellPanel.ICON_LEAF_CLASS);
 			break;
 		case DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS:
 			localComponent.setForeground(Color.RED);
@@ -79,12 +84,15 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 					System.out.println("selected:" + selectedProperty);
 				}
 			});
+			icon.setIcon(EditCellPanel.ICON_CHOICE_SUBCLASS);
 			break;
 		case DATA_TYPE_NODE_FOR_CHOICE_STANDALONE_OBJECT:
 			localComponent.setForeground(Color.YELLOW);
+			icon.setIcon(EditCellPanel.ICON_STANDALONE_OBJECT);
 			break;
 		default:
 			localComponent.setForeground(Color.MAGENTA);
+			//too error dialog
 			break;
 		}
 	}

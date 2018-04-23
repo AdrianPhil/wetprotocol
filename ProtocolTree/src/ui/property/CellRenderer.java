@@ -56,13 +56,6 @@ public class CellRenderer implements TreeCellRenderer {
 		} else {
 			renderPanel.setBackground(backgroundNonSelectionColor);
 		}
-		if (propertyAndIndividual.getOntProperty().isObjectProperty()) {
-			renderPanel.setIcon(EditCellPanel.iconObjectProperty);
-		} else if (propertyAndIndividual.getOntProperty().isDatatypeProperty()) {
-			renderPanel.setIcon(EditCellPanel.iconDataProperty);
-		} else {
-			UiUtils.showDialog(tree, "This property is not a data property nor an object property");
-		}
 		renderPanel.setEnabled(tree.isEnabled());
 		returnComponent = renderPanel;
 		if (returnComponent == null) {
