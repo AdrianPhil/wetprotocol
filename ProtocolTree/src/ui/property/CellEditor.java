@@ -32,37 +32,25 @@ public class CellEditor extends AbstractCellEditor implements TreeCellEditor {
 	public Object getCellEditorValue() { // builds and returns propertyAndIndividual from field EditRenderPanel, Returns the value contained in the editor.
 		System.out.println("In EDITOR getCellEditorValue called");
 		// fillPropertyAndIndividual
-		Literal literalPropertyValue = OntManager.getInstance().createValueAsStringLiteral(editPanel.getValue());
-		propertyAndIndividual.getIndividual().setPropertyValue(propertyAndIndividual.getOntProperty(), literalPropertyValue);
-		return propertyAndIndividual;
+		return editPanel.getNewIndividualValueScrapedFromEditPanel();
 	}
 
 	// clearly this is called first of the 2 methods to show the display panel
 	@Override // when we finish editing?
-	public Component getTreeCellEditorComponent(JTree tree, Object propertyAndIndividualObject, boolean isSelected, boolean expanded, boolean leaf, int row) {
+	public Component getTreeCellEditorComponent(JTree tree, Object propertyAndIndividualNode, boolean isSelected, boolean expanded, boolean leaf, int row) {
 		System.out.print("In EDITOR getTreeCellEditorComponent called on property:");
-		if (propertyAndIndividualObject != null && propertyAndIndividualObject instanceof DefaultMutableTreeNode) {
-			Object userObject = ((DefaultMutableTreeNode) propertyAndIndividualObject).getUserObject();
+		if (propertyAndIndividualNode != null && propertyAndIndividualNode instanceof DefaultMutableTreeNode) {
+			Object userObject = ((DefaultMutableTreeNode) propertyAndIndividualNode).getUserObject();
 			// if (userObject instanceof OntClass) {
 			// return null;//new DefaultCellEditor().getTreeCellEditorComponent( tree, propertyAndIndividualObject, isSelected, expanded, leaf, row);
 			// }
 			if (userObject instanceof PropertyAndIndividual) {
 				propertyAndIndividual = (PropertyAndIndividual) userObject;
 				System.out.println("on property:" + propertyAndIndividual.getOntProperty().getLocalName());
-				editPanel = new EditCellPanel(propertyAndIndividual);
-				if (propertyAndIndividual.getNodeType() == NodeType.DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS || propertyAndIndividual.getNodeType() == NodeType.DATA_TYPE_NODE_FOR_CHOICE_STANDALONE_OBJECT) {
-					editPanel.getSaveButton().addActionListener(e -> {
-						stopCellEditing();
-						OntClass ontClass = editPanel.getComboSelection();
-						ClassPropertyEditorPanel.createNodesForClass(ontClass, (DefaultMutableTreeNode) propertyAndIndividualObject, propertyAndIndividual.getIndividual());
-						expandTree(jTree);
-						//jTree.expandRow(currentTopNode.getLevel());
-					});
-				}
-				System.out.println();
+				editPanel = new EditCellPanel(propertyAndIndividual, (DefaultMutableTreeNode) propertyAndIndividualNode, this );
 			}
 		} else {
-			UiUtils.showDialog(tree, "Uknown object type:" + propertyAndIndividualObject);
+			UiUtils.showDialog(tree, "Uknown object type:" + propertyAndIndividualNode);
 		}
 		return editPanel;
 	}

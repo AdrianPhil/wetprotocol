@@ -167,11 +167,12 @@ public class ClassPropertyEditorPanel extends JPanel implements TreeSelectionLis
 			if (OntManager.isStandalone(ontProperty)) { // standalone takes precedence
 				DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individual, NodeType.DATA_TYPE_NODE_FOR_CHOICE_STANDALONE_OBJECT));// Pop up
 				currentTopNode.add(newChild);// would be Read Only as it's an object property
+				return currentTopNode;
 				// return createNode(ontProperty, newChild);
 			} // else it must be an object property
 			OntResource range = ontProperty.getRange();
 			System.out.println("\trange:" + range);
-			if (range.asClass().listSubClasses().toList().isEmpty()) {// subClass(OntologyManager.NOTHING_SUBCLASS)) { // no subclasses like volume for instance //todo use subclass for speed
+			if (OntManager.isLeafClass(range.asClass())) {// subClass(OntologyManager.NOTHING_SUBCLASS)) { // no subclasses like volume for instance //todo use subclass for speed
 				DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individual, NodeType.DATA_TYPE_NODE_FOR_LEAF_CLASS));// Pop up
 				currentTopNode.add(newChild);// would be Read Only as it's an object property
 				Set<OntProperty> rangeProps = OntManager.getInstance().calculateHierarchicalPropertiesForAClass(range.asClass());

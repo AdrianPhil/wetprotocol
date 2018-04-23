@@ -23,7 +23,7 @@ public class OntManager {
 	public static final String NS = "http://www.wet.protocol#";// namespace and #
 	public static OntProperty STANDALONE;
 	private static Individual topProtocolInstance;
-	public static Resource NOTHING_SUBCLASS ;
+	public static Resource NOTHING_SUBCLASS;
 	//
 
 	public static final OntManager getInstance() {
@@ -32,7 +32,7 @@ public class OntManager {
 			ontologyModel = ModelFactory.createOntologyModel();// full? hierarchy reasoner
 			ontologyModel.read(ONTOLOGY_LOCATION);
 			STANDALONE = ontologyModel.getOntProperty(NS + "standalone");
-			NOTHING_SUBCLASS= ontologyModel.getOntClass("owl:Nothing");
+			NOTHING_SUBCLASS = ontologyModel.getOntClass("owl:Nothing");
 		}
 		return instance;
 	}
@@ -42,7 +42,6 @@ public class OntManager {
 		return ontologyModel.listClasses().toSet();
 	}
 
-
 	public Individual getTopProtocoInstancel() {
 		if (topProtocolInstance == null) {
 			OntClass protocolClass = ontologyModel.getOntClass(NS + "Protocol");
@@ -51,9 +50,6 @@ public class OntManager {
 		}
 		return topProtocolInstance;
 	}
-
-
-
 
 	public Individual createIndividual(String instanceName, OntClass ontClass) {
 		return ontologyModel.createIndividual(NS + instanceName, ontClass);
@@ -65,7 +61,7 @@ public class OntManager {
 	}
 
 	public OntClass getStringClass(String clazz) {
-		return ontologyModel.getOntClass(NS +clazz);
+		return ontologyModel.getOntClass(NS + clazz);
 	}
 
 	public void dumpPropertiesAndValuesInIndividual(Individual individual) {
@@ -88,7 +84,6 @@ public class OntManager {
 		});
 		// printSet(instance.getPropertiesInIndividual(tinyValueIndividual));
 	}
-
 
 	private void dumpPropertiesForAllClasses() {
 		Set<OntClass> classesSet = ontologyModel.listClasses().toSet();
@@ -140,11 +135,9 @@ public class OntManager {
 		});
 	}
 
-
 	public Literal createValueAsStringLiteral(String newValue) {
 		return ontologyModel.createTypedLiteral(newValue);
 	}
-
 
 	public static void printSet(Set<?> set, int indent) {
 		set.forEach(elem -> System.out.println(String.join("", Collections.nCopies(indent, "\t")) + elem));
@@ -170,5 +163,10 @@ public class OntManager {
 
 	public static OntModel getOntologyModel() {
 		return ontologyModel;
+	}
+
+	public static boolean isLeafClass(OntClass ontClass) {
+		// )!subclassFromRange.hasSubClass() todo should be a faster way but somtimes you get these ghost subclasses
+		return ontClass.listSubClasses().toList().isEmpty();
 	}
 }
