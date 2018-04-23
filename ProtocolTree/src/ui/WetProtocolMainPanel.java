@@ -6,23 +6,28 @@ import ui.property.ClassPropertyEditorPanel;
 import javax.swing.*;
 import javax.swing.tree.*;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import ont.OntManager;
 
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.URL;
 import static ui.UiUtils.*;
 
 public class WetProtocolMainPanel extends JPanel implements TreeSelectionListener {
 	private URL helpURL;
 	private JButton addNewSiblingNodeButton = new JButton("New Step");
-
 	private JButton addChildNodeButton = new JButton("New Substep");
 	private JButton expandTreeButton = new JButton("Expand Tree");
+	private JButton saveProtocolButton = new JButton("Save Protocol");
 	private JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-	private DefaultTreeModel protocolTreeModel = new DefaultTreeModel(new DefaultMutableTreeNode(OntManager.getInstance().getTopProtocoInstancel()));//todo we might not need this
+	private DefaultTreeModel protocolTreeModel = new DefaultTreeModel(new DefaultMutableTreeNode(OntManager.getInstance().getTopProtocoInstancel()));// todo we might not need this
 	private JTree jProtocolTree;
 	private static boolean DEBUG = true; // adrian
 	public static final int WITH_OF_PROTOCOL_TREE = 200;
@@ -36,6 +41,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		treeViewButtonPanel.add(addNewSiblingNodeButton);
 		treeViewButtonPanel.add(addChildNodeButton);
 		treeViewButtonPanel.add(expandTreeButton);
+		treeViewButtonPanel.add(saveProtocolButton);
 		treeViewPanel.add(treeViewButtonPanel, BorderLayout.PAGE_END);
 		// Create the scroll pane and add the tree view panel to it.
 		JScrollPane treeViewScrollPane = new JScrollPane(treeViewPanel);
@@ -55,9 +61,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 	}
 
 	private void initiateTree() {
-		// Operation topOperation = (Operation) root.getUserObject();
 		jProtocolTree = new JTree(protocolTreeModel);
-		// Create a jProtocolTree that allows one selection at a time.
 		jProtocolTree.setEditable(false);
 		jProtocolTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		jProtocolTree.setShowsRootHandles(true);
@@ -65,10 +69,10 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		expandTree(jProtocolTree);
 		// Enable tool tips.
 		ToolTipManager.sharedInstance().registerComponent(jProtocolTree);
-		jProtocolTree.setCellRenderer(new ProtocolInstanceCellRenderer());//todo reinstate
+		jProtocolTree.setCellRenderer(new ProtocolInstanceCellRenderer());// todo reinstate
 		// Listen for when the selection changes.
 		jProtocolTree.addTreeSelectionListener(this);
-		jProtocolTree.setSelectionRow(1);//select first after root
+		jProtocolTree.setSelectionRow(1);// select first after root
 	}
 
 	private void AddTreeButtonListeners(JSplitPane splitPane) {
@@ -102,10 +106,36 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 			// UiUtils.createChildNode(newClass, selectedNode, jProtocolTree,
 			// selectedNode.getChildCount());
 		});
-		expandTreeButton.addActionListener(this::actionPerformed);
+		expandTreeButton.addActionListener(e -> {
+			expandTree(jProtocolTree);
+		});
+		saveProtocolButton.addActionListener(e -> {
+			final JFileChooser fc = new JFileChooser();
+			fc.setDialogTitle("Select a place and name for saving your owl file");
+			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("Owl files", "owl");
+			fc.addChoosableFileFilter(filter);
+			fc.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					System.out.println(" file chooser action");
+					if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+						File file = fc.getSelectedFile();
+						// String path = ResourceFindingDummyClass.getResource("AdrianProtocol.owl").get;
+						System.out.println("Save path: " + file);
+						try (FileOutputStream output = new FileOutputStream(file.getAbsolutePath() + "/adrianProtocolSaved.owl")) {
+							OntManager.getOntologyModel().writeAll(output, "RDF/XML", OntManager.NS);
+						} catch (Exception e1) {
+							UiUtils.showDialog(jProtocolTree, "Cannot open output file" + e1.getLocalizedMessage());
+						}
+					}
+				}
+			});
+			fc.showOpenDialog(this);
+		});
 	}
 
-	/**
+	/*
 	 * Tree node selection
 	 */
 	@Override
@@ -167,9 +197,5 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		// creating and showing this application's GUI.
 		// Create and set up the content pane.
 		javax.swing.SwingUtilities.invokeLater(() -> UiUtils.createAndShowNewFrameGUI(new WetProtocolMainPanel(), "Wet Protocol"));
-	}
-
-	private void actionPerformed(ActionEvent e) {
-		expandTree(jProtocolTree);
 	}
 }

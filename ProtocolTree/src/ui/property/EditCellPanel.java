@@ -132,10 +132,6 @@ public class EditCellPanel extends AbstractTreeCellPanel implements PropertyChan
 		System.out.println("value changed:" + evt);
 	}
 
-	public JButton getSaveButton() {
-		return saveButton;
-	}
-
 	public OntClass getComboSelection() {
 		return ((WrappedOntProperty) (individualOrClassChooser.getSelectedItem())).getOntClass();
 	}

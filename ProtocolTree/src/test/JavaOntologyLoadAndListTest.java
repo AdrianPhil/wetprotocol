@@ -6,6 +6,7 @@ import java.util.Collection;
 public class JavaOntologyLoadAndListTest {
 	public static void main(String[] args) {
 		try {
+
 //			OntologyManager ontologyManager = OntologyManager.getInstance();
 //			Individual pipette = ontologyManager.createIndividual("myFirstPipette", "Pipette");
 //			Set<OWLObjectProperty> objectPropertiesInSignature = pipette.getObjectPropertiesInSignature();

@@ -9,6 +9,7 @@ import org.apache.jena.rdf.model.Literal;
 import org.junit.Test;
 
 import ont.*;
+import resources.ResourceFindingDummyClass;
 import ui.property.ClassPropertyEditorPanel.NodeType;
 
 class OntologyTest {
@@ -20,6 +21,7 @@ class OntologyTest {
 	void test() {
 		fail("Not yet implemented");
 	}
+
 	public Literal getTypedLiteral(String text) {
 		return null;
 		// return ontologyModel.createTypedLiteral(text);
@@ -58,4 +60,6 @@ class OntologyTest {
 		// //showSetSuperclasses(owlClass.getSuperClasses(myOntology));
 		// }
 	}
+
+
 }
