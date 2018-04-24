@@ -20,8 +20,6 @@ public class CellRenderer implements TreeCellRenderer {
 	DefaultTreeCellRenderer defaultRenderer = new DefaultTreeCellRenderer();
 	Color backgroundSelectionColor;
 	Color backgroundNonSelectionColor;
-	// ImageIcon createImageIcon =
-	// ResourceFindingDummyClass.createImageIcon("pipette.png");
 
 	public CellRenderer() {
 		backgroundSelectionColor = defaultRenderer.getBackgroundSelectionColor();

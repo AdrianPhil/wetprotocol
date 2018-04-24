@@ -19,7 +19,8 @@ import java.util.stream.Collectors;
 public class OntManager {
 	private static OntManager instance;
 	private static OntModel ontologyModel;
-	private static String ONTOLOGY_LOCATION = ResourceFindingDummyClass.getResource("AdrianProtocol.owl").getFile();
+	public static final String PROTOCOL_FILE="AdrianProtocol.owl";
+	private static String ONTOLOGY_LOCATION = ResourceFindingDummyClass.getResource(PROTOCOL_FILE).getFile();
 	public static final String NS = "http://www.wet.protocol#";// namespace and #
 	public static OntProperty STANDALONE;
 	private static Individual topProtocolInstance;

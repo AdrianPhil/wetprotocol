@@ -19,6 +19,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URISyntaxException;
 import java.net.URL;
 import static ui.UiUtils.*;
 
@@ -118,16 +119,19 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 				fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 				FileNameExtensionFilter filter = new FileNameExtensionFilter("Owl files", "owl");
 				fileChooser.addChoosableFileFilter(filter);
-				// String path = ResourceFindingDummyClass.getResource("AdrianProtocol.owl")
+				String path=null;
+				try {
+					path = ResourceFindingDummyClass.getResource(OntManager.PROTOCOL_FILE).toURI().getPath();
+				} catch (URISyntaxException e2) {
+					e2.printStackTrace();
+				}
+				fileChooser.setCurrentDirectory(new File(path.substring(1, path.length()-OntManager.PROTOCOL_FILE.length())));
 				int retval = fileChooser.showSaveDialog(null);
 				if (retval == JFileChooser.APPROVE_OPTION) {
-					System.out.println(" file chooser action");
 					File file = fileChooser.getSelectedFile();
 					if (file == null) {
 						return;
 					}
-					// String path = ResourceFindingDummyClass.getResource("AdrianProtocol.owl").get;
-					System.out.println("Save path: " + file);
 					try (FileOutputStream output = new FileOutputStream(file)) {
 						OntManager.getOntologyModel().writeAll(output, "RDF/XML", OntManager.NS);
 					} catch (Exception e1) {

@@ -17,8 +17,11 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
+import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntProperty;
+import org.apache.jena.ontology.OntResource;
+import org.apache.jena.rdf.model.RDFNode;
 
 import ont.OntManager;
 import ont.PropertyAndIndividual;
@@ -41,18 +44,17 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 	JLabel debug = new JLabel("debug");
 
 	public AbstractTreeCellPanel(PropertyAndIndividual propertyAndIndividual) {
-		this.propertyAndIndividual=propertyAndIndividual;
+		this.propertyAndIndividual = propertyAndIndividual;
+		debug.setText("individual:" + propertyAndIndividual.getIndividual().getLocalName());
 	}
 
 	public void setIcon(Icon icon) {
 		this.icon.setIcon(icon);
 	}
 
-
 	public void setTextAndAddComponents() {
 		OntProperty ontProperty = propertyAndIndividual.getOntProperty();
 		localComponent.setText(ontProperty.getLocalName() + ":");
-		valueComponent.setText("" + propertyAndIndividual.getIndividual().getPropertyValue(ontProperty));//todo this should be different
 		rangeComponent.setText("Range:" + ontProperty.getRange().getLocalName().toString());
 		domainComponent.setText("Domain:" + ontProperty.getDomain().getLocalName());
 		add(icon);
@@ -65,29 +67,16 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 		add(debug);
 		debug.setText(propertyAndIndividual.getNodeType().name());
 		individualOrClassChooser.setVisible(false);
-		switch (propertyAndIndividual.getNodeType()) {
+		RDFNode propertyValue = propertyAndIndividual.getIndividual().getPropertyValue(ontProperty);
+		switch (propertyAndIndividual.getNodeType()) {// todo check order to avoid weird side effects
 		case LITERAL_NODE:
+			
+			valueComponent.setText("" +  propertyValue.asLiteral().getLexicalForm());// todo this should extract the type and the value properly and attach the formatter
 			localComponent.setForeground(Color.GREEN);
 			icon.setIcon(EditCellPanel.ICON_LITERAL);
 			break;
-		case DATA_TYPE_NODE_FOR_LEAF_CLASS:
-			localComponent.setForeground(Color.CYAN);
-			icon.setIcon(EditCellPanel.ICON_LEAF_CLASS);
-			break;
-		case DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS:
-			localComponent.setForeground(Color.RED);
-			individualOrClassChooser.setVisible(true);
-			extractPossibleLeafClassValues(individualOrClassChooser);
-			individualOrClassChooser.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					WrappedOntProperty selectedProperty = (WrappedOntProperty) (individualOrClassChooser.getSelectedItem());
-					System.out.println("selected:" + selectedProperty);
-				}
-			});
-			icon.setIcon(EditCellPanel.ICON_CHOICE_SUBCLASS);
-			break;
 		case DATA_TYPE_NODE_FOR_CHOICE_STANDALONE_OBJECT:
+			valueComponent.setText("" + propertyValue);//todo this should be different
 			localComponent.setForeground(Color.PINK);
 			individualOrClassChooser.setVisible(true);
 			extractPossibleIndividualValues(individualOrClassChooser);
@@ -99,6 +88,25 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 				}
 			});
 			icon.setIcon(EditCellPanel.ICON_STANDALONE_OBJECT);
+			break;
+		case DATA_TYPE_NODE_FOR_LEAF_CLASS:
+			valueComponent.setText("" + ( ( (OntResource)propertyValue).asIndividual().getLocalName()));
+			localComponent.setForeground(Color.CYAN);
+			icon.setIcon(EditCellPanel.ICON_LEAF_CLASS);
+			break;
+		case DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS:
+			valueComponent.setText("" + propertyValue);// todo this should be different
+			localComponent.setForeground(Color.RED);
+			individualOrClassChooser.setVisible(true);
+			extractPossibleLeafClassValues(individualOrClassChooser);
+			individualOrClassChooser.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					WrappedOntProperty selectedProperty = (WrappedOntProperty) (individualOrClassChooser.getSelectedItem());
+					System.out.println("selected:" + selectedProperty);
+				}
+			});
+			icon.setIcon(EditCellPanel.ICON_CHOICE_SUBCLASS);
 			break;
 		default:
 			localComponent.setForeground(Color.MAGENTA);
@@ -115,7 +123,7 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 		OntProperty ontProperty = propertyAndIndividual.getOntProperty();
 		// individualOrClassChooser.addItem(OntManager.getInstance().getStringClass("DummyClass"));
 		for (OntClass subclassFromRange : ontProperty.getRange().asClass().listSubClasses(false).toSet()) {
-			//System.out.println("\t\t dealing with range subclass:" + subclassFromRange.getLocalName());
+			// System.out.println("\t\t dealing with range subclass:" + subclassFromRange.getLocalName());
 			if (OntManager.isLeafClass(subclassFromRange)) { // only leaf classes
 				individualOrClassChooser.addItem(new WrappedOntProperty(subclassFromRange));
 			}
@@ -129,7 +137,7 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 			// // createNode(p, currentTopNode, true);
 			// // }
 			// currentTopNode = rangeLevelNode;
-			//System.out.println("\t\t finished dealing with range subclass:" + subclassFromRange.getLocalName());
+			// System.out.println("\t\t finished dealing with range subclass:" + subclassFromRange.getLocalName());
 		}
 	}
 	// public JComboBox<WrappedOntProperty> getIndividualOrClassChooser() {

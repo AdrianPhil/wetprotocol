@@ -9,6 +9,8 @@ import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.ontology.OntResource;
+import org.apache.jena.ontology.impl.OntResourceImpl;
+
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -173,12 +175,20 @@ public class ClassPropertyEditorPanel extends JPanel implements TreeSelectionLis
 			OntResource range = ontProperty.getRange();
 			System.out.println("\trange:" + range);
 			if (OntManager.isLeafClass(range.asClass())) {// subClass(OntologyManager.NOTHING_SUBCLASS)) { // no subclasses like volume for instance //todo use subclass for speed
+				Object subIndividualObject = individual.getPropertyValue(ontProperty);
+				Individual subIndividual;
+				if (subIndividualObject == null) {
+					subIndividual = OntManager.getInstance().createIndividual("newInternalIndividualOfClass_"+range.asClass().getLocalName()+"_AsValueFor_"+ontProperty.getLocalName() ,range.asClass());
+					individual.setPropertyValue(ontProperty, subIndividual);
+				} else {
+					subIndividual=((OntResource)subIndividualObject).asIndividual();
+				}
 				DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individual, NodeType.DATA_TYPE_NODE_FOR_LEAF_CLASS));// Pop up
 				currentTopNode.add(newChild);// would be Read Only as it's an object property
 				Set<OntProperty> rangeProps = OntManager.getInstance().calculateHierarchicalPropertiesForAClass(range.asClass());
 				for (OntProperty rageProperty : rangeProps) {
 					System.out.println("creating range property for " + ontProperty.getLocalName());
-					createNode(rageProperty, newChild, individual);// ---------------------> recursion
+					createNode(rageProperty, newChild, subIndividual);// ---------------------> recursion
 				}
 				return newChild;
 			} else {
