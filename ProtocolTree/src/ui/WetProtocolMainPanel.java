@@ -8,6 +8,8 @@ import javax.swing.tree.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+
 import ont.OntManager;
 
 import javax.swing.event.TreeSelectionEvent;
@@ -109,29 +111,30 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		expandTreeButton.addActionListener(e -> {
 			expandTree(jProtocolTree);
 		});
-		saveProtocolButton.addActionListener(e -> {
-			final JFileChooser fc = new JFileChooser();
-			fc.setDialogTitle("Select a place and name for saving your owl file");
-			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			FileNameExtensionFilter filter = new FileNameExtensionFilter("Owl files", "owl");
-			fc.addChoosableFileFilter(filter);
-			fc.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
+		saveProtocolButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setDialogTitle("Select a place and name for saving your owl file");
+				fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("Owl files", "owl");
+				fileChooser.addChoosableFileFilter(filter);
+				// String path = ResourceFindingDummyClass.getResource("AdrianProtocol.owl")
+				int retval = fileChooser.showSaveDialog(null);
+				if (retval == JFileChooser.APPROVE_OPTION) {
 					System.out.println(" file chooser action");
-					if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-						File file = fc.getSelectedFile();
-						// String path = ResourceFindingDummyClass.getResource("AdrianProtocol.owl").get;
-						System.out.println("Save path: " + file);
-						try (FileOutputStream output = new FileOutputStream(file.getAbsolutePath() + "/adrianProtocolSaved.owl")) {
-							OntManager.getOntologyModel().writeAll(output, "RDF/XML", OntManager.NS);
-						} catch (Exception e1) {
-							UiUtils.showDialog(jProtocolTree, "Cannot open output file" + e1.getLocalizedMessage());
-						}
+					File file = fileChooser.getSelectedFile();
+					if (file == null) {
+						return;
+					}
+					// String path = ResourceFindingDummyClass.getResource("AdrianProtocol.owl").get;
+					System.out.println("Save path: " + file);
+					try (FileOutputStream output = new FileOutputStream(file)) {
+						OntManager.getOntologyModel().writeAll(output, "RDF/XML", OntManager.NS);
+					} catch (Exception e1) {
+						UiUtils.showDialog(jProtocolTree, "Cannot open output file" + e1.getLocalizedMessage());
 					}
 				}
-			});
-			fc.showOpenDialog(this);
+			}
 		});
 	}
 
