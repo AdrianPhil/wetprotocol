@@ -10,6 +10,7 @@ import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.ontology.OntResource;
 import org.apache.jena.ontology.impl.OntResourceImpl;
+import org.apache.jena.rdf.model.RDFNode;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -196,6 +197,16 @@ public class ClassPropertyEditorPanel extends JPanel implements TreeSelectionLis
 				System.out.println("nasty case where the property could be ANY number of classes coming from range subclasses");
 				DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individual, NodeType.DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS));// , ontProperty.getRange().asClass().listSubClasses(false).toSet()));// Pop up
 				currentTopNode.add(newChild);// would be Read Only as it's an object property
+				RDFNode propertyValueAsIndividual = (individual.getPropertyValue(ontProperty));
+				if(propertyValueAsIndividual!=null) {//already selected at one point
+					//same as for DATA_TYPE_NODE_FOR_LEAF_CLASS					
+					Individual subIndividual = propertyValueAsIndividual.as(Individual.class);;
+					Set<OntProperty> rangeProps = OntManager.getInstance().calculateHierarchicalPropertiesForAClass(subIndividual.getOntClass());
+					for (OntProperty rageProperty : rangeProps) {
+						System.out.println("creating range property for " + ontProperty.getLocalName());
+						createNode(rageProperty, newChild, subIndividual);// ---------------------> recursion
+					}
+				}
 				return currentTopNode;
 			}
 		}

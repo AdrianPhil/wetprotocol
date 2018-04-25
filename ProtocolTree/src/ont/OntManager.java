@@ -1,7 +1,6 @@
 package ont;
 
 import resources.ResourceFindingDummyClass;
-import ui.property.WrappedOntProperty;
 import ui.property.ClassPropertyEditorPanel.NodeType;
 import ui.property.WrappedOntResource;
 

@@ -40,22 +40,22 @@ public class WrappedOntResource<T extends OntResource>  {
 
 	private T wrappedOntResource;
 
-	public WrappedOntResource(T individual) {
-		this.wrappedOntResource=individual;
+	public WrappedOntResource(T wrappedOntResource) {
+		this.wrappedOntResource=wrappedOntResource;
 	}
 
 	@Override
 	public String toString() {
 		if(wrappedOntResource instanceof Individual) {			
 			return ((Individual)wrappedOntResource).getLocalName();
-		}else 	if(wrappedOntResource instanceof OntProperty) {			
-			return ((OntProperty)wrappedOntResource).getLocalName();
+		}else 	if(wrappedOntResource instanceof OntClass) {			
+			return ((OntClass)wrappedOntResource).getLocalName();
 		}
-		UiUtils.showDialog(null, "WrappedResources can be only Individuals or OntProperties and this one is:"+wrappedOntResource);
+		UiUtils.showDialog(null, "WrappedResources can be only Individuals or OntClass-es and this one is:"+wrappedOntResource);
 		return "problem";
 	}
 
-	public T getIndividual() {
+	public T getWrappedResource() {
 		return wrappedOntResource;
 	}
 	

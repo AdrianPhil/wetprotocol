@@ -58,7 +58,7 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 		localComponent.setText(ontProperty.getLocalName() + ":");
 		UiUtils.showConditionDialog(ontProperty.getRange() == null, this, "Property:" + ontProperty + " must have a non null range");
 		rangeComponent.setText("Range:" + ontProperty.getRange().getLocalName().toString());
-		domainComponent.setText("Domain:" + ontProperty.getDomain().getLocalName());
+		domainComponent.setText("Coming from super class:" + ontProperty.getDomain().getLocalName());
 		add(icon);
 		add(localComponent);
 		valueComponent.setEditable(false);
@@ -91,7 +91,7 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 			individualOrClassChooser.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					WrappedOntProperty selectedProperty = (WrappedOntProperty) (individualOrClassChooser.getSelectedItem());
+					WrappedOntResource selectedProperty = (WrappedOntResource) (individualOrClassChooser.getSelectedItem());
 					System.out.println("selected:" + selectedProperty);
 				}
 			});
@@ -102,13 +102,14 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 			localComponent.setForeground(Color.CYAN);
 			icon.setIcon(EditCellPanel.ICON_LEAF_CLASS);
 			break;
-		case DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS:
+		case DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS://RED RUBY
 			valueComponent.setEditable(false);
+			loadPossibleLeafClassValues(individualOrClassChooser);
 			if (propertyValue != null) {// individual already created
-				loadPossibleLeafClassValues(individualOrClassChooser);
 				String localName = "" + ((OntResource) propertyValue).asIndividual().getLocalName();
 				valueComponent.setText(localName);
 				setSelectedItemByComparing(individualOrClassChooser, ((OntResource) propertyValue).asIndividual().getOntClass().getLocalName());
+				//we need to keep going down in here as long as it's populated
 			} else {
 				valueComponent.setText("please select from the combo box");
 			}
@@ -117,7 +118,7 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 			individualOrClassChooser.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					WrappedOntProperty selectedProperty = (WrappedOntProperty) (individualOrClassChooser.getSelectedItem());
+					WrappedOntResource selectedProperty = (WrappedOntResource) (individualOrClassChooser.getSelectedItem());
 					System.out.println("selected:" + selectedProperty);
 				}
 			});
@@ -136,7 +137,7 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 		for (OntClass subclassFromRange : ontProperty.getRange().asClass().listSubClasses(false).toSet()) {
 			// System.out.println("\t\t dealing with range subclass:" + subclassFromRange.getLocalName());
 			if (OntManager.isLeafClass(subclassFromRange)) { // only leaf classes
-				individualOrClassChooser2.addItem(new WrappedOntProperty(subclassFromRange));
+				individualOrClassChooser2.addItem(new WrappedOntResource(subclassFromRange));
 			}
 			// DefaultMutableTreeNode newClassChild = new DefaultMutableTreeNode(subclassFromRange);
 			// DefaultMutableTreeNode rangeLevelNode = currentTopNode;
