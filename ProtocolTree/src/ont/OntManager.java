@@ -1,7 +1,9 @@
 package ont;
 
 import resources.ResourceFindingDummyClass;
+import ui.property.WrappedOntProperty;
 import ui.property.ClassPropertyEditorPanel.NodeType;
+import ui.property.WrappedIndividual;
 
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
@@ -13,21 +15,25 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.util.iterator.ExtendedIterator;
+
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import javax.swing.JComboBox;
+
 public class OntManager {
 	private static OntManager instance;
 	private static OntModel ontologyModel;
-	public static final String PROTOCOL_FILE="AdrianProtocol.owl";
+	public static final String PROTOCOL_FILE = "AdrianProtocol.owl";
 	private static String ONTOLOGY_LOCATION = ResourceFindingDummyClass.getResource(PROTOCOL_FILE).getFile();
 	public static final String NS = "http://www.wet.protocol#";// namespace and #
 	public static OntProperty STANDALONE;
 	private static Individual topProtocolInstance;
 	public static Resource NOTHING_SUBCLASS;
-	public static AtomicInteger counter=new AtomicInteger(0);
+	public static AtomicInteger counter = new AtomicInteger(0);
 	//
 
 	public static final OntManager getInstance() {
@@ -56,12 +62,10 @@ public class OntManager {
 	}
 
 	public static Individual createIndividual(OntClass ontClass) {
-		return OntManager.getInstance().createIndividual("newInternalIndividual"+counter.incrementAndGet()+"_OfClass_"+
-				ontClass.getLocalName(), ontClass);
-		
+		return OntManager.getInstance().createIndividual("newInternalIndividual" + counter.incrementAndGet() + "_OfClass_" + ontClass.getLocalName(), ontClass);
 	}
-	
-	private Individual createIndividual(String instanceName, OntClass ontClass) {//todo make this private
+
+	private Individual createIndividual(String instanceName, OntClass ontClass) {// todo make this private
 		return ontologyModel.createIndividual(NS + instanceName, ontClass);
 	}
 
@@ -172,13 +176,20 @@ public class OntManager {
 	}
 
 	public static OntModel getOntologyModel() {
+		getInstance();// make sure it's loaded
 		return ontologyModel;
 	}
 
 	public static boolean isLeafClass(OntClass ontClass) {
-		// )!subclassFromRange.hasSubClass() todo should be a faster way but somtimes you get these ghost subclasses
+		// )!subclassFromRange.hasSubClass() todo should be a faster way but sometimes you get these ghost subclasses
 		return ontClass.listSubClasses().toList().isEmpty();
 	}
 
-
+	// will load in the combo box all existing individuals of the given class
+	public static void loadPossibleIndividualValues(JComboBox individualOrClassChooser, OntClass ontClass) {
+		Set<Individual> individualsSet = getOntologyModel().listIndividuals(ontClass).toSet();
+		for (Individual individual : individualsSet) {
+			individualOrClassChooser.addItem(new WrappedIndividual(individual));
+		}
+	}
 }

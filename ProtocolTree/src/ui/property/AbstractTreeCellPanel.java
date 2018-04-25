@@ -41,7 +41,7 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 	JFormattedTextField valueComponent = new JFormattedTextField("dummy value ");
 	JLabel rangeComponent = new JLabel("dummy range");
 	JLabel domainComponent = new JLabel("dummy domain");
-	JComboBox<WrappedOntProperty> individualOrClassChooser = new JComboBox();
+	JComboBox individualOrClassChooser = new JComboBox();
 	JLabel debug = new JLabel("debug");
 
 	public AbstractTreeCellPanel(PropertyAndIndividual propertyAndIndividual) {
@@ -77,10 +77,16 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 			icon.setIcon(EditCellPanel.ICON_LITERAL);
 			break;
 		case DATA_TYPE_NODE_FOR_CHOICE_STANDALONE_OBJECT:
-			valueComponent.setText("" + propertyValue);// todo this should be different
+			OntManager.loadPossibleIndividualValues(individualOrClassChooser, ontProperty.getRange().asClass());
+			if (propertyValue != null) {// individual already created
+				String localName = "" + ((OntResource) propertyValue).asIndividual().getLocalName();
+				valueComponent.setText(localName);
+				setSelectedItemByComparing(individualOrClassChooser, ((OntResource) propertyValue).asIndividual().getOntClass().getLocalName());
+			} else {
+				valueComponent.setText("please select an existing object from the combo box");
+			}
 			localComponent.setForeground(Color.PINK);
 			individualOrClassChooser.setVisible(true);
-			extractPossibleIndividualValues(individualOrClassChooser);
 			individualOrClassChooser.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
@@ -98,7 +104,7 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 		case DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS:
 			valueComponent.setEditable(false);
 			if (propertyValue != null) {// individual already created
-				extractPossibleLeafClassValues(individualOrClassChooser);
+				loadPossibleLeafClassValues(individualOrClassChooser);
 				String localName = "" + ((OntResource) propertyValue).asIndividual().getLocalName();
 				valueComponent.setText(localName);
 				setSelectedItemByComparing(individualOrClassChooser, ((OntResource) propertyValue).asIndividual().getOntClass().getLocalName());
@@ -123,17 +129,13 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 		}
 	}
 
-	private void extractPossibleIndividualValues(JComboBox<WrappedOntProperty> individualOrClassChooser2) {
-		// TODO Auto-generated method stub
-	}
-
-	private void extractPossibleLeafClassValues(JComboBox<WrappedOntProperty> individualOrClassChooser) {
+	private void loadPossibleLeafClassValues(JComboBox individualOrClassChooser2) {
 		OntProperty ontProperty = propertyAndIndividual.getOntProperty();
 		// individualOrClassChooser.addItem(OntManager.getInstance().getStringClass("DummyClass"));
 		for (OntClass subclassFromRange : ontProperty.getRange().asClass().listSubClasses(false).toSet()) {
 			// System.out.println("\t\t dealing with range subclass:" + subclassFromRange.getLocalName());
 			if (OntManager.isLeafClass(subclassFromRange)) { // only leaf classes
-				individualOrClassChooser.addItem(new WrappedOntProperty(subclassFromRange));
+				individualOrClassChooser2.addItem(new WrappedOntProperty(subclassFromRange));
 			}
 			// DefaultMutableTreeNode newClassChild = new DefaultMutableTreeNode(subclassFromRange);
 			// DefaultMutableTreeNode rangeLevelNode = currentTopNode;
@@ -149,12 +151,13 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 		}
 	}
 
-	private void setSelectedItemByComparing(JComboBox<WrappedOntProperty> individualOrClassChooser, String localName) {
-		ComboBoxModel<WrappedOntProperty> model = individualOrClassChooser.getModel();
+
+	private void setSelectedItemByComparing(JComboBox individualOrClassChooser2, String localName) {
+		ComboBoxModel<WrappedOntProperty> model = individualOrClassChooser2.getModel();
 		for (int i = 0; i < model.getSize(); i++) {
 			Object elementAt = model.getElementAt(i);
 			if (elementAt.toString().equalsIgnoreCase(localName)) {
-				individualOrClassChooser.setSelectedItem(elementAt);
+				individualOrClassChooser2.setSelectedItem(elementAt);
 				return;
 			}
 		}
