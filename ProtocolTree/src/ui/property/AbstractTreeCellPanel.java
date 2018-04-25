@@ -7,6 +7,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.ComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -70,13 +71,13 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 		RDFNode propertyValue = propertyAndIndividual.getIndividual().getPropertyValue(ontProperty);
 		switch (propertyAndIndividual.getNodeType()) {// todo check order to avoid weird side effects
 		case LITERAL_NODE:
-			valueComponent.setText(propertyValue!=null?"" +  propertyValue.asLiteral().getValue():"---");// todo this should extract the type and the value properly and attach the formatter
-			//use getDataType to set the type
+			valueComponent.setText(propertyValue != null ? "" + propertyValue.asLiteral().getValue() : "---");// todo this should extract the type and the value properly and attach the formatter
+			// use getDataType to set the type
 			localComponent.setForeground(Color.GREEN);
 			icon.setIcon(EditCellPanel.ICON_LITERAL);
 			break;
 		case DATA_TYPE_NODE_FOR_CHOICE_STANDALONE_OBJECT:
-			valueComponent.setText("" + propertyValue);//todo this should be different
+			valueComponent.setText("" + propertyValue);// todo this should be different
 			localComponent.setForeground(Color.PINK);
 			individualOrClassChooser.setVisible(true);
 			extractPossibleIndividualValues(individualOrClassChooser);
@@ -90,15 +91,22 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 			icon.setIcon(EditCellPanel.ICON_STANDALONE_OBJECT);
 			break;
 		case DATA_TYPE_NODE_FOR_LEAF_CLASS:
-			valueComponent.setText("" + ( ( (OntResource)propertyValue).asIndividual().getLocalName()));
+			valueComponent.setText("" + (((OntResource) propertyValue).asIndividual().getLocalName()));
 			localComponent.setForeground(Color.CYAN);
 			icon.setIcon(EditCellPanel.ICON_LEAF_CLASS);
 			break;
 		case DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS:
-			valueComponent.setText("" + propertyValue);// todo this should be different
+			valueComponent.setEditable(false);
+			if (propertyValue != null) {// individual already created
+				extractPossibleLeafClassValues(individualOrClassChooser);
+				String localName = "" + ((OntResource) propertyValue).asIndividual().getLocalName();
+				valueComponent.setText(localName);
+				setSelectedItemByComparing(individualOrClassChooser, ((OntResource) propertyValue).asIndividual().getOntClass().getLocalName());
+			} else {
+				valueComponent.setText("please select from the combo box");
+			}
 			localComponent.setForeground(Color.RED);
 			individualOrClassChooser.setVisible(true);
-			extractPossibleLeafClassValues(individualOrClassChooser);
 			individualOrClassChooser.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
@@ -139,6 +147,18 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 			// currentTopNode = rangeLevelNode;
 			// System.out.println("\t\t finished dealing with range subclass:" + subclassFromRange.getLocalName());
 		}
+	}
+
+	private void setSelectedItemByComparing(JComboBox<WrappedOntProperty> individualOrClassChooser, String localName) {
+		ComboBoxModel<WrappedOntProperty> model = individualOrClassChooser.getModel();
+		for (int i = 0; i < model.getSize(); i++) {
+			Object elementAt = model.getElementAt(i);
+			if (elementAt.toString().equalsIgnoreCase(localName)) {
+				individualOrClassChooser.setSelectedItem(elementAt);
+				return;
+			}
+		}
+		assert (true);// ,"I should have found the selection") ;
 	}
 	// public JComboBox<WrappedOntProperty> getIndividualOrClassChooser() {
 	// return individualOrClassChooser;
