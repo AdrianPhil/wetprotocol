@@ -22,6 +22,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static ui.UiUtils.expandTree;
 
@@ -40,6 +41,7 @@ public class ClassPropertyEditorPanel extends JPanel implements TreeSelectionLis
 	DefaultMutableTreeNode topNodeAsPropertyHolder = new DefaultMutableTreeNode("dummy");// this is empty
 	private DefaultTreeModel protocolTreeModel = new DefaultTreeModel(topNodeAsPropertyHolder);
 	private JTree jPropertyAndIndividualTree = new JTree(protocolTreeModel);// my property tree
+	public static AtomicInteger counter=new AtomicInteger(3);
 
 	public ClassPropertyEditorPanel(DefaultMutableTreeNode protocolTreeNode, JTree jProtocolTree) {// todo we don't need to pass the tree in here ?
 		super(new GridLayout(1, 1));
@@ -178,7 +180,7 @@ public class ClassPropertyEditorPanel extends JPanel implements TreeSelectionLis
 				Object subIndividualObject = individual.getPropertyValue(ontProperty);
 				Individual subIndividual;
 				if (subIndividualObject == null) {
-					subIndividual = OntManager.getInstance().createIndividual("newInternalIndividualOfClass_"+range.asClass().getLocalName()+"_AsValueFor_"+ontProperty.getLocalName() ,range.asClass());
+					subIndividual = OntManager.getInstance().createIndividual("newInternalIndividualOfClass_"+counter.incrementAndGet()+range.asClass().getLocalName()+"_AsValueFor_"+ontProperty.getLocalName() ,range.asClass());
 					individual.setPropertyValue(ontProperty, subIndividual);
 				} else {
 					subIndividual=((OntResource)subIndividualObject).asIndividual();

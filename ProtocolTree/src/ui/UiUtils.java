@@ -1,6 +1,7 @@
 package ui;
 
 import ont.OntManager;
+import ui.property.ClassPropertyEditorPanel;
 
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
@@ -63,7 +64,7 @@ public class UiUtils {
 			return;  // tree is already populated
 		}
 		classesInSignature.stream().forEach(ontClass -> {
-			Individual emptyIndividual=  OntManager.getInstance().createIndividual("myEmpty"+ontClass.getLocalName()+"Individual",ontClass);
+			Individual emptyIndividual=  OntManager.getInstance().createIndividual("myEmpty"+ontClass.getLocalName()+"Individual"+ClassPropertyEditorPanel.counter.incrementAndGet(),ontClass);
 			DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(emptyIndividual);
 			// model.insertNodeInto(new DefaultMutableTreeNode(new Operation(className,"tutorial.html")), root, root.getChildCount());
 			root.add(newNode);
