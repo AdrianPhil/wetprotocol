@@ -34,21 +34,29 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.util.iterator.ExtendedIterator;
 
-public class WrappedIndividual  {
+import ui.UiUtils;
 
-	private Individual individual;
+public class WrappedOntResource<T extends OntResource>  {
 
-	public WrappedIndividual(Individual individual) {
-		this.individual=individual;
+	private T wrappedOntResource;
+
+	public WrappedOntResource(T individual) {
+		this.wrappedOntResource=individual;
 	}
 
 	@Override
 	public String toString() {
-		return individual.getLocalName();
+		if(wrappedOntResource instanceof Individual) {			
+			return ((Individual)wrappedOntResource).getLocalName();
+		}else 	if(wrappedOntResource instanceof OntProperty) {			
+			return ((OntProperty)wrappedOntResource).getLocalName();
+		}
+		UiUtils.showDialog(null, "WrappedResources can be only Individuals or OntProperties and this one is:"+wrappedOntResource);
+		return "problem";
 	}
 
-	public Individual getIndividual() {
-		return individual;
+	public T getIndividual() {
+		return wrappedOntResource;
 	}
 	
 }

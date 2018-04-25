@@ -1,6 +1,7 @@
 package ui;
 
 import ont.OntManager;
+import ui.property.AbstractTreeCellPanel;
 import ui.property.ClassPropertyEditorPanel;
 
 import org.apache.jena.ontology.Individual;
@@ -124,5 +125,12 @@ public class UiUtils {
 			c = c.getParent();
 		} while (!(c instanceof JFrame));
 		return (JFrame) c;
+	}
+
+	public static void showConditionDialog(boolean b, Component c, String message) {
+		if(b) {
+			showDialog(c,message); 
+		}
+		
 	}
 }

@@ -3,7 +3,7 @@ package ont;
 import resources.ResourceFindingDummyClass;
 import ui.property.WrappedOntProperty;
 import ui.property.ClassPropertyEditorPanel.NodeType;
-import ui.property.WrappedIndividual;
+import ui.property.WrappedOntResource;
 
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
@@ -189,7 +189,7 @@ public class OntManager {
 	public static void loadPossibleIndividualValues(JComboBox individualOrClassChooser, OntClass ontClass) {
 		Set<Individual> individualsSet = getOntologyModel().listIndividuals(ontClass).toSet();
 		for (Individual individual : individualsSet) {
-			individualOrClassChooser.addItem(new WrappedIndividual(individual));
+			individualOrClassChooser.addItem(new WrappedOntResource(individual));
 		}
 	}
 }

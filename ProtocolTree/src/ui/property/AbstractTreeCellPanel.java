@@ -41,7 +41,7 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 	JFormattedTextField valueComponent = new JFormattedTextField("dummy value ");
 	JLabel rangeComponent = new JLabel("dummy range");
 	JLabel domainComponent = new JLabel("dummy domain");
-	JComboBox individualOrClassChooser = new JComboBox();
+	JComboBox<WrappedOntResource> individualOrClassChooser = new JComboBox();
 	JLabel debug = new JLabel("debug");
 
 	public AbstractTreeCellPanel(PropertyAndIndividual propertyAndIndividual) {
@@ -56,6 +56,7 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 	public void setTextAndAddComponents() {
 		OntProperty ontProperty = propertyAndIndividual.getOntProperty();
 		localComponent.setText(ontProperty.getLocalName() + ":");
+		UiUtils.showConditionDialog(ontProperty.getRange() == null, this, "Property:" + ontProperty + " must have a non null range");
 		rangeComponent.setText("Range:" + ontProperty.getRange().getLocalName().toString());
 		domainComponent.setText("Domain:" + ontProperty.getDomain().getLocalName());
 		add(icon);
@@ -79,9 +80,9 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 		case DATA_TYPE_NODE_FOR_CHOICE_STANDALONE_OBJECT:
 			OntManager.loadPossibleIndividualValues(individualOrClassChooser, ontProperty.getRange().asClass());
 			if (propertyValue != null) {// individual already created
-				String localName = "" + ((OntResource) propertyValue).asIndividual().getLocalName();
-				valueComponent.setText(localName);
-				setSelectedItemByComparing(individualOrClassChooser, ((OntResource) propertyValue).asIndividual().getOntClass().getLocalName());
+				Individual individual = ((OntResource) propertyValue).asIndividual();
+				valueComponent.setText(individual.getLocalName());
+				setSelectedItemByComparing(individualOrClassChooser,individual.getLocalName());
 			} else {
 				valueComponent.setText("please select an existing object from the combo box");
 			}
@@ -151,11 +152,10 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 		}
 	}
 
-
-	private void setSelectedItemByComparing(JComboBox individualOrClassChooser2, String localName) {
-		ComboBoxModel<WrappedOntProperty> model = individualOrClassChooser2.getModel();
+	private void setSelectedItemByComparing(JComboBox<WrappedOntResource> individualOrClassChooser2, String localName) {
+		ComboBoxModel<WrappedOntResource> model = individualOrClassChooser2.getModel();
 		for (int i = 0; i < model.getSize(); i++) {
-			Object elementAt = model.getElementAt(i);
+			WrappedOntResource elementAt = model.getElementAt(i);
 			if (elementAt.toString().equalsIgnoreCase(localName)) {
 				individualOrClassChooser2.setSelectedItem(elementAt);
 				return;
