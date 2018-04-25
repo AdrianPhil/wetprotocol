@@ -15,7 +15,7 @@ import ui.UiUtils;
 
 public class TestEditRenderPanel extends JPanel {
 
-	static final ImageIcon createImageIcon = ResourceFindingDummyClass.createImageIcon("labcoat.png");
+	static final ImageIcon createImageIcon = ResourceFindingDummyClass.createImageIcon("icons/lab_coat.png");
 	JButton saveButton = new JButton("Save");
 	JLabel field1Component = new JLabel("");
 	JTextField field2Component = new JTextField(" ");

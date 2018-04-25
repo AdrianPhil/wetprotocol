@@ -7,6 +7,7 @@ import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntProperty;
+import org.apache.jena.ontology.OntResource;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
@@ -14,6 +15,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class OntManager {
@@ -25,6 +27,7 @@ public class OntManager {
 	public static OntProperty STANDALONE;
 	private static Individual topProtocolInstance;
 	public static Resource NOTHING_SUBCLASS;
+	public static AtomicInteger counter=new AtomicInteger(0);
 	//
 
 	public static final OntManager getInstance() {
@@ -52,17 +55,23 @@ public class OntManager {
 		return topProtocolInstance;
 	}
 
-	public Individual createIndividual(String instanceName, OntClass ontClass) {
+	public static Individual createIndividual(OntClass ontClass) {
+		return OntManager.getInstance().createIndividual("newInternalIndividual"+counter.incrementAndGet()+"_OfClass_"+
+				ontClass.getLocalName(), ontClass);
+		
+	}
+	
+	private Individual createIndividual(String instanceName, OntClass ontClass) {//todo make this private
 		return ontologyModel.createIndividual(NS + instanceName, ontClass);
 	}
 
 	public Individual createIndividual(String instanceName, String className) {
-		OntClass ontClass = OntManager.getInstance().getStringClass(className);
+		OntClass ontClass = OntManager.getInstance().getOntClass(className);
 		return ontologyModel.createIndividual(instanceName, ontClass);
 	}
 
-	public OntClass getStringClass(String clazz) {
-		return ontologyModel.getOntClass(NS + clazz);
+	public OntClass getOntClass(String clazz) {
+		return OntManager.getInstance().getOntologyModel().getOntClass(NS + clazz);
 	}
 
 	public void dumpPropertiesAndValuesInIndividual(Individual individual) {
@@ -170,4 +179,6 @@ public class OntManager {
 		// )!subclassFromRange.hasSubClass() todo should be a faster way but somtimes you get these ghost subclasses
 		return ontClass.listSubClasses().toList().isEmpty();
 	}
+
+
 }

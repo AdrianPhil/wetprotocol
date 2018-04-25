@@ -56,20 +56,17 @@ public class UiUtils {
 		}
 	}
 
-	public static void createEmpyIndividualNodes(JTree jTree, Set<OntClass> classesInSignature) {//for classChooserPanel
-		//AtomicInteger counter = new AtomicInteger();
+	public static void createEmpyClassNodes(JTree jTree, Set<OntClass> classesInSignature) {//for classChooserPanel
 		DefaultTreeModel model = (DefaultTreeModel) jTree.getModel();
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
 		if (root.getChildCount() > 0) {
 			return;  // tree is already populated
 		}
 		classesInSignature.stream().forEach(ontClass -> {
-			Individual emptyIndividual=  OntManager.getInstance().createIndividual("myEmpty"+ontClass.getLocalName()+"Individual"+ClassPropertyEditorPanel.counter.incrementAndGet(),ontClass);
-			DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(emptyIndividual);
-			// model.insertNodeInto(new DefaultMutableTreeNode(new Operation(className,"tutorial.html")), root, root.getChildCount());
+			DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(ontClass);
 			root.add(newNode);
 		});
-		model.reload(root);// todo I dont't know know if necessary
+		model.reload(root);// TODO I dont't know if necessary
 	}
 
 	public static void createInstanceNodes(DefaultMutableTreeNode topProtocolNode) {

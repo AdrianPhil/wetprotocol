@@ -17,6 +17,7 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.rdf.model.Literal;
@@ -24,6 +25,7 @@ import org.apache.jena.rdf.model.Literal;
 import ont.OntManager;
 import ont.PropertyAndIndividual;
 import resources.ResourceFindingDummyClass;
+import ui.UiUtils;
 import ui.property.ClassPropertyEditorPanel.NodeType;
 
 public class EditCellPanel extends AbstractTreeCellPanel implements PropertyChangeListener {
@@ -48,6 +50,13 @@ public class EditCellPanel extends AbstractTreeCellPanel implements PropertyChan
 			saveButton.addActionListener(e -> {
 				cellEditor.stopCellEditing();
 				OntClass ontClass = getComboSelection();
+				Individual newIndividual = OntManager.createIndividual(ontClass);
+				if(propertyAndIndividual.getIndividual()!=null) {
+					UiUtils.showDialog(this, "we will overwrite the current individual:"+propertyAndIndividual.getIndividual()+
+							" with a new individual of other class:"+newIndividual);
+				}
+				//here I need to change the individual if we had any
+				//propertyAndIndividualNode.set
 				ClassPropertyEditorPanel.createNodesForClass(ontClass, (DefaultMutableTreeNode) propertyAndIndividualNode, propertyAndIndividual.getIndividual());
 			});
 			saveButton.setEnabled(true);
