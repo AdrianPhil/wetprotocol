@@ -70,8 +70,8 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 		RDFNode propertyValue = propertyAndIndividual.getIndividual().getPropertyValue(ontProperty);
 		switch (propertyAndIndividual.getNodeType()) {// todo check order to avoid weird side effects
 		case LITERAL_NODE:
-			
-			valueComponent.setText("" +  propertyValue.asLiteral().getLexicalForm());// todo this should extract the type and the value properly and attach the formatter
+			valueComponent.setText(propertyValue!=null?"" +  propertyValue.asLiteral().getValue():"---");// todo this should extract the type and the value properly and attach the formatter
+			//use getDataType to set the type
 			localComponent.setForeground(Color.GREEN);
 			icon.setIcon(EditCellPanel.ICON_LITERAL);
 			break;
