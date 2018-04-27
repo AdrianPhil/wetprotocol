@@ -14,6 +14,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.util.ResourceUtils;
 import org.apache.jena.util.iterator.ExtendedIterator;
 
 import java.util.Collections;
@@ -22,6 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.swing.JComboBox;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 public class OntManager {
 	private static OntManager instance;
@@ -40,6 +42,7 @@ public class OntManager {
 			instance = new OntManager();
 			ontologyModel = ModelFactory.createOntologyModel();// full? hierarchy reasoner
 			ontologyModel.read(ONTOLOGY_LOCATION);
+			ontologyModel.setStrictMode(true);
 			STANDALONE = ontologyModel.getOntProperty(NS + "standalone");
 			NOTHING_SUBCLASS = ontologyModel.getOntClass("owl:Nothing");
 		}
@@ -61,7 +64,7 @@ public class OntManager {
 	}
 
 	public static Individual createIndividual(OntClass ontClass) {
-		return OntManager.getInstance().createIndividual("newInternalIndividual" + counter.incrementAndGet() + "_OfClass_" + ontClass.getLocalName(), ontClass);
+		return OntManager.getInstance().createIndividual("newInternalIndividual" + counter.incrementAndGet() + "_ofClass_" + ontClass.getLocalName(), ontClass);
 	}
 
 	private Individual createIndividual(String instanceName, OntClass ontClass) {// todo make this private
@@ -190,5 +193,11 @@ public class OntManager {
 		for (Individual individual : individualsSet) {
 			individualOrClassChooser.addItem(new WrappedOntResource(individual));
 		}
+	}
+
+	public static Individual renameNode(Individual resource, String newValue) {
+		Individual individual=(Individual)(ResourceUtils.renameResource(resource, NS + newValue).as(Individual.class));
+		System.out.println(individual.getOntClass());
+		return individual ;
 	}
 }

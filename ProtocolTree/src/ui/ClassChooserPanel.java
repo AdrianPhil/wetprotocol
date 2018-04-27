@@ -50,7 +50,7 @@ public class ClassChooserPanel extends JPanel implements TreeSelectionListener {
 		// Create the HTML viewing pane.
 		htmlPane = new JEditorPane();
 		htmlPane.setEditable(true);
-		initHelp();
+		//initHelp();
 		JScrollPane htmlView = new JScrollPane(htmlPane);
 		treeView.setPreferredSize(new Dimension(400, 300));
 		// Add the split pane to this panel.
@@ -155,16 +155,16 @@ public class ClassChooserPanel extends JPanel implements TreeSelectionListener {
 		});
 	}
 
-	private void initHelp() {
-		String s = "TreeDemoHelp.html";
-		helpURL = ResourceFindingDummyClass.getResource(s);
-		if (helpURL == null) {
-			System.err.println("Couldn't open help file: " + s);
-		} else if (DEBUG) {
-			System.out.println("Help URL is " + helpURL);
-		}
-		displayURL(helpURL);
-	}
+//	private void initHelp() {
+//		String s = "TreeDemoHelp.html";
+//		helpURL = ResourceFindingDummyClass.getResource(s);
+//		if (helpURL == null) {
+//			System.err.println("Couldn't open help file: " + s);
+//		} else if (DEBUG) {
+//			System.out.println("Help URL is " + helpURL);
+//		}
+//		displayURL(helpURL);
+//	}
 
 	private void displayURL(URL url) {
 		try {

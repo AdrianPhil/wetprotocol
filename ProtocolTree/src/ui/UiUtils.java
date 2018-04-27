@@ -6,6 +6,7 @@ import ui.property.ClassPropertyEditorPanel;
 
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontology.OntResource;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;

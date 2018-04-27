@@ -1,4 +1,4 @@
-package ui;
+package oldStuff;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -7,6 +7,7 @@ import javax.swing.tree.TreeCellRenderer;
 import org.apache.jena.ontology.Individual;
 
 import resources.ResourceFindingDummyClass;
+import ui.UiUtils;
 
 import java.awt.Color;
 import java.awt.Component;
