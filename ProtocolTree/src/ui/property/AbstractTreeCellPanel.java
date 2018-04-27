@@ -29,7 +29,7 @@ import ont.PropertyAndIndividual;
 import resources.ResourceFindingDummyClass;
 import ui.UiUtils;
 
-public abstract class AbstractTreeCellPanel extends JPanel {
+public abstract class AbstractTreeCellPanel extends JPanel{
 	protected PropertyAndIndividual propertyAndIndividual;
 	public static final Icon ICON_LEAF_CLASS = UIManager.getIcon("FileChooser.detailsViewIcon");// http://en-human-begin.blogspot.ca/2007/11/javas-icons-by-default.html
 	// maybe next is application_edit
@@ -38,7 +38,7 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 	static final ImageIcon ICON_CHOICE_SUBCLASS = ResourceFindingDummyClass.createImageIcon("icons/page_white_ruby.png");
 	JLabel icon = new JLabel("");
 	JLabel localComponent = new JLabel("dummy local");
-	JFormattedTextField valueComponent = new JFormattedTextField("dummy value ");
+	JFormattedTextField valueComponent=new JFormattedTextField("dummy");// this seems to generate dummy on escape for JformattedTextField and no change for JText
 	JLabel rangeComponent = new JLabel("dummy range");
 	JLabel domainComponent = new JLabel("dummy domain");
 	JComboBox<WrappedOntResource> individualOrClassChooser = new JComboBox();
@@ -47,6 +47,20 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 	public AbstractTreeCellPanel(PropertyAndIndividual propertyAndIndividual) {
 		this.propertyAndIndividual = propertyAndIndividual;
 		debug.setText("individual:" + propertyAndIndividual.getIndividual().getLocalName());
+		valueComponent.addPropertyChangeListener("value", new ValueChangeListener());
+		RDFNode propertyValue = propertyAndIndividual.getIndividual().getPropertyValue(propertyAndIndividual.getOntProperty());
+		if (propertyValue != null) {
+			if (propertyValue.isLiteral()) {
+				valueComponent.setText(propertyValue.asLiteral().getValue().toString());
+				System.out.println("in Abstract Cell Panel constructor setting the valueComponent to:"+valueComponent.getText());
+			}else if (propertyValue.isResource()) {
+				valueComponent.setText(propertyValue.asResource().getLocalName());
+				System.out.println("in Abstract Cell Panel constructor setting the valueComponent to:"+valueComponent.getText());
+			}
+		} else {
+			valueComponent.setText("---");
+			System.out.println("in Abstract Cell Panel constructor setting the valueComponent to:"+valueComponent.getText());
+		}
 	}
 
 	public void setIcon(Icon icon) {
@@ -82,7 +96,7 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 			if (propertyValue != null) {// individual already created
 				Individual individual = ((OntResource) propertyValue).asIndividual();
 				valueComponent.setText(individual.getLocalName());
-				setSelectedItemByComparing(individualOrClassChooser,individual.getLocalName());
+				setSelectedItemByComparing(individualOrClassChooser, individual.getLocalName());
 			} else {
 				valueComponent.setText("please select an existing object from the combo box");
 			}
@@ -102,14 +116,14 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 			localComponent.setForeground(Color.CYAN);
 			icon.setIcon(EditCellPanel.ICON_LEAF_CLASS);
 			break;
-		case DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS://RED RUBY
+		case DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS:// RED RUBY
 			valueComponent.setEditable(false);
 			loadPossibleLeafClassValues(individualOrClassChooser);
 			if (propertyValue != null) {// individual already created
 				String localName = "" + ((OntResource) propertyValue).asIndividual().getLocalName();
 				valueComponent.setText(localName);
 				setSelectedItemByComparing(individualOrClassChooser, ((OntResource) propertyValue).asIndividual().getOntClass().getLocalName());
-				//we need to keep going down in here as long as it's populated
+				// we need to keep going down in here as long as it's populated
 			} else {
 				valueComponent.setText("please select from the combo box");
 			}
@@ -164,9 +178,7 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 		}
 		assert (true);// ,"I should have found the selection") ;
 	}
-	// public JComboBox<WrappedOntProperty> getIndividualOrClassChooser() {
-	// return individualOrClassChooser;
-	// }
+
 }
 // }
 // for (OntClass subclassFromRange : range.asClass().listSubClasses(false).toSet()) {

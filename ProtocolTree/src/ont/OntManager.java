@@ -196,7 +196,11 @@ public class OntManager {
 	}
 
 	public static Individual renameNode(Individual resource, String newValue) {
+		Individual ind=(Individual)(resource.as(Individual.class));
+		System.out.println(ind);
+		System.out.println(ind.getOntClass());
 		Individual individual=(Individual)(ResourceUtils.renameResource(resource, NS + newValue).as(Individual.class));
+		System.out.println(individual);
 		System.out.println(individual.getOntClass());
 		return individual ;
 	}

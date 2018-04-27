@@ -30,9 +30,8 @@ public class InstanceNameCellEditor extends AbstractCellEditor implements TreeCe
 
 	@Override // I think it's called when somebody from outside want the edited value. Maybe when clicking outside
 	public Object getCellEditorValue() { // builds and returns propertyAndIndividual from field EditRenderPanel, Returns the value contained in the editor.
-		Individual newIndividual= instanceNameEditCellPanel.getNewIndividualValueScrapedFromEditPanel();
-		
-		individual.getOntClass();
+		Individual newIndividual= instanceNameEditCellPanel.getNewIndividualValueScrapedFromEditPanel();		
+		newIndividual.getOntClass();//todo remove used just to check for exceptions
 		return newIndividual;
 	}
 

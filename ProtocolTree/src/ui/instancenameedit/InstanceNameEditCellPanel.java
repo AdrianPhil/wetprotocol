@@ -19,10 +19,11 @@ public class InstanceNameEditCellPanel extends JPanel implements PropertyChangeL
 	private JButton saveButton;
 	final DefaultMutableTreeNode individualNode;
 	JLabel icon = new JLabel("");
-	JFormattedTextField valueComponent = new JFormattedTextField("dummy value ");
+	JFormattedTextField valueComponent = new JFormattedTextField("dummy value 2");
 
 	public InstanceNameEditCellPanel(Individual individual, DefaultMutableTreeNode individualNode) {
 		this.individualNode = individualNode;
+		valueComponent.setText(individual.getLocalName());
 		valueComponent.addPropertyChangeListener("value", this);
 		valueComponent.setEditable(true);
 		add(valueComponent);

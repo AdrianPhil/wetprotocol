@@ -30,26 +30,25 @@ import resources.ResourceFindingDummyClass;
 import ui.UiUtils;
 import ui.property.ClassPropertyEditorPanel.NodeType;
 
-public class EditCellPanel extends AbstractTreeCellPanel implements PropertyChangeListener {
+public class EditCellPanel extends AbstractTreeCellPanel {
 	private JButton saveButton;
 	final CellEditor cellEditor;// just to fire the stop edit when the save button in pressed
 	// final DefaultMutableTreeNode propertyAndIndividualNode;
 
 	public EditCellPanel(PropertyAndIndividual propertyAndIndividual, DefaultMutableTreeNode propertyAndIndividualNode, CellEditor cellEditor) {
 		super(propertyAndIndividual);
-		// this.propertyAndIndividualNode = propertyAndIndividualNode;
-		this.cellEditor = cellEditor;
+		this.cellEditor = cellEditor;// if (propertyValue != null) {
 		OntProperty ontProperty = propertyAndIndividual.getOntProperty();
 		setTextAndAddComponents();
 		// only for literal properties
 		if (propertyAndIndividual.getNodeType() == NodeType.LITERAL_NODE) {
-			valueComponent.addPropertyChangeListener("value", this);
+			RDFNode propertyValue = propertyAndIndividual.getIndividual().getPropertyValue(ontProperty);
 			valueComponent.setEditable(true);
 			setProperFormatter(valueComponent, propertyAndIndividual);
 			individualOrClassChooser.setVisible(false);
 		} else if (propertyAndIndividual.getNodeType() == NodeType.DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS || propertyAndIndividual.getNodeType() == NodeType.DATA_TYPE_NODE_FOR_CHOICE_STANDALONE_OBJECT) {
 			RDFNode existingIndividual = propertyAndIndividual.getIndividual().getPropertyValue(ontProperty);// the value for existing individual
-			if (existingIndividual != null  && propertyAndIndividual.getNodeType() != NodeType.DATA_TYPE_NODE_FOR_CHOICE_STANDALONE_OBJECT) {
+			if (existingIndividual != null && propertyAndIndividual.getNodeType() != NodeType.DATA_TYPE_NODE_FOR_CHOICE_STANDALONE_OBJECT) {
 				individualOrClassChooser.setEnabled(false);
 				return;// --------------------------------------->
 			}
@@ -149,13 +148,7 @@ public class EditCellPanel extends AbstractTreeCellPanel implements PropertyChan
 		setBorder(BorderFactory.createLineBorder(Color.RED));
 	}
 
-	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
-		if (saveButton != null) {
-			saveButton.setEnabled(true);
-		}
-		System.out.println("value changed:" + evt);
-	}
+
 
 	public Object getComboClassOrIndividualSelection() {
 		return ((WrappedOntResource) individualOrClassChooser.getSelectedItem()).getWrappedResource();
