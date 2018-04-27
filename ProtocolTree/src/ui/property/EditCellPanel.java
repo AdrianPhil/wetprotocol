@@ -33,11 +33,11 @@ import ui.property.ClassPropertyEditorPanel.NodeType;
 public class EditCellPanel extends AbstractTreeCellPanel implements PropertyChangeListener {
 	private JButton saveButton;
 	final CellEditor cellEditor;// just to fire the stop edit when the save button in pressed
-	final DefaultMutableTreeNode propertyAndIndividualNode;
+	// final DefaultMutableTreeNode propertyAndIndividualNode;
 
 	public EditCellPanel(PropertyAndIndividual propertyAndIndividual, DefaultMutableTreeNode propertyAndIndividualNode, CellEditor cellEditor) {
 		super(propertyAndIndividual);
-		this.propertyAndIndividualNode = propertyAndIndividualNode;
+		// this.propertyAndIndividualNode = propertyAndIndividualNode;
 		this.cellEditor = cellEditor;
 		OntProperty ontProperty = propertyAndIndividual.getOntProperty();
 		setTextAndAddComponents();
@@ -48,24 +48,35 @@ public class EditCellPanel extends AbstractTreeCellPanel implements PropertyChan
 			setProperFormatter(valueComponent, propertyAndIndividual);
 			individualOrClassChooser.setVisible(false);
 		} else if (propertyAndIndividual.getNodeType() == NodeType.DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS || propertyAndIndividual.getNodeType() == NodeType.DATA_TYPE_NODE_FOR_CHOICE_STANDALONE_OBJECT) {
+			RDFNode existingIndividual = propertyAndIndividual.getIndividual().getPropertyValue(ontProperty);// the value for existing individual
+			if (existingIndividual != null  && propertyAndIndividual.getNodeType() != NodeType.DATA_TYPE_NODE_FOR_CHOICE_STANDALONE_OBJECT) {
+				individualOrClassChooser.setEnabled(false);
+				return;// --------------------------------------->
+			}
 			saveButton = new JButton("Apply Choice");
 			saveButton.addActionListener(e -> {
 				cellEditor.stopCellEditing();
-				OntClass ontClass = getComboClassSelection();
-				Individual newIndividual = OntManager.createIndividual(ontClass);
-				RDFNode existingIndividual = propertyAndIndividual.getIndividual().getPropertyValue(ontProperty);// the value for existing individual
-				if (existingIndividual != null) {// individual already existing
-					UiUtils.showDialog(this, "we will overwrite the current individual:" + ((OntResource) existingIndividual).asIndividual().getLocalName() + " with a new individual of other class:" + newIndividual);
-					//TODO
+				Individual newIndividual;
+				if (propertyAndIndividual.getNodeType() == NodeType.DATA_TYPE_NODE_FOR_CHOICE_STANDALONE_OBJECT) {
+					newIndividual = (Individual) getComboClassOrIndividualSelection();
+					propertyAndIndividual.getIndividual().setPropertyValue(ontProperty, newIndividual);
 				} else {
-					// here I need to change the individual if we had any
-					// propertyAndIndividualNode.set
+					OntClass ontClass = (OntClass) getComboClassOrIndividualSelection();
+					newIndividual = OntManager.createIndividual(ontClass);
+					propertyAndIndividual.getIndividual().setPropertyValue(ontProperty, newIndividual);
 					ClassPropertyEditorPanel.createNodesForClass(ontClass, (DefaultMutableTreeNode) propertyAndIndividualNode, propertyAndIndividual.getIndividual());
-					UiUtils.expandTree(cellEditor.jTree);
 				}
+				// if (existingIndividual != null) {// individual already existing
+				// UiUtils.showDialog(this, "we will overwrite the current individual:" + ((OntResource) existingIndividual).asIndividual().getLocalName() + " with a new individual of other class:" + newIndividual);
+				// //UiUtils.showDialog(this, "we will overwrite the current individual:" + ((OntResource) existingIndividual).asIndividual().getLocalName() + " with a new individual of other class:" + newIndividual);
+				// //TODO here I need to delete all under propertyAndIndividualNode and all ontModel like existingIndividual and the tree because of it
+				// }
+				// here I need to change the individual if we had any
+				// propertyAndIndividualNode.set
+				UiUtils.expandTree(cellEditor.jTree);
 			});
 			saveButton.setEnabled(true);
-			add(saveButton, this.getComponentCount()-3);
+			add(saveButton, this.getComponentCount() - 3);
 			System.out.println();
 			individualOrClassChooser.setVisible(true);
 		}
@@ -146,7 +157,7 @@ public class EditCellPanel extends AbstractTreeCellPanel implements PropertyChan
 		System.out.println("value changed:" + evt);
 	}
 
-	public OntClass getComboClassSelection() {
-		return (OntClass) (((WrappedOntResource) individualOrClassChooser.getSelectedItem()).getWrappedResource());
+	public Object getComboClassOrIndividualSelection() {
+		return ((WrappedOntResource) individualOrClassChooser.getSelectedItem()).getWrappedResource();
 	}
 }
