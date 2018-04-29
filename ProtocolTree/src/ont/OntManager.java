@@ -4,20 +4,36 @@ import resources.ResourceFindingDummyClass;
 import ui.property.ClassPropertyEditorPanel.NodeType;
 import ui.property.WrappedOntResource;
 
+import org.apache.jena.graph.Graph;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.Triple;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.ontology.OntResource;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.reasoner.InfGraph;
 import org.apache.jena.util.ResourceUtils;
 import org.apache.jena.util.iterator.ExtendedIterator;
+import org.apache.jena.util.iterator.UniqueFilter;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.ReasonerVocabulary;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -40,7 +56,7 @@ public class OntManager {
 	public static final OntManager getInstance() {
 		if (instance == null) {
 			instance = new OntManager();
-			ontologyModel = ModelFactory.createOntologyModel();// full? hierarchy reasoner
+			ontologyModel = ModelFactory.createOntologyModel();//OntModelSpec.OWL_LITE_MEM);// "" isfull? hierarchy reasoner; OWL_MEM
 			ontologyModel.read(ONTOLOGY_LOCATION);
 			ontologyModel.setStrictMode(true);
 			STANDALONE = ontologyModel.getOntProperty(NS + "standalone");
@@ -196,12 +212,110 @@ public class OntManager {
 	}
 
 	public static Individual renameNode(Individual resource, String newValue) {
-		Individual ind=(Individual)(resource.as(Individual.class));
+		Individual ind = (Individual) (resource.as(Individual.class));
 		System.out.println(ind);
-		System.out.println(ind.getOntClass());
-		Individual individual=(Individual)(ResourceUtils.renameResource(resource, NS + newValue).as(Individual.class));
+		OntClass ontClass = ind.getOntClass();
+		System.out.println(ontClass);
+		Individual individual = (Individual) (myRenameResource(resource, NS + newValue).as(Individual.class));
+//		String req ="SELECT * WHERE {<" + resource.getURI() + "> "+ReasonerVocabulary.directRDFType+" ?x}";
+//		//String req ="SELECT * WHERE {<" + resource.getURI() + "> rdf:type ?x}";
+//		String req1 = "SELECT * { <" + resource.getURI() + "> <" + ReasonerVocabulary.directRDFType + "> ?type }";
+//		Query query = QueryFactory.create(req);
+//		QueryExecution qe = QueryExecutionFactory.create(query, ontologyModel);
+//		ResultSet res = qe.execSelect();
+//		// ResultSetFormatter.out(System.out, res, query);
+//		int leng = 0;
+//		while (res.hasNext()) {
+//			leng++;
+//			res.next();
+//		}
+//		System.out.println("Length : " + leng);
+		//
+		System.out.println(individual.getRDFType(true).as(OntClass.class));
+		individual.setOntClass(ontClass);
 		System.out.println(individual);
 		System.out.println(individual.getOntClass());
-		return individual ;
+		System.out.println(individual.getRDFType(true).as(OntClass.class));
+		//can be done as below
+//	    public ExtendedIterator<Resource> listRDFTypes( boolean direct ) {
+//	        ExtendedIterator<Resource> i = listDirectPropertyValues( RDF.type, "rdf:type", Resource.class, getProfile().SUB_CLASS_OF(), direct, false );
+//	        // we only want each result once
+//	        return i.filterKeep( new UniqueFilter<Resource>());
+//	    }
+		return individual;
+	}
+
+	private static int WINDOW_SIZE = 1000;
+
+	public static Resource myRenameResource(final Resource old, final String uri) {
+		// Work at the graph level. Also, work underneath one layer of inference
+		// if it's there. This avoids both fighting the inference engine and the
+		// Statement reconstruction work of the Model layer.
+		String oldURI = old.getURI();
+		if (oldURI != null && oldURI.equals(uri)) {
+			return old;
+		}
+		Node resAsNode = old.asNode();
+		Model model = old.getModel();
+		Graph graph = model.getGraph();
+		Graph rawGraph = graph instanceof InfGraph ? ((InfGraph) graph).getRawGraph() : graph;
+		Resource newRes = model.createResource(uri);
+		Node newResAsNode = newRes.asNode();
+		boolean changeOccured = false;
+		List<Triple> triples = new ArrayList<>(WINDOW_SIZE);
+		// An optimization to prevent concatenating the two find() operations together every time through the outer loop
+		boolean onFirstIterator = true;
+		// It's possible there are triples (old wossname old) that are in triples twice. It doesn't matter.
+		ExtendedIterator<Triple> it = rawGraph.find(resAsNode, Node.ANY, Node.ANY);
+		try {
+			if (!it.hasNext()) {
+				it.close();
+				onFirstIterator = false;
+				it = rawGraph.find(Node.ANY, Node.ANY, resAsNode);
+			}
+			changeOccured = it.hasNext();
+			Triple realClass = null;
+			while (it.hasNext()) {
+				int count = 0;
+				while (it.hasNext() && count < WINDOW_SIZE) {
+					Triple next = it.next();
+					if (next.getPredicate().toString().equalsIgnoreCase("@rdf:type") && next.getSubject().toString().equalsIgnoreCase("@rdf:type")) {
+						realClass = next;
+					} else {
+						triples.add(next);
+						count++;
+					}
+				}
+				if (realClass != null) {
+					triples.add(realClass);
+					count++;
+				}
+				it.close();
+				// Iterate over the triples collection twice (this may be more efficient than interleaving deletes and adds)
+				for (Triple t : triples) {
+					rawGraph.delete(t);
+				}
+				for (Triple t : triples) {
+					Node oldS = t.getSubject(), oldO = t.getObject();
+					Node newS = oldS.equals(resAsNode) ? newResAsNode : oldS;
+					Node newO = oldO.equals(resAsNode) ? newResAsNode : oldO;
+					rawGraph.add(Triple.create(newS, t.getPredicate(), newO));
+				}
+				triples.clear();
+				it = onFirstIterator ? rawGraph.find(resAsNode, Node.ANY, Node.ANY) : rawGraph.find(Node.ANY, Node.ANY, resAsNode);
+				if (onFirstIterator && !it.hasNext()) {
+					it.close();
+					onFirstIterator = false;
+					it = rawGraph.find(Node.ANY, Node.ANY, resAsNode);
+				}
+			}
+		} finally {
+			it.close();
+		}
+		// If we were underneath an InfGraph, and at least one triple changed, then we have to rebind.
+		if (rawGraph != graph && changeOccured) {
+			((InfGraph) graph).rebind();
+		}
+		return newRes;
 	}
 }

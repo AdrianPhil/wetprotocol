@@ -50,6 +50,12 @@ public class ProtocolInstanceCellRenderer implements TreeCellRenderer {
 		Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
 		if (userObject instanceof Individual) {
 			Individual individual = (Individual) userObject;
+			if(individual==null ) {
+				assert false: "individual is null";
+			}
+			if( individual.getOntClass()==null) {
+				assert false: "class is null";
+			}
 			localName.setText(individual.getLocalName());
 			ontClass.setText("<" + individual.getOntClass().getLocalName() + ">");
 			if (selected) {

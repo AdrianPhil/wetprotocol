@@ -20,18 +20,20 @@ import ui.property.ClassPropertyEditorPanel.NodeType;
 
 public class InstanceNameCellEditor extends AbstractCellEditor implements TreeCellEditor {
 	private InstanceNameEditCellPanel instanceNameEditCellPanel;
-	private Individual individual;
-	private DefaultMutableTreeNode currentTopNode;
-	//JTree jTree;
+	//private DefaultMutableTreeNode currentTopNode;
+	JTree jProtocolTree;//so I can update the renamed individual node
 
-//	public InstanceNameCellEditor(JTree jTree) {
-//		this.jTree = jTree;
-//	}
+	public InstanceNameCellEditor(JTree jProtocolTree) {
+		this.jProtocolTree = jProtocolTree;
+	}
 
 	@Override // I think it's called when somebody from outside want the edited value. Maybe when clicking outside
 	public Object getCellEditorValue() { // builds and returns propertyAndIndividual from field EditRenderPanel, Returns the value contained in the editor.
 		Individual newIndividual= instanceNameEditCellPanel.getNewIndividualValueScrapedFromEditPanel();		
 		newIndividual.getOntClass();//todo remove used just to check for exceptions
+		DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jProtocolTree.getLastSelectedPathComponent();
+		selectedNode.setUserObject(newIndividual);
+		//individual=newIndividual;
 		return newIndividual;
 	}
 
@@ -41,7 +43,7 @@ public class InstanceNameCellEditor extends AbstractCellEditor implements TreeCe
 		if (individualNode != null && individualNode instanceof DefaultMutableTreeNode) {
 			Object userObject = ((DefaultMutableTreeNode) individualNode).getUserObject();
 			if (userObject instanceof Individual) {
-				individual = (Individual) userObject;
+				Individual individual = (Individual) userObject;
 				instanceNameEditCellPanel = new InstanceNameEditCellPanel(individual, (DefaultMutableTreeNode)individualNode );
 			}
 		} else {

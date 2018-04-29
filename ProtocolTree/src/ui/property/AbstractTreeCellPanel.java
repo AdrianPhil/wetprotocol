@@ -52,14 +52,14 @@ public abstract class AbstractTreeCellPanel extends JPanel{
 		if (propertyValue != null) {
 			if (propertyValue.isLiteral()) {
 				valueComponent.setText(propertyValue.asLiteral().getValue().toString());
-				System.out.println("in Abstract Cell Panel constructor setting the valueComponent to:"+valueComponent.getText());
+				//System.out.println("in Abstract Cell Panel constructor setting the valueComponent to:"+valueComponent.getText());
 			}else if (propertyValue.isResource()) {
 				valueComponent.setText(propertyValue.asResource().getLocalName());
-				System.out.println("in Abstract Cell Panel constructor setting the valueComponent to:"+valueComponent.getText());
+				//System.out.println("in Abstract Cell Panel constructor setting the valueComponent to:"+valueComponent.getText());
 			}
 		} else {
 			valueComponent.setText("---");
-			System.out.println("in Abstract Cell Panel constructor setting the valueComponent to:"+valueComponent.getText());
+			//System.out.println("in Abstract Cell Panel constructor setting the valueComponent to:"+valueComponent.getText());
 		}
 	}
 
