@@ -86,8 +86,10 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		// Enable tool tips.
 		ToolTipManager.sharedInstance().registerComponent(jProtocolTree);
 		jProtocolTree.setCellRenderer(new ProtocolInstanceCellRenderer());
-		jProtocolTree.setCellEditor(new InstanceNameCellEditor(jProtocolTree));
-		jProtocolTree.setEditable(true);
+		
+		//jProtocolTree.setCellEditor(new InstanceNameCellEditor());
+		//jProtocolTree.setEditable(true);
+		
 		// Listen for when the selection changes.
 		jProtocolTree.addTreeSelectionListener(this);
 		jProtocolTree.setSelectionRow(1);// select first after root
