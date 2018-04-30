@@ -59,7 +59,7 @@ public class OntManager {
 	public static final String NS = "http://www.wet.protocol#";// namespace and #
 	public static OntProperty STANDALONE;
 	private static Individual topProtocolInstance;
-	public static Resource NOTHING_SUBCLASS;
+	// public static Resource NOTHING_SUBCLASS;
 	public static AtomicInteger counter = new AtomicInteger(0);
 	//
 
@@ -70,8 +70,19 @@ public class OntManager {
 			ontologyModel.read(ONTOLOGY_LOCATION);
 			ontologyModel.setStrictMode(true);
 			STANDALONE = ontologyModel.getOntProperty(NS + "standalone");
-			NOTHING_SUBCLASS = ontologyModel.getOntClass("owl:Nothing");
+			// NOTHING_SUBCLASS = ontologyModel.getOntClass("owl:Nothing");
 		}
+		return instance;
+	}
+
+	public static final OntManager resetInstance(String pathOfOntFileToLoad) {
+		instance = new OntManager();
+		ontologyModel = ModelFactory.createOntologyModel();// OntModelSpec.OWL_LITE_MEM);// "" isfull? hierarchy reasoner; OWL_MEM
+		ontologyModel.read(pathOfOntFileToLoad);
+		ontologyModel.setStrictMode(true);
+		System.out.println("after reload:" + OntManager.getOntologyModel().listIndividuals().toList());
+		STANDALONE = ontologyModel.getOntProperty(NS + "standalone");
+		// NOTHING_SUBCLASS = ontologyModel.getOntClass("owl:Nothing");
 		return instance;
 	}
 
@@ -89,8 +100,8 @@ public class OntManager {
 		return topProtocolInstance;
 	}
 
-	public static Individual createIndividual(OntClass ontClass) {
-		return OntManager.getInstance().createIndividual("newInternalIndividual" + counter.incrementAndGet() + "_ofClass_" + ontClass.getLocalName(), ontClass);
+	public static Individual createIndividual(OntClass ontClass, String prefix) {
+		return OntManager.getInstance().createIndividual(prefix + counter.incrementAndGet() + "_ofClass_" + ontClass.getLocalName(), ontClass);
 	}
 
 	private Individual createIndividual(String instanceName, OntClass ontClass) {// todo make this private
@@ -103,6 +114,7 @@ public class OntManager {
 	}
 
 	public OntClass getOntClass(String clazz) {
+		//!!this does ot seem to work except for DummyClass
 		return OntManager.getInstance().getOntologyModel().getOntClass(NS + clazz);
 	}
 
@@ -224,14 +236,12 @@ public class OntManager {
 	public static void renameNode(Individual resource, String newValue) {
 		File file = new File("C:/eclipseworkspace/ProtocolTree/src/resources/adrianTempOnt.xml");
 		try (FileOutputStream output = new FileOutputStream(file)) {
-			OntManager.getOntologyModel().writeAll(output, "RDF/XML", OntManager.NS);			
-			
+			OntManager.getOntologyModel().writeAll(output, "RDF/XML", OntManager.NS);
 			Path path = Paths.get(file.getAbsolutePath());
 			Charset charset = StandardCharsets.UTF_8;
 			String content = new String(Files.readAllBytes(path), charset);
 			content = content.replaceAll(resource.getLocalName(), newValue);
 			Files.write(path, content.getBytes(charset));
-			
 			ontologyModel.read(ONTOLOGY_LOCATION);
 		} catch (Exception e1) {
 			UiUtils.showDialog(null, "some issues writing temp ontology file" + e1.getLocalizedMessage());

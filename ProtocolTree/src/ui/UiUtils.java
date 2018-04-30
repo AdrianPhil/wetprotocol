@@ -6,6 +6,7 @@ import ui.property.ClassPropertyEditorPanel;
 
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntResource;
 
 import javax.swing.*;
@@ -18,6 +19,7 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 import static ui.WetProtocolMainPanel.WITH_OF_PROTOCOL_TREE;
 
 import java.awt.*;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -68,22 +70,17 @@ public class UiUtils {
 		});
 		model.reload(root);// TODO I dont't know if necessary
 	}
-
-	public static void createInstanceNodes(DefaultMutableTreeNode topProtocolNode) {
-		DefaultMutableTreeNode firstStepNode;
-		Individual myProtejeCreatedMicroCentrifugeTube = OntManager.getInstance().getProtejeCreatedMicrocetrifugeTube();
-		firstStepNode = new DefaultMutableTreeNode(myProtejeCreatedMicroCentrifugeTube);
-		topProtocolNode.add(firstStepNode);
-		// JFC Swing Tutorial
-		// book = new DefaultMutableTreeNode(
-		// new Operation("The JFC Swing Tutorial: A Guide to Constructing GUIs",
-		// "swingtutorial.html"));
-		// topProtocolNode.add(book);
-		// // Bloch
-		// book = new DefaultMutableTreeNode(new Operation("Effective Java Programming
-		// Language Guide", "bloch.html"));
-		// topProtocolNode.add(book);
+	
+	static void loadStepsTreeFromModel(DefaultMutableTreeNode topProtocolNode) {
+		topProtocolNode.removeAllChildren();
+		OntModel ontologyModel = OntManager.getOntologyModel();
+		OntClass ontClass = OntManager.getInstance().getOntClass("Step");
+		List<Individual> list = ontologyModel.listIndividuals(ontClass).toList();
+		for( Individual step:list) {
+			topProtocolNode.add( new DefaultMutableTreeNode(step));
+		}				
 	}
+
 	// public static void createPropertyNodes(DefaultMutableTreeNode topPropertyNode) {
 	// DefaultMutableTreeNode firstStepNode;
 	// Individual myProtejeCreatedMicroCentrifugeTube = OntologyManager.getInstance().getProtejeCreatedMicrocetrifugeTube();

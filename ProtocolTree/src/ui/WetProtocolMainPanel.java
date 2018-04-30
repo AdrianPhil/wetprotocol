@@ -11,8 +11,8 @@ import org.apache.jena.ontology.Individual;
 import org.apache.jena.util.ResourceUtils;
 import org.apache.jena.ontology.OntResource;
 
-
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 
@@ -40,6 +40,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 	private JButton deleteChildNodeButton = new JButton("Delete Step");
 	private JButton expandTreeButton = new JButton("Expand Tree");
 	private JButton saveProtocolButton = new JButton("Save Protocol");
+	private JButton loadProtocolButton = new JButton("Load Protocol");
 	private JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 	private DefaultTreeModel protocolTreeModel = new DefaultTreeModel(new DefaultMutableTreeNode(OntManager.getInstance().getTopProtocoInstancel()));// todo we might not need this
 	private JTree jProtocolTree;
@@ -57,6 +58,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		treeViewButtonPanel.add(deleteChildNodeButton);
 		treeViewButtonPanel.add(expandTreeButton);
 		treeViewButtonPanel.add(saveProtocolButton);
+		treeViewButtonPanel.add(loadProtocolButton);
 		treeViewPanel.add(treeViewButtonPanel, BorderLayout.PAGE_END);
 		// Create the scroll pane and add the tree view panel to it.
 		JScrollPane treeViewScrollPane = new JScrollPane(treeViewPanel);
@@ -81,15 +83,13 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		jProtocolTree.setEditable(false);
 		jProtocolTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		jProtocolTree.setShowsRootHandles(true);
-		createInstanceNodes((DefaultMutableTreeNode) (protocolTreeModel.getRoot()));
+		loadStepsTreeFromModel((DefaultMutableTreeNode) (protocolTreeModel.getRoot()));
 		expandTree(jProtocolTree);
 		// Enable tool tips.
 		ToolTipManager.sharedInstance().registerComponent(jProtocolTree);
 		jProtocolTree.setCellRenderer(new ProtocolInstanceCellRenderer());
-		
-		//jProtocolTree.setCellEditor(new InstanceNameCellEditor());
-		//jProtocolTree.setEditable(true);
-		
+		// jProtocolTree.setCellEditor(new InstanceNameCellEditor());
+		// jProtocolTree.setEditable(true);
 		// Listen for when the selection changes.
 		jProtocolTree.addTreeSelectionListener(this);
 		jProtocolTree.setSelectionRow(1);// select first after root
@@ -150,10 +150,41 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 						return;
 					}
 					try (FileOutputStream output = new FileOutputStream(file)) {
-						OntManager.getOntologyModel().writeAll(output, "RDF/XML", OntManager.NS);
+						OntManager.getOntologyModel().write(output, "RDF/XML",null);// OntManager.NS);
 					} catch (Exception e1) {
 						UiUtils.showDialog(jProtocolTree, "Cannot open output file" + e1.getLocalizedMessage());
 					}
+				}
+			}
+		});
+		loadProtocolButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setDialogTitle("Select an owl file");
+				fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("Owl files", "owl");
+				fileChooser.addChoosableFileFilter(filter);
+				String path = null;
+				try {
+					path = ResourceFindingDummyClass.getResource(OntManager.PROTOCOL_FILE).toURI().getPath();
+				} catch (URISyntaxException e2) {
+					e2.printStackTrace();
+				}
+				fileChooser.setCurrentDirectory(new File(path.substring(1, path.length() - OntManager.PROTOCOL_FILE.length())));
+				int retval = fileChooser.showOpenDialog(null);
+				if (retval == JFileChooser.APPROVE_OPTION) {
+					File file = fileChooser.getSelectedFile();
+					if (file == null) {
+						UiUtils.showDialog(jProtocolTree, "Cannot open the file");
+						return;
+					}
+					//System.out.println(OntManager.getOntologyModel().listIndividuals().toList());
+					OntManager.resetInstance(file.getAbsolutePath());
+					//System.out.println(OntManager.getOntologyModel().listIndividuals().toList());
+					DefaultTreeModel model = (DefaultTreeModel) jProtocolTree.getModel();
+					DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
+					model.reload(root);//maybe not necessary
+					initiateTree();
 				}
 			}
 		});

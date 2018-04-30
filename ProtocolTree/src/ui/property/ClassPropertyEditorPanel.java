@@ -180,7 +180,7 @@ public class ClassPropertyEditorPanel extends JPanel implements TreeSelectionLis
 				Object subIndividualObject = individual.getPropertyValue(ontProperty);
 				Individual subIndividual;
 				if (subIndividualObject == null) {
-					subIndividual = OntManager.createIndividual(ontProperty.getRange().asClass());
+					subIndividual = OntManager.createIndividual(ontProperty.getRange().asClass(),"newIndividual");
 					individual.setPropertyValue(ontProperty, subIndividual);
 				} else {
 					subIndividual=((OntResource)subIndividualObject).asIndividual();

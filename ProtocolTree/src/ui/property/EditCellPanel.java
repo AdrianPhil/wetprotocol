@@ -61,7 +61,7 @@ public class EditCellPanel extends AbstractTreeCellPanel {
 					propertyAndIndividual.getIndividual().setPropertyValue(ontProperty, newIndividual);
 				} else {
 					OntClass ontClass = (OntClass) getComboClassOrIndividualSelection();
-					newIndividual = OntManager.createIndividual(ontClass);
+					newIndividual = OntManager.createIndividual(ontClass,"newIndividual");
 					propertyAndIndividual.getIndividual().setPropertyValue(ontProperty, newIndividual);
 					ClassPropertyEditorPanel.createNodesForClass(ontClass, (DefaultMutableTreeNode) propertyAndIndividualNode, propertyAndIndividual.getIndividual());
 				}
