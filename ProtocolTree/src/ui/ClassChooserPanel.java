@@ -102,7 +102,9 @@ public class ClassChooserPanel extends JPanel implements TreeSelectionListener {
 		if (selectedClassNode == null) {
 			UiUtils.showDialog(splitPane, "Selected node is null");// should never get here
 		} else {
-			DefaultMutableTreeNode newIndividualNode = new DefaultMutableTreeNode(OntManager.createIndividual((OntClass) selectedClassNode.getUserObject(),"newProtocolStep"));
+			DefaultMutableTreeNode newIndividualNode = 
+					new DefaultMutableTreeNode(OntManager.createStepIndividual((OntClass) selectedClassNode.getUserObject(),"newProtocolStep",
+							protocolTreeParentNode.getLevel(), protocolTreeParentNode.getDepth()));
 			DefaultMutableTreeNode selectedProtocolNode = (DefaultMutableTreeNode) jProtocolTree.getLastSelectedPathComponent();
 			if (selectedProtocolNode == protocolTreeParentNode) {// insert child as last child of parent
 				protocolTreeParentNode.insert(newIndividualNode, protocolTreeParentNode.getChildCount());

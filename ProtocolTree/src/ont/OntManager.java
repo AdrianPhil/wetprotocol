@@ -22,6 +22,7 @@ import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
@@ -59,18 +60,14 @@ public class OntManager {
 	public static final String NS = "http://www.wet.protocol#";// namespace and #
 	public static OntProperty STANDALONE;
 	private static Individual topProtocolInstance;
+	private static Property stepProperty;
 	// public static Resource NOTHING_SUBCLASS;
 	public static AtomicInteger counter = new AtomicInteger(0);
 	//
 
 	public static final OntManager getInstance() {
 		if (instance == null) {
-			instance = new OntManager();
-			ontologyModel = ModelFactory.createOntologyModel();// OntModelSpec.OWL_LITE_MEM);// "" isfull? hierarchy reasoner; OWL_MEM
-			ontologyModel.read(ONTOLOGY_LOCATION);
-			ontologyModel.setStrictMode(true);
-			STANDALONE = ontologyModel.getOntProperty(NS + "standalone");
-			// NOTHING_SUBCLASS = ontologyModel.getOntClass("owl:Nothing");
+			instance = resetInstance(ONTOLOGY_LOCATION);
 		}
 		return instance;
 	}
@@ -83,7 +80,22 @@ public class OntManager {
 		System.out.println("after reload:" + OntManager.getOntologyModel().listIndividuals().toList());
 		STANDALONE = ontologyModel.getOntProperty(NS + "standalone");
 		// NOTHING_SUBCLASS = ontologyModel.getOntClass("owl:Nothing");
+		OntClass protocolClass = ontologyModel.getOntClass(NS + "Protocol");
+		topProtocolInstance = ontologyModel.createIndividual(NS + "TadaMySampleProtocol", protocolClass);
+		topProtocolInstance.setPropertyValue(ontologyModel.getOntProperty(NS + "version"), ontologyModel.createTypedLiteral("Version 0.0"));
+		stepProperty = ontologyModel.getOntProperty(NS + "stepLevel");
 		return instance;
+	}
+
+	public Set<OntProperty> calculateHierarchicalPropertiesForAClass(OntClass ontClass) {
+		Set<OntProperty> collected = ontologyModel.listAllOntProperties().toSet().stream().filter(dataTypeProperty -> {
+			return dataTypeProperty.hasDomain(ontClass);
+		}).collect(Collectors.toSet());
+		ontClass.listSuperClasses(true).toSet().forEach(superClass -> {
+			dumpCalculatedPropertiesForAClass(superClass, collected);
+		});
+		collected.forEach(System.out::println);
+		return collected;
 	}
 
 	public Set<OntClass> getClassesInSignature() {
@@ -92,29 +104,32 @@ public class OntManager {
 	}
 
 	public Individual getTopProtocoInstancel() {
-		if (topProtocolInstance == null) {
-			OntClass protocolClass = ontologyModel.getOntClass(NS + "Protocol");
-			topProtocolInstance = ontologyModel.createIndividual(NS + "TadaMySampleProtocol", protocolClass);
-			topProtocolInstance.setPropertyValue(ontologyModel.getOntProperty(NS + "version"), ontologyModel.createTypedLiteral("Version 0.0"));
-		}
 		return topProtocolInstance;
+	}
+
+	public static Individual createStepIndividual(OntClass ontClass, String prefix, int level, int depth) {
+		Individual createdIndividual = createIndividual( ontClass, prefix);
+		createdIndividual.addLiteral(stepProperty, level+"."+depth);
+		return createdIndividual;
 	}
 
 	public static Individual createIndividual(OntClass ontClass, String prefix) {
 		return OntManager.getInstance().createIndividual(prefix + counter.incrementAndGet() + "_ofClass_" + ontClass.getLocalName(), ontClass);
 	}
 
-	private Individual createIndividual(String instanceName, OntClass ontClass) {// todo make this private
-		return ontologyModel.createIndividual(NS + instanceName, ontClass);
+	/** base one */
+	private Individual createIndividual(String instanceName, OntClass ontClass) {
+		Individual createdIndividual = ontologyModel.createIndividual(NS + instanceName, ontClass);
+		return createdIndividual;
 	}
 
-	public Individual createIndividual(String instanceName, String className) {
-		OntClass ontClass = OntManager.getInstance().getOntClass(className);
-		return ontologyModel.createIndividual(instanceName, ontClass);
-	}
+//
+//	private Individual createIndividual(String instanceName, String className) {
+//		OntClass ontClass = OntManager.getInstance().getOntClass(className);
+//		return ontologyModel.createIndividual(instanceName, ontClass);
+//	}
 
 	public OntClass getOntClass(String clazz) {
-		//!!this does ot seem to work except for DummyClass
 		return OntManager.getInstance().getOntologyModel().getOntClass(NS + clazz);
 	}
 
@@ -166,17 +181,6 @@ public class OntManager {
 			dumpAllDirectPropertiesForAClass(superClass, declaredOntProperties);
 		});
 		System.out.println("class:" + ontClass.getLocalName());
-	}
-
-	public Set<OntProperty> calculateHierarchicalPropertiesForAClass(OntClass ontClass) {
-		Set<OntProperty> collected = ontologyModel.listAllOntProperties().toSet().stream().filter(dataTypeProperty -> {
-			return dataTypeProperty.hasDomain(ontClass);
-		}).collect(Collectors.toSet());
-		ontClass.listSuperClasses(true).toSet().forEach(superClass -> {
-			dumpCalculatedPropertiesForAClass(superClass, collected);
-		});
-		collected.forEach(System.out::println);
-		return collected;
 	}
 
 	public void dumpCalculatedPropertiesForAClass(OntClass ontClass, final Set<OntProperty> collected) {

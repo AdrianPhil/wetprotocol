@@ -42,10 +42,10 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 	private JButton saveProtocolButton = new JButton("Save Protocol");
 	private JButton loadProtocolButton = new JButton("Load Protocol");
 	private JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-	private DefaultTreeModel protocolTreeModel = new DefaultTreeModel(new DefaultMutableTreeNode(OntManager.getInstance().getTopProtocoInstancel()));// todo we might not need this
 	private JTree jProtocolTree;
 	private static boolean DEBUG = true; // adrian
 	public static final int WITH_OF_PROTOCOL_TREE = 200;
+	private DefaultTreeModel protocolTreeModel ;
 
 	private WetProtocolMainPanel() {
 		super(new GridLayout(1, 1));
@@ -79,14 +79,21 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 	}
 
 	private void initiateTree() {
-		jProtocolTree = new JTree(protocolTreeModel);
+		jProtocolTree = new JTree();
 		jProtocolTree.setEditable(false);
 		jProtocolTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		ToolTipManager.sharedInstance().registerComponent(jProtocolTree);
 		jProtocolTree.setShowsRootHandles(true);
+		initiateOrRefreshTreeModelAndRest();
+	}
+	private void initiateOrRefreshTreeModelAndRest() {
+		protocolTreeModel= new DefaultTreeModel(new DefaultMutableTreeNode(OntManager.getInstance().getTopProtocoInstancel()));// todo we might not need this
+		jProtocolTree.setModel(protocolTreeModel);		
+		DefaultMutableTreeNode root = (DefaultMutableTreeNode)protocolTreeModel.getRoot();
+		//protocolTreeModel.reload(root);//maybe not necessary
 		loadStepsTreeFromModel((DefaultMutableTreeNode) (protocolTreeModel.getRoot()));
 		expandTree(jProtocolTree);
 		// Enable tool tips.
-		ToolTipManager.sharedInstance().registerComponent(jProtocolTree);
 		jProtocolTree.setCellRenderer(new ProtocolInstanceCellRenderer());
 		// jProtocolTree.setCellEditor(new InstanceNameCellEditor());
 		// jProtocolTree.setEditable(true);
@@ -94,7 +101,6 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		jProtocolTree.addTreeSelectionListener(this);
 		jProtocolTree.setSelectionRow(1);// select first after root
 	}
-
 	private void AddTreeButtonListeners(JSplitPane splitPane) {
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode) jProtocolTree.getModel().getRoot();
 		addNewSiblingNodeButton.addActionListener(e -> {
@@ -178,13 +184,12 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 						UiUtils.showDialog(jProtocolTree, "Cannot open the file");
 						return;
 					}
-					//System.out.println(OntManager.getOntologyModel().listIndividuals().toList());
 					OntManager.resetInstance(file.getAbsolutePath());
+//					DefaultTreeModel model = (DefaultTreeModel) jProtocolTree.getModel();
+//					DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
+//					model.reload(root);//maybe not necessary
+					initiateOrRefreshTreeModelAndRest();
 					//System.out.println(OntManager.getOntologyModel().listIndividuals().toList());
-					DefaultTreeModel model = (DefaultTreeModel) jProtocolTree.getModel();
-					DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
-					model.reload(root);//maybe not necessary
-					initiateTree();
 				}
 			}
 		});

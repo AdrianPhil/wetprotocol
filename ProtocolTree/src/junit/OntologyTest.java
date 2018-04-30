@@ -27,20 +27,20 @@ class OntologyTest {
 		// return ontologyModel.createTypedLiteral(text);
 	}
 
-	private void testCreateIndividualAndAssignLiteralAndClassPropertyValues() {
-		Individual newlyCreatedIndividual = ontologyManager.createIndividual("myCodeCreatedMicroCentrifugeTube", "MicroCentrifugeTube");
-		System.out.println(newlyCreatedIndividual);
-		// https://jena.apache.org/documentation/notes/typed-literals.html
-		// will create a typed literal with the lexical value "2", of type xsd:int.
-		// Could use model.createTypedLiteral(value, datatype).
-		// model.createLiteral(25); still works but is deprecated because it does string
-		// conversions
-		Literal literalPropertyValue = ontologyModel.createTypedLiteral("QIGEN");
-		OntProperty stringValueProperty = ontologyModel.getOntProperty(OntManager.NS + "manufacturer");
-		newlyCreatedIndividual.setPropertyValue(stringValueProperty, literalPropertyValue);
-		ontologyManager.dumpPropertiesAndValuesInIndividual(newlyCreatedIndividual);
-		System.out.println("-------------");
-	}
+//	private void testCreateIndividualAndAssignLiteralAndClassPropertyValues() {
+//		Individual newlyCreatedIndividual = ontologyManager.createIndividual("myCodeCreatedMicroCentrifugeTube", "MicroCentrifugeTube");
+//		System.out.println(newlyCreatedIndividual);
+//		// https://jena.apache.org/documentation/notes/typed-literals.html
+//		// will create a typed literal with the lexical value "2", of type xsd:int.
+//		// Could use model.createTypedLiteral(value, datatype).
+//		// model.createLiteral(25); still works but is deprecated because it does string
+//		// conversions
+//		Literal literalPropertyValue = ontologyModel.createTypedLiteral("QIGEN");
+//		OntProperty stringValueProperty = ontologyModel.getOntProperty(OntManager.NS + "manufacturer");
+//		newlyCreatedIndividual.setPropertyValue(stringValueProperty, literalPropertyValue);
+//		ontologyManager.dumpPropertiesAndValuesInIndividual(newlyCreatedIndividual);
+//		System.out.println("-------------");
+//	}
 
 	public PropertyAndIndividual getTopPropertyAndIndividual() {
 		if (TOP_PROPERTY_AND_INDIVIDUAL == null) {

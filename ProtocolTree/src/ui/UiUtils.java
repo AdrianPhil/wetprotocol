@@ -76,6 +76,7 @@ public class UiUtils {
 		OntModel ontologyModel = OntManager.getOntologyModel();
 		OntClass ontClass = OntManager.getInstance().getOntClass("Step");
 		List<Individual> list = ontologyModel.listIndividuals(ontClass).toList();
+		System.out.println("step individuals in loadStepsTreeFromModel are:"+list);
 		for( Individual step:list) {
 			topProtocolNode.add( new DefaultMutableTreeNode(step));
 		}				
