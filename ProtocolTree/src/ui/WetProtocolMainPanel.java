@@ -87,7 +87,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		initiateOrRefreshTreeModelAndRest();
 	}
 	private void initiateOrRefreshTreeModelAndRest() {
-		protocolTreeModel= new DefaultTreeModel(new DefaultMutableTreeNode(OntManager.getInstance().getTopProtocoInstancel()));// todo we might not need this
+		protocolTreeModel= new DefaultTreeModel(new DefaultMutableTreeNode(OntManager.getInstance().getTopProtocolInstance()));// todo we might not need this
 		jProtocolTree.setModel(protocolTreeModel);		
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode)protocolTreeModel.getRoot();
 		//protocolTreeModel.reload(root);//maybe not necessary

@@ -8,6 +8,7 @@ import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntResource;
+import org.apache.jena.rdf.model.RDFNode;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -19,6 +20,7 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 import static ui.WetProtocolMainPanel.WITH_OF_PROTOCOL_TREE;
 
 import java.awt.*;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -70,18 +72,25 @@ public class UiUtils {
 		});
 		model.reload(root);// TODO I dont't know if necessary
 	}
-	
+
 	static void loadStepsTreeFromModel(DefaultMutableTreeNode topProtocolNode) {
 		topProtocolNode.removeAllChildren();
 		OntModel ontologyModel = OntManager.getOntologyModel();
 		OntClass ontClass = OntManager.getInstance().getOntClass("Step");
 		List<Individual> list = ontologyModel.listIndividuals(ontClass).toList();
+		//Collections.reverse(list);
 		System.out.println("step individuals in loadStepsTreeFromModel are:"+list);
+		
+		list.sort((Individual i1, Individual i2) -> 
+			i1.getPropertyValue(OntManager.getInstance().getStepPropertyInstance()).asLiteral().getString().compareTo(XXX
+					i2.getPropertyValue(OntManager.getInstance().getStepPropertyInstance()).asLiteral().getString()));
+
 		for( Individual step:list) {
+//			step.
+//			int level
 			topProtocolNode.add( new DefaultMutableTreeNode(step));
 		}				
 	}
-
 	// public static void createPropertyNodes(DefaultMutableTreeNode topPropertyNode) {
 	// DefaultMutableTreeNode firstStepNode;
 	// Individual myProtejeCreatedMicroCentrifugeTube = OntologyManager.getInstance().getProtejeCreatedMicrocetrifugeTube();

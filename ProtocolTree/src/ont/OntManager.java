@@ -60,7 +60,7 @@ public class OntManager {
 	public static final String NS = "http://www.wet.protocol#";// namespace and #
 	public static OntProperty STANDALONE;
 	private static Individual topProtocolInstance;
-	private static Property stepProperty;
+	private static Property stepLevelProperty;
 	// public static Resource NOTHING_SUBCLASS;
 	public static AtomicInteger counter = new AtomicInteger(0);
 	//
@@ -83,7 +83,7 @@ public class OntManager {
 		OntClass protocolClass = ontologyModel.getOntClass(NS + "Protocol");
 		topProtocolInstance = ontologyModel.createIndividual(NS + "TadaMySampleProtocol", protocolClass);
 		topProtocolInstance.setPropertyValue(ontologyModel.getOntProperty(NS + "version"), ontologyModel.createTypedLiteral("Version 0.0"));
-		stepProperty = ontologyModel.getOntProperty(NS + "stepLevel");
+		stepLevelProperty=(ontologyModel.getOntProperty(NS + "stepLevel"));
 		return instance;
 	}
 
@@ -103,16 +103,13 @@ public class OntManager {
 		return ontologyModel.listClasses().toSet();
 	}
 
-	public Individual getTopProtocoInstancel() {
+	public Individual getTopProtocolInstance() {
 		return topProtocolInstance;
 	}
-
-	public static Individual createStepIndividual(OntClass ontClass, String prefix, int level, int depth) {
-		Individual createdIndividual = createIndividual( ontClass, prefix);
-		createdIndividual.addLiteral(stepProperty, level+"."+depth);
-		return createdIndividual;
+	public Property getStepPropertyInstance() {
+		return getStepLevelProperty();
 	}
-
+	
 	public static Individual createIndividual(OntClass ontClass, String prefix) {
 		return OntManager.getInstance().createIndividual(prefix + counter.incrementAndGet() + "_ofClass_" + ontClass.getLocalName(), ontClass);
 	}
@@ -251,4 +248,9 @@ public class OntManager {
 			UiUtils.showDialog(null, "some issues writing temp ontology file" + e1.getLocalizedMessage());
 		}
 	}
+
+	public static Property getStepLevelProperty() {
+		return stepLevelProperty;
+	}
+
 }

@@ -8,6 +8,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.*;
 
+import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 
 import java.awt.*;
@@ -50,7 +51,7 @@ public class ClassChooserPanel extends JPanel implements TreeSelectionListener {
 		// Create the HTML viewing pane.
 		htmlPane = new JEditorPane();
 		htmlPane.setEditable(true);
-		//initHelp();
+		// initHelp();
 		JScrollPane htmlView = new JScrollPane(htmlPane);
 		treeView.setPreferredSize(new Dimension(400, 300));
 		// Add the split pane to this panel.
@@ -102,19 +103,21 @@ public class ClassChooserPanel extends JPanel implements TreeSelectionListener {
 		if (selectedClassNode == null) {
 			UiUtils.showDialog(splitPane, "Selected node is null");// should never get here
 		} else {
-			DefaultMutableTreeNode newIndividualNode = 
-					new DefaultMutableTreeNode(OntManager.createStepIndividual((OntClass) selectedClassNode.getUserObject(),"newProtocolStep",
-							protocolTreeParentNode.getLevel(), protocolTreeParentNode.getDepth()));
 			DefaultMutableTreeNode selectedProtocolNode = (DefaultMutableTreeNode) jProtocolTree.getLastSelectedPathComponent();
+			DefaultMutableTreeNode newChildIndividualNode = new DefaultMutableTreeNode(OntManager.createIndividual((OntClass) selectedClassNode.getUserObject(),
+					"newProtocolStep"));			
 			if (selectedProtocolNode == protocolTreeParentNode) {// insert child as last child of parent
-				protocolTreeParentNode.insert(newIndividualNode, protocolTreeParentNode.getChildCount());
+				protocolTreeParentNode.insert(newChildIndividualNode, protocolTreeParentNode.getChildCount());
 				DefaultMutableTreeNode insertedChild = (DefaultMutableTreeNode) protocolTreeParentNode.getChildAt(protocolTreeParentNode.getChildCount() - 1);
 				jProtocolTree.expandPath(new TreePath(protocolTreeParentNode.getPath()));
 				jProtocolTree.setSelectionPath(new TreePath(insertedChild.getPath()));// select it
+				((Individual)(insertedChild.getUserObject())).addLiteral(OntManager.getStepLevelProperty(), insertedChild.getLevel()+"."+insertedChild.getDepth());
 			} else {// insert sibling after the selected one
-				protocolTreeParentNode.insert(newIndividualNode, selectedProtocolNode.getParent().getIndex(selectedProtocolNode) + 1);
+				protocolTreeParentNode.insert(newChildIndividualNode, 
+						selectedProtocolNode.getParent().getIndex(selectedProtocolNode) + 1);
 				DefaultMutableTreeNode addedChild = (DefaultMutableTreeNode) protocolTreeParentNode.getChildAt(selectedProtocolNode.getParent().getIndex(selectedProtocolNode) + 1);
 				jProtocolTree.setSelectionPath(new TreePath(addedChild.getPath()));// select it
+				((Individual)(addedChild.getUserObject())).addLiteral(OntManager.getStepLevelProperty(), addedChild.getLevel()+"."+addedChild.getDepth());
 			}
 			jProtocolTree.updateUI();
 			((JFrame) ClassChooserPanel.this.getTopLevelAncestor()).dispose();
@@ -157,17 +160,16 @@ public class ClassChooserPanel extends JPanel implements TreeSelectionListener {
 		});
 	}
 
-//	private void initHelp() {
-//		String s = "TreeDemoHelp.html";
-//		helpURL = ResourceFindingDummyClass.getResource(s);
-//		if (helpURL == null) {
-//			System.err.println("Couldn't open help file: " + s);
-//		} else if (DEBUG) {
-//			System.out.println("Help URL is " + helpURL);
-//		}
-//		displayURL(helpURL);
-//	}
-
+	// private void initHelp() {
+	// String s = "TreeDemoHelp.html";
+	// helpURL = ResourceFindingDummyClass.getResource(s);
+	// if (helpURL == null) {
+	// System.err.println("Couldn't open help file: " + s);
+	// } else if (DEBUG) {
+	// System.out.println("Help URL is " + helpURL);
+	// }
+	// displayURL(helpURL);
+	// }
 	private void displayURL(URL url) {
 		try {
 			if (url != null) {
