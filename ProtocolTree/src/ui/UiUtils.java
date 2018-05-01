@@ -81,9 +81,9 @@ public class UiUtils {
 		//Collections.reverse(list);
 		System.out.println("step individuals in loadStepsTreeFromModel are:"+list);
 		
-		list.sort((Individual i1, Individual i2) -> 
-			i1.getPropertyValue(OntManager.getInstance().getStepLevelProperty()).asLiteral().getString().compareTo(
-					i2.getPropertyValue(OntManager.getInstance().getStepLevelProperty()).asLiteral().getString()));
+//		list.sort((Individual i1, Individual i2) -> 
+//			i1.getPropertyValue(OntManager.getInstance().getStepLevelProperty()).asLiteral().getString().compareTo(
+//					i2.getPropertyValue(OntManager.getInstance().getStepLevelProperty()).asLiteral().getString()));
 
 		for( Individual step:list) {
 //			step.

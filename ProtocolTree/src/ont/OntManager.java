@@ -104,9 +104,10 @@ public class OntManager {
 		for (Individual ind : allIndividuals) {
 			System.out.println("Individual :" + ind);
 			Resource rdfType = ind.getRDFType(false);
-			System.out.println(rdfType);
+			ind.hasOntClass(ontClass)
+			System.out.println("\trdfType:"+rdfType +" and OntClass:"+ind.listOntClasses(false).toSet()+" primary class:"+ind.getOntClass(false));
 		}
-		return null;
+		return ontologyModel.listIndividuals(stepLevelProperty).toList();// TODO remove this
 		// will load in the combo box all existing individuals of the given class
 		// public static void loadPossibleIndividualValues(JComboBox individualOrClassChooser, OntClass ontClass) {
 		// Set<Individual> individualsSet = getOntologyModel().listIndividuals(ontClass).toSet();
