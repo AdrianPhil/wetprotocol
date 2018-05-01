@@ -77,13 +77,13 @@ public class UiUtils {
 		topProtocolNode.removeAllChildren();
 		OntModel ontologyModel = OntManager.getOntologyModel();
 		OntClass ontClass = OntManager.getInstance().getOntClass("Step");
-		List<Individual> list = ontologyModel.listIndividuals(ontClass).toList();
+		List<Individual> list = OntManager.getInstance().calculateStepIndividuals(ontClass);
 		//Collections.reverse(list);
 		System.out.println("step individuals in loadStepsTreeFromModel are:"+list);
 		
 		list.sort((Individual i1, Individual i2) -> 
-			i1.getPropertyValue(OntManager.getInstance().getStepPropertyInstance()).asLiteral().getString().compareTo(XXX
-					i2.getPropertyValue(OntManager.getInstance().getStepPropertyInstance()).asLiteral().getString()));
+			i1.getPropertyValue(OntManager.getInstance().getStepLevelProperty()).asLiteral().getString().compareTo(
+					i2.getPropertyValue(OntManager.getInstance().getStepLevelProperty()).asLiteral().getString()));
 
 		for( Individual step:list) {
 //			step.

@@ -74,7 +74,7 @@ public class OntManager {
 
 	public static final OntManager resetInstance(String pathOfOntFileToLoad) {
 		instance = new OntManager();
-		ontologyModel = ModelFactory.createOntologyModel();// OntModelSpec.OWL_LITE_MEM);// "" isfull? hierarchy reasoner; OWL_MEM
+		ontologyModel = ModelFactory.createOntologyModel();// OntModelSpec.OWL_MEM);// OntModelSpec.OWL_LITE_MEM);// "" isfull? hierarchy reasoner; OWL_MEM
 		ontologyModel.read(pathOfOntFileToLoad);
 		ontologyModel.setStrictMode(true);
 		System.out.println("after reload:" + OntManager.getOntologyModel().listIndividuals().toList());
@@ -83,7 +83,7 @@ public class OntManager {
 		OntClass protocolClass = ontologyModel.getOntClass(NS + "Protocol");
 		topProtocolInstance = ontologyModel.createIndividual(NS + "TadaMySampleProtocol", protocolClass);
 		topProtocolInstance.setPropertyValue(ontologyModel.getOntProperty(NS + "version"), ontologyModel.createTypedLiteral("Version 0.0"));
-		stepLevelProperty=(ontologyModel.getOntProperty(NS + "stepLevel"));
+		stepLevelProperty = (ontologyModel.getOntProperty(NS + "stepLevel"));
 		return instance;
 	}
 
@@ -92,10 +92,27 @@ public class OntManager {
 			return dataTypeProperty.hasDomain(ontClass);
 		}).collect(Collectors.toSet());
 		ontClass.listSuperClasses(true).toSet().forEach(superClass -> {
-			dumpCalculatedPropertiesForAClass(superClass, collected);
+			calculatePropertiesForClass(superClass, collected);
 		});
 		collected.forEach(System.out::println);
 		return collected;
+	}
+
+	public List<Individual> calculateStepIndividuals(OntClass ontClass) {
+		// TODO Auto-generated method stub
+		List<Individual> allIndividuals = ontologyModel.listIndividuals().toList();
+		for (Individual ind : allIndividuals) {
+			System.out.println("Individual :" + ind);
+			Resource rdfType = ind.getRDFType(false);
+			System.out.println(rdfType);
+		}
+		return null;
+		// will load in the combo box all existing individuals of the given class
+		// public static void loadPossibleIndividualValues(JComboBox individualOrClassChooser, OntClass ontClass) {
+		// Set<Individual> individualsSet = getOntologyModel().listIndividuals(ontClass).toSet();
+		// for (Individual individual : individualsSet) {
+		// individualOrClassChooser.addItem(new WrappedOntResource(individual));
+		// }
 	}
 
 	public Set<OntClass> getClassesInSignature() {
@@ -106,10 +123,7 @@ public class OntManager {
 	public Individual getTopProtocolInstance() {
 		return topProtocolInstance;
 	}
-	public Property getStepPropertyInstance() {
-		return getStepLevelProperty();
-	}
-	
+
 	public static Individual createIndividual(OntClass ontClass, String prefix) {
 		return OntManager.getInstance().createIndividual(prefix + counter.incrementAndGet() + "_ofClass_" + ontClass.getLocalName(), ontClass);
 	}
@@ -120,12 +134,11 @@ public class OntManager {
 		return createdIndividual;
 	}
 
-//
-//	private Individual createIndividual(String instanceName, String className) {
-//		OntClass ontClass = OntManager.getInstance().getOntClass(className);
-//		return ontologyModel.createIndividual(instanceName, ontClass);
-//	}
-
+	//
+	// private Individual createIndividual(String instanceName, String className) {
+	// OntClass ontClass = OntManager.getInstance().getOntClass(className);
+	// return ontologyModel.createIndividual(instanceName, ontClass);
+	// }
 	public OntClass getOntClass(String clazz) {
 		return OntManager.getInstance().getOntologyModel().getOntClass(NS + clazz);
 	}
@@ -180,13 +193,13 @@ public class OntManager {
 		System.out.println("class:" + ontClass.getLocalName());
 	}
 
-	public void dumpCalculatedPropertiesForAClass(OntClass ontClass, final Set<OntProperty> collected) {
+	public void calculatePropertiesForClass(OntClass ontClass, final Set<OntProperty> collected) {
 		// System.out.println("calculated for class:" + ontClass.getLocalName());
 		collected.addAll(ontologyModel.listAllOntProperties().toSet().stream().filter(dataTypeProperty -> {
 			return dataTypeProperty.hasDomain(ontClass);
 		}).collect(Collectors.toSet()));
 		ontClass.listSuperClasses(true).toSet().forEach(superClass -> {
-			dumpCalculatedPropertiesForAClass(superClass, collected);
+			calculatePropertiesForClass(superClass, collected);
 		});
 	}
 
@@ -227,6 +240,7 @@ public class OntManager {
 	}
 
 	// will load in the combo box all existing individuals of the given class
+	// TODO I think this one should be done like the listStepIndividuals
 	public static void loadPossibleIndividualValues(JComboBox individualOrClassChooser, OntClass ontClass) {
 		Set<Individual> individualsSet = getOntologyModel().listIndividuals(ontClass).toSet();
 		for (Individual individual : individualsSet) {
@@ -252,5 +266,4 @@ public class OntManager {
 	public static Property getStepLevelProperty() {
 		return stepLevelProperty;
 	}
-
 }
