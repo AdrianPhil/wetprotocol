@@ -7,7 +7,7 @@ import javax.swing.tree.TreeCellRenderer;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 
-import resources.ResourceFindingDummyClass;
+import resources.ResourceFinding;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -15,7 +15,7 @@ import java.awt.Component;
 import javax.swing.*;
 
 public class ClassCellRenderer implements TreeCellRenderer {
-	static final ImageIcon createImageIcon = ResourceFindingDummyClass.createImageIcon("icons/brick_add.png");
+	static final ImageIcon createImageIcon = ResourceFinding.createImageIcon("icons/brick_add.png");
 	JLabel localName = new JLabel(" ");
 	JLabel imageLabel = new JLabel();
 	JPanel renderer = new JPanel();
@@ -46,7 +46,7 @@ public class ClassCellRenderer implements TreeCellRenderer {
 		}
 		Component returnValue = null;
 		Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
-		if (userObject instanceof String) {// user has chosen the tree root
+		if (userObject instanceof String) {// user has chosen the ont class chooser root "please choose a step" 
 			return defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 		}
 		if (userObject instanceof OntClass) {

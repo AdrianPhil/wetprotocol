@@ -26,7 +26,7 @@ import org.apache.jena.rdf.model.RDFNode;
 
 import ont.OntManager;
 import ont.PropertyAndIndividual;
-import resources.ResourceFindingDummyClass;
+import resources.ResourceFinding;
 import ui.UiUtils;
 import ui.property.ClassPropertyEditorPanel.NodeType;
 

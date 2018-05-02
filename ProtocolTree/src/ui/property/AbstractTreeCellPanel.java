@@ -26,7 +26,7 @@ import org.apache.jena.rdf.model.RDFNode;
 
 import ont.OntManager;
 import ont.PropertyAndIndividual;
-import resources.ResourceFindingDummyClass;
+import resources.ResourceFinding;
 import ui.UiUtils;
 
 public abstract class AbstractTreeCellPanel extends JPanel{
@@ -34,8 +34,8 @@ public abstract class AbstractTreeCellPanel extends JPanel{
 	public static final Icon ICON_LEAF_CLASS = UIManager.getIcon("FileChooser.detailsViewIcon");// http://en-human-begin.blogspot.ca/2007/11/javas-icons-by-default.html
 	// maybe next is application_edit
 	public static final Icon ICON_LITERAL = UIManager.getIcon("Tree.leafIcon");// http://en-human-begin.blogspot.ca/2007/11/javas-icons-by-default.html
-	static final ImageIcon ICON_STANDALONE_OBJECT = ResourceFindingDummyClass.createImageIcon("icons/brick_add.png");
-	static final ImageIcon ICON_CHOICE_SUBCLASS = ResourceFindingDummyClass.createImageIcon("icons/page_white_ruby.png");
+	static final ImageIcon ICON_STANDALONE_OBJECT = ResourceFinding.createImageIcon("icons/brick_add.png");
+	static final ImageIcon ICON_CHOICE_SUBCLASS = ResourceFinding.createImageIcon("icons/page_white_ruby.png");
 	JLabel icon = new JLabel("");
 	JLabel localComponent = new JLabel("dummy local");
 	JFormattedTextField valueComponent=new JFormattedTextField("dummy");// this seems to generate dummy on escape for JformattedTextField and no change for JText
@@ -147,7 +147,6 @@ public abstract class AbstractTreeCellPanel extends JPanel{
 
 	private void loadPossibleLeafClassValues(JComboBox individualOrClassChooser2) {
 		OntProperty ontProperty = propertyAndIndividual.getOntProperty();
-		// individualOrClassChooser.addItem(OntManager.getInstance().getStringClass("DummyClass"));
 		for (OntClass subclassFromRange : ontProperty.getRange().asClass().listSubClasses(false).toSet()) {
 			// System.out.println("\t\t dealing with range subclass:" + subclassFromRange.getLocalName());
 			if (OntManager.isLeafClass(subclassFromRange)) { // only leaf classes

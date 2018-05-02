@@ -6,7 +6,7 @@ import javax.swing.tree.TreeCellRenderer;
 
 import org.apache.jena.ontology.Individual;
 
-import resources.ResourceFindingDummyClass;
+import resources.ResourceFinding;
 import ui.UiUtils;
 
 import java.awt.Color;

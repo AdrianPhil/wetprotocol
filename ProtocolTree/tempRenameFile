@@ -953,8 +953,8 @@
       </www:Volume>
     </www:volume>
     <www:standaloneField>
-      <www:DummyClass rdf:ID="dummyIndividual">
-        <www:dummyDataProperty>dummyDataProperty value :)</www:dummyDataProperty>
+      <www:DummyClass rdf:ID="dummyClassIndividual">
+        <www:dummyClassDataProperty>dummyClassDataProperty value :)</www:dummyClassDataProperty>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
         <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
       </www:DummyClass>

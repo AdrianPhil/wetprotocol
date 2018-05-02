@@ -17,7 +17,7 @@ import org.apache.jena.ontology.OntProperty;
 
 import ont.OntManager;
 import ont.PropertyAndIndividual;
-import resources.ResourceFindingDummyClass;
+import resources.ResourceFinding;
 
 public class RenderCellPanel extends AbstractTreeCellPanel {
 

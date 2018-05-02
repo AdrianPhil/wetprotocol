@@ -1,6 +1,6 @@
 package ont;
 
-import resources.ResourceFindingDummyClass;
+import resources.ResourceFinding;
 import ui.property.ClassPropertyEditorPanel.NodeType;
 import ui.UiUtils;
 import ui.property.WrappedOntResource;
@@ -55,12 +55,12 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class OntManager {
 	private static OntManager instance;
 	private static OntModel ontologyModel;
-	public static final String PROTOCOL_FILE = "AdrianProtocol.owl";
-	private static String ONTOLOGY_LOCATION = ResourceFindingDummyClass.getResource(PROTOCOL_FILE).getFile();
+	public static final String PROTOCOL_FILE = "WetProtocolWithTopProtocolInstanceFromProteje.owl";
+	private static String ONTOLOGY_LOCATION = ResourceFinding.getResource(PROTOCOL_FILE).getFile();
 	public static final String NS = "http://www.wet.protocol#";// namespace and #
 	public static OntProperty STANDALONE;
 	private static Individual topProtocolInstance;
-	private static Property stepLevelProperty;
+	private static OntProperty stepLevelProperty;// to rename to stepCoordinatesProperty
 	// public static Resource NOTHING_SUBCLASS;
 	public static AtomicInteger counter = new AtomicInteger(0);
 	//
@@ -80,9 +80,9 @@ public class OntManager {
 		System.out.println("after reload:" + OntManager.getOntologyModel().listIndividuals().toList());
 		STANDALONE = ontologyModel.getOntProperty(NS + "standalone");
 		// NOTHING_SUBCLASS = ontologyModel.getOntClass("owl:Nothing");
-		OntClass protocolClass = ontologyModel.getOntClass(NS + "Protocol");
-		topProtocolInstance = ontologyModel.createIndividual(NS + "TadaMySampleProtocol", protocolClass);
-		topProtocolInstance.setPropertyValue(ontologyModel.getOntProperty(NS + "version"), ontologyModel.createTypedLiteral("Version 0.0"));
+		topProtocolInstance= ontologyModel.getIndividual(NS + "topProtocolInstance");
+		topProtocolInstance.setOntClass(getOntClass("Protocol"));// need to correct the NamedIndividual nonsense that appears when saving in Jena
+		//topProtocolInstance.setPropertyValue(ontologyModel.getOntProperty(NS + "version"), ontologyModel.createTypedLiteral("Version 0.0")); //TODO reinstate
 		stepLevelProperty = (ontologyModel.getOntProperty(NS + "stepLevel"));
 		return instance;
 	}
@@ -98,22 +98,19 @@ public class OntManager {
 		return collected;
 	}
 
-	public List<Individual> calculateStepIndividuals(OntClass ontClass) {
-		// TODO Auto-generated method stub
-		List<Individual> allIndividuals = ontologyModel.listIndividuals().toList();
-		for (Individual ind : allIndividuals) {
-			System.out.println("Individual :" + ind);
-			Resource rdfType = ind.getRDFType(false);
-			ind.hasOntClass(ontClass)
-			System.out.println("\trdfType:"+rdfType +" and OntClass:"+ind.listOntClasses(false).toSet()+" primary class:"+ind.getOntClass(false));
-		}
-		return ontologyModel.listIndividuals(stepLevelProperty).toList();// TODO remove this
-		// will load in the combo box all existing individuals of the given class
-		// public static void loadPossibleIndividualValues(JComboBox individualOrClassChooser, OntClass ontClass) {
-		// Set<Individual> individualsSet = getOntologyModel().listIndividuals(ontClass).toSet();
-		// for (Individual individual : individualsSet) {
-		// individualOrClassChooser.addItem(new WrappedOntResource(individual));
-		// }
+	public List<Individual> calculateStepIndividuals() {
+		// the top protocol is already added so we can filter out
+		OntClass stepOntClass = OntManager.getInstance().getOntClass("Step");//TODO cache
+		return ontologyModel.listIndividuals(stepOntClass).toList();
+//		List<Individual> allIndividuals = ontologyModel.listIndividuals().toList();
+//		for (Individual ind : allIndividuals) {
+//			System.out.println("Individual :" + ind);
+//			Resource rdfType = ind.getRDFType(false);
+//			System.out.println("hasOntClass:"+ ind.hasOntClass(stepOntClass));
+//			System.out.println("\trdfType:"+rdfType +" and OntClass:"+ind.listOntClasses(true).toList()+" primary class:"+ind.getOntClass(false));
+//			System.out.println("\trdfType:"+rdfType +" primary class:"+ind.getOntClass(false));
+//		}
+
 	}
 
 	public Set<OntClass> getClassesInSignature() {
@@ -140,7 +137,7 @@ public class OntManager {
 	// OntClass ontClass = OntManager.getInstance().getOntClass(className);
 	// return ontologyModel.createIndividual(instanceName, ontClass);
 	// }
-	public OntClass getOntClass(String clazz) {
+	public static OntClass getOntClass(String clazz) {
 		return OntManager.getInstance().getOntologyModel().getOntClass(NS + clazz);
 	}
 
@@ -264,7 +261,8 @@ public class OntManager {
 		}
 	}
 
-	public static Property getStepLevelProperty() {
+	public static OntProperty getStepCoordinatesProperty() {
 		return stepLevelProperty;
 	}
 }
+//TODO for some reason it seams that only the top protocol is saved with rdf type as   </owl:NamedIndividual> but all the other newly created nodes are saved withe the right class and without rdf t

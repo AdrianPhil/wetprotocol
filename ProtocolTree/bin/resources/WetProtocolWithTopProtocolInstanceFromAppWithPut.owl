@@ -1,0 +1,244 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://www.semanticweb.org/ad/ontologies/2018/3/untitled-ontology-6#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:www="http://www.wet.protocol#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
+  <owl:Ontology rdf:about="http://www.wet.protocol"/>
+  <owl:Class rdf:about="http://www.wet.protocol#PipetteRelease">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.wet.protocol#Put"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#Reagent">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.wet.protocol#Liquid"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#Procure">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.wet.protocol#Step"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#TemperatureControlledStore">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.wet.protocol#Store"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#Pipette">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.wet.protocol#VolumetricContainer"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#Quantity"/>
+  <owl:Class rdf:about="http://www.wet.protocol#Container">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.wet.protocol#Equipment"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#Transfer">
+    <rdfs:subClassOf rdf:resource="http://www.wet.protocol#Step"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#Put">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.wet.protocol#MiniStep"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#CentrifugeTube">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.wet.protocol#VolumetricContainer"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#Enzime">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.wet.protocol#OrganicCompound"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#Dna">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.wet.protocol#OrganicCompound"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#Protocol"/>
+  <owl:Class rdf:about="http://www.wet.protocol#Move">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.wet.protocol#MiniStep"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#Liquid">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.wet.protocol#MovableObject"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#MovableObject">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.wet.protocol#Place"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#VolumetricContainer">
+    <rdfs:subClassOf rdf:resource="http://www.wet.protocol#Container"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#Bench">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.wet.protocol#Store"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#OrganicCompound">
+    <rdfs:subClassOf rdf:resource="http://www.wet.protocol#Liquid"/>
+    <owl:disjointWith rdf:resource="http://www.wet.protocol#Reagent"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#Plasmid">
+    <rdfs:subClassOf rdf:resource="http://www.wet.protocol#OrganicCompound"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#Volume">
+    <rdfs:subClassOf rdf:resource="http://www.wet.protocol#Quantity"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#Supplier">
+    <rdfs:subClassOf rdf:resource="http://www.wet.protocol#Place"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#TestTube">
+    <rdfs:subClassOf rdf:resource="http://www.wet.protocol#VolumetricContainer"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#PipetteAspiration">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.wet.protocol#Get"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#Equipment">
+    <rdfs:subClassOf rdf:resource="http://www.wet.protocol#MovableObject"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#MiniStep">
+    <rdfs:subClassOf rdf:resource="http://www.wet.protocol#Step"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#NonLiquid">
+    <rdfs:subClassOf rdf:resource="http://www.wet.protocol#MovableObject"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.w3.org/2002/07/owl#Protocol"/>
+  <owl:Class rdf:about="http://www.wet.protocol#PipetteMove">
+    <rdfs:subClassOf rdf:resource="http://www.wet.protocol#Move"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#DummyClass"/>
+  <owl:Class rdf:about="http://www.wet.protocol#Store">
+    <rdfs:subClassOf rdf:resource="http://www.wet.protocol#MovableObject"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.wet.protocol#Get">
+    <rdfs:subClassOf rdf:resource="http://www.wet.protocol#MiniStep"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:about="http://www.wet.protocol#standalone"/>
+  <owl:ObjectProperty rdf:about="http://www.wet.protocol#destination">
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Put"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#Place"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.wet.protocol#volumetricContainerVolume">
+    <rdfs:domain rdf:resource="http://www.wet.protocol#VolumetricContainer"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#Volume"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.wet.protocol#procureObject">
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Procure"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#MovableObject"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.wet.protocol#content">
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Container"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#Liquid"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.wet.protocol#steps">
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Transfer"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#Step"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.wet.protocol#pipetteAspirationVolume">
+    <rdfs:domain rdf:resource="http://www.wet.protocol#PipetteAspiration"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#Volume"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.wet.protocol#getFrom">
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Get"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#Place"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.wet.protocol#standaloneField">
+    <rdfs:subPropertyOf rdf:resource="http://www.wet.protocol#standalone"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#CentrifugeTube"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#DummyClass"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.wet.protocol#pipetteReleaseVolume">
+    <rdfs:domain rdf:resource="http://www.wet.protocol#PipetteRelease"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#Volume"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.wet.protocol#putObject">
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Put"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#MovableObject"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.wet.protocol#source">
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Move"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#Place"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.wet.protocol#liquidVolume">
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Liquid"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#Volume"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.wet.protocol#minimumVolume">
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Pipette"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#Volume"/>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:about="http://www.wet.protocol#stepLevel">
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Step"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.wet.protocol#fasta">
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Dna"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.wet.protocol#numericValue">
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Volume"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.wet.protocol#unit">
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Volume"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.wet.protocol#dummyClassDataProperty">
+    <rdfs:domain rdf:resource="http://www.wet.protocol#DummyClass"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.wet.protocol#version">
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Protocol"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.wet.protocol#mutiplication">
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Volume"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.wet.protocol#plasmidName">
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Plasmid"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.wet.protocol#manufacturer">
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Container"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Store"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:NamedIndividual rdf:about="http://www.wet.protocol#topProtocolInstance">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Protocol"/>
+    <www:version>Version 0.0</www:version>
+    <rdf:type rdf:resource="http://www.wet.protocol#Protocol"/>
+  </owl:NamedIndividual>
+  <owl:AllDisjointClasses>
+    <owl:members rdf:parseType="Collection">
+      <owl:Class rdf:about="http://www.wet.protocol#Dna"/>
+      <owl:Class rdf:about="http://www.wet.protocol#Enzime"/>
+      <owl:Class rdf:about="http://www.wet.protocol#Plasmid"/>
+    </owl:members>
+  </owl:AllDisjointClasses>
+  <www:Put rdf:about="http://www.wet.protocol#newProtocolStep1_ofClass_Put">
+    <www:stepLevel>1.0</www:stepLevel>
+  </www:Put>
+</rdf:RDF>

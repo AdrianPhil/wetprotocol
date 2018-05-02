@@ -1,12 +1,14 @@
 package ui;
 
 import ont.OntManager;
+import ui.WetProtocolMainPanel.WhereToAddStepNode;
 import ui.property.AbstractTreeCellPanel;
 import ui.property.ClassPropertyEditorPanel;
 
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.ontology.OntResource;
 import org.apache.jena.rdf.model.RDFNode;
 
@@ -26,6 +28,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class UiUtils {
+	private static boolean debug = false;
+
 	/**
 	 * Create the GUI and show it. For thread safety, this method should be invoked from the event-dispatching thread.
 	 */
@@ -40,11 +44,11 @@ public class UiUtils {
 		frame.setVisible(true);
 	}
 
-	public static void createAndShowStepChooserGUI(DefaultMutableTreeNode protocolTreeModel, JTree jProtocolTree) {// todo maybe in here we'll do a dialog
+	public static void showStepChooserGuiAndCreateNewStepTree(WhereToAddStepNode whereToAddStepNode, JTree jProtocolTree) {// todo maybe in here we'll do a dialog
 		JFrame frame = new JFrame("Step Chooser");
 		// frame.setDefaultCloseOperation(EXIT_ON_CLOSE);//todo
 		// Create and set up the content pane.
-		ClassChooserPanel newContentPane = new ClassChooserPanel(protocolTreeModel, jProtocolTree);
+		ClassChooserPanel newContentPane = new ClassChooserPanel(jProtocolTree, whereToAddStepNode);
 		newContentPane.setOpaque(true); // content panes must be opaque
 		frame.setContentPane(newContentPane);
 		// Display the window.
@@ -60,36 +64,57 @@ public class UiUtils {
 		}
 	}
 
-	public static void createEmpyClassNodes(JTree jTree, Set<OntClass> classesInSignature) {// for classChooserPanel
+	public static void createEmpyClassNodes(JTree jTree) {// for classChooserPanel
+		OntClass stepOntClass = OntManager.getInstance().getOntClass("Step");// TODO cache
+		Set<OntClass> stepClasses;
+		if (debug) {
+			stepClasses = OntManager.getInstance().getClassesInSignature();
+		} else {
+			stepClasses = stepOntClass.listSubClasses().toSet();
+		}
 		DefaultTreeModel model = (DefaultTreeModel) jTree.getModel();
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
 		if (root.getChildCount() > 0) {
 			return; // tree is already populated
 		}
-		classesInSignature.stream().forEach(ontClass -> {
+		stepClasses.stream().forEach(ontClass -> {
 			DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(ontClass);
 			root.add(newNode);
 		});
 		model.reload(root);// TODO I dont't know if necessary
 	}
 
-	static void loadStepsTreeFromModel(DefaultMutableTreeNode topProtocolNode) {
-		topProtocolNode.removeAllChildren();
-		OntModel ontologyModel = OntManager.getOntologyModel();
-		OntClass ontClass = OntManager.getInstance().getOntClass("Step");
-		List<Individual> list = OntManager.getInstance().calculateStepIndividuals(ontClass);
-		//Collections.reverse(list);
-		System.out.println("step individuals in loadStepsTreeFromModel are:"+list);
-		
-//		list.sort((Individual i1, Individual i2) -> 
-//			i1.getPropertyValue(OntManager.getInstance().getStepLevelProperty()).asLiteral().getString().compareTo(
-//					i2.getPropertyValue(OntManager.getInstance().getStepLevelProperty()).asLiteral().getString()));
+	static void loadStepsTreeFromModel(DefaultMutableTreeNode topStepNode) {
+		topStepNode.removeAllChildren();
+		List<Individual> list = OntManager.getInstance().calculateStepIndividuals();
+		list.sort((Individual i1, Individual i2) -> i1.getPropertyValue(OntManager.getStepCoordinatesProperty()).asLiteral().getString().compareTo(i2.getPropertyValue(OntManager.getStepCoordinatesProperty()).asLiteral().getString()));
+		DefaultMutableTreeNode lastAddedNode = topStepNode;
+		OntProperty STPE_LEVEL_PROPERTY = OntManager.getStepCoordinatesProperty();
+		for (int i = 1; i < list.size(); i++) {// skip the top
+			Individual step = list.get(i);
+			NodeCoordinates nodeLocation = new NodeCoordinates(step);
+			step.removeAll(STPE_LEVEL_PROPERTY);// clean up the memory model once the tree is reassembled
+			DefaultMutableTreeNode newStep = new DefaultMutableTreeNode(step);
+			if (lastAddedNode.getLevel() == nodeLocation.depth) {// add sibling
+				((DefaultMutableTreeNode) lastAddedNode.getParent()).add(newStep);
+			} else if (lastAddedNode.getLevel() < nodeLocation.depth) {// add child
+				lastAddedNode.add(newStep);
+			} else {
+				DefaultMutableTreeNode newParent = getEarlierParent(lastAddedNode, lastAddedNode.getLevel() - nodeLocation.depth);
+				newParent.add(newStep);
+			}
+			System.out.println("Step:" + step.getLocalName() + " vertical:" + nodeLocation.vertical + " depth:" + nodeLocation.depth);
+			lastAddedNode = newStep;
+		}
+		// need to clean the model
+	}
 
-		for( Individual step:list) {
-//			step.
-//			int level
-			topProtocolNode.add( new DefaultMutableTreeNode(step));
-		}				
+	private static DefaultMutableTreeNode getEarlierParent(DefaultMutableTreeNode lastAddedNode, int i) {
+		TreeNode earlierParent = lastAddedNode.getParent();
+		while (i-- > 0) {
+			earlierParent = earlierParent.getParent();
+		}
+		return (DefaultMutableTreeNode) earlierParent;
 	}
 	// public static void createPropertyNodes(DefaultMutableTreeNode topPropertyNode) {
 	// DefaultMutableTreeNode firstStepNode;
@@ -133,6 +158,18 @@ public class UiUtils {
 	public static void showConditionDialog(boolean b, Component c, String message) {
 		if (b) {
 			showDialog(c, message);
+		}
+	}
+
+	private static class NodeCoordinates {
+		int vertical;
+		int depth;
+
+		NodeCoordinates(Individual i) {
+			String coordinates = i.getPropertyValue(OntManager.getInstance().getStepCoordinatesProperty()).asLiteral().getString();
+			String[] split = coordinates.split("\\.");
+			vertical = new Integer(split[0]);
+			depth = new Integer(split[1]);
 		}
 	}
 }

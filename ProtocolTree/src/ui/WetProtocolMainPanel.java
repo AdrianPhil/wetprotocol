@@ -1,6 +1,6 @@
 package ui;
 
-import resources.ResourceFindingDummyClass;
+import resources.ResourceFinding;
 import ui.instancenameedit.InstanceNameCellEditor;
 import ui.property.ClassPropertyEditorPanel;
 
@@ -31,6 +31,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Enumeration;
+
 import static ui.UiUtils.*;
 
 public class WetProtocolMainPanel extends JPanel implements TreeSelectionListener {
@@ -44,8 +46,8 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 	private JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 	private JTree jProtocolTree;
 	private static boolean DEBUG = true; // adrian
-	public static final int WITH_OF_PROTOCOL_TREE = 200;
-	private DefaultTreeModel protocolTreeModel ;
+	public static final int WITH_OF_PROTOCOL_TREE = 150;
+	private DefaultTreeModel protocolTreeModel;
 
 	private WetProtocolMainPanel() {
 		super(new GridLayout(1, 1));
@@ -85,41 +87,44 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		ToolTipManager.sharedInstance().registerComponent(jProtocolTree);
 		jProtocolTree.setShowsRootHandles(true);
 		initiateOrRefreshTreeModelAndRest();
+		jProtocolTree.setExpandsSelectedPaths(true);
 	}
+
 	private void initiateOrRefreshTreeModelAndRest() {
-		protocolTreeModel= new DefaultTreeModel(new DefaultMutableTreeNode(OntManager.getInstance().getTopProtocolInstance()));// todo we might not need this
-		jProtocolTree.setModel(protocolTreeModel);		
-		DefaultMutableTreeNode root = (DefaultMutableTreeNode)protocolTreeModel.getRoot();
-		//protocolTreeModel.reload(root);//maybe not necessary
+		protocolTreeModel = new DefaultTreeModel(new DefaultMutableTreeNode(OntManager.getInstance().getTopProtocolInstance()));// todo we might not need this
+		jProtocolTree.setModel(protocolTreeModel);
+		DefaultMutableTreeNode root = (DefaultMutableTreeNode) protocolTreeModel.getRoot();
+		// protocolTreeModel.reload(root);//maybe not necessary
 		loadStepsTreeFromModel((DefaultMutableTreeNode) (protocolTreeModel.getRoot()));
 		expandTree(jProtocolTree);
 		// Enable tool tips.
-		jProtocolTree.setCellRenderer(new ProtocolInstanceCellRenderer());
+		jProtocolTree.setCellRenderer(new StepInstanceCellRenderer());
 		// jProtocolTree.setCellEditor(new InstanceNameCellEditor());
 		// jProtocolTree.setEditable(true);
 		// Listen for when the selection changes.
 		jProtocolTree.addTreeSelectionListener(this);
-		jProtocolTree.setSelectionRow(1);// select first after root
+		jProtocolTree.setSelectionRow(0);// select root
 	}
+
 	private void AddTreeButtonListeners(JSplitPane splitPane) {
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode) jProtocolTree.getModel().getRoot();
 		addNewSiblingNodeButton.addActionListener(e -> {
 			// display/center the jDialog when the button is pressed
 			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jProtocolTree.getLastSelectedPathComponent();
 			if (selectedNode == null) {
-				// UiUtils.showDialog(splitPane, "Please select a node");
 				TreeModel model = jProtocolTree.getModel();
-				selectedNode = (DefaultMutableTreeNode) model.getChild(root, model.getChildCount(root) - 1);// add sibling to last root
+				if (model.getChildCount(root) == 0) {// empty model
+					jProtocolTree.setSelectionRow(0);
+				} else {
+					selectedNode = (DefaultMutableTreeNode) model.getChild(root, model.getChildCount(root) - 1);// add sibling to last root
+				}
 			}
 			DefaultMutableTreeNode parent = (DefaultMutableTreeNode) selectedNode.getParent();
 			if (parent == null) {
 				UiUtils.showDialog(splitPane, "Can not add a sibling to root");
 				return;
 			}
-			UiUtils.createAndShowStepChooserGUI(parent, jProtocolTree);// this will update the protocol tree model
-			// UiUtils.createChildNode(newClass, parent, jProtocolTree,
-			// parent.getChildCount());
-			// Make sure the user can see the new node.
+			UiUtils.showStepChooserGuiAndCreateNewStepTree(WhereToAddStepNode.NEW_SIBBLING_STEP_NODE, jProtocolTree);// this will update the protocol tree model
 		});
 		addChildNodeButton.addActionListener(e -> {
 			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jProtocolTree.getLastSelectedPathComponent();
@@ -128,69 +133,70 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 			// selectedNode = root;// add child to root todo strange does not work
 			// jProtocolTree.getSelectionModel().setSelectionPath(new TreePath(((DefaultTreeModel) jProtocolTree.getModel()).getPathToRoot(root)));// select root
 			// }
-			UiUtils.createAndShowStepChooserGUI(selectedNode, jProtocolTree);// this will update the protocol tree model
-			// UiUtils.createChildNode(newClass, selectedNode, jProtocolTree,
-			// selectedNode.getChildCount());
+			UiUtils.showStepChooserGuiAndCreateNewStepTree(WhereToAddStepNode.NEW_CHILD_STEP_NODE, jProtocolTree);// this will update the protocol tree model
 		});
 		expandTreeButton.addActionListener(e -> {
 			expandTree(jProtocolTree);
 		});
-		saveProtocolButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser fileChooser = new JFileChooser();
-				fileChooser.setDialogTitle("Select a place and name for saving your owl file");
-				fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-				FileNameExtensionFilter filter = new FileNameExtensionFilter("Owl files", "owl");
-				fileChooser.addChoosableFileFilter(filter);
-				String path = null;
-				try {
-					path = ResourceFindingDummyClass.getResource(OntManager.PROTOCOL_FILE).toURI().getPath();
-				} catch (URISyntaxException e2) {
-					e2.printStackTrace();
+		saveProtocolButton.addActionListener(e -> {
+			JFileChooser fileChooser = new JFileChooser();
+			fileChooser.setDialogTitle("Select a place and name for saving your owl file");
+			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("Owl files", "owl");
+			fileChooser.addChoosableFileFilter(filter);
+			String path = null;
+			try {
+				path = ResourceFinding.getResource(OntManager.PROTOCOL_FILE).toURI().getPath();
+			} catch (URISyntaxException e2) {
+				e2.printStackTrace();
+			}
+			fileChooser.setCurrentDirectory(new File(path.substring(1, path.length() - OntManager.PROTOCOL_FILE.length())));
+			int retval = fileChooser.showSaveDialog(null);
+			if (retval == JFileChooser.APPROVE_OPTION) {
+				File file = fileChooser.getSelectedFile();
+				if (file == null) {
+					return;
 				}
-				fileChooser.setCurrentDirectory(new File(path.substring(1, path.length() - OntManager.PROTOCOL_FILE.length())));
-				int retval = fileChooser.showSaveDialog(null);
-				if (retval == JFileChooser.APPROVE_OPTION) {
-					File file = fileChooser.getSelectedFile();
-					if (file == null) {
-						return;
-					}
-					try (FileOutputStream output = new FileOutputStream(file)) {
-						OntManager.getOntologyModel().write(output, "RDF/XML",null);// OntManager.NS);
-					} catch (Exception e1) {
-						UiUtils.showDialog(jProtocolTree, "Cannot open output file" + e1.getLocalizedMessage());
-					}
+				Enumeration<?> preorderEnumeration = ((DefaultMutableTreeNode) jProtocolTree.getModel().getRoot()).preorderEnumeration();
+				int verticalDistance = 0;
+				while (preorderEnumeration.hasMoreElements()) {
+					DefaultMutableTreeNode defaultMutableTreeNode = (DefaultMutableTreeNode) (preorderEnumeration.nextElement());
+					Individual individual = (Individual) (defaultMutableTreeNode.getUserObject());
+					individual.addLiteral(OntManager.getStepCoordinatesProperty(), verticalDistance++ + "." + defaultMutableTreeNode.getLevel());
+				}
+				try (FileOutputStream output = new FileOutputStream(file)) {
+					OntManager.getOntologyModel().write(output, "RDF/XML", null);// OntManager.NS);
+				} catch (Exception e1) {
+					UiUtils.showDialog(jProtocolTree, "Cannot open output file" + e1.getLocalizedMessage());
 				}
 			}
 		});
-		loadProtocolButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser fileChooser = new JFileChooser();
-				fileChooser.setDialogTitle("Select an owl file");
-				fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-				FileNameExtensionFilter filter = new FileNameExtensionFilter("Owl files", "owl");
-				fileChooser.addChoosableFileFilter(filter);
-				String path = null;
-				try {
-					path = ResourceFindingDummyClass.getResource(OntManager.PROTOCOL_FILE).toURI().getPath();
-				} catch (URISyntaxException e2) {
-					e2.printStackTrace();
+		loadProtocolButton.addActionListener(e -> {
+			JFileChooser fileChooser = new JFileChooser();
+			fileChooser.setDialogTitle("Select an owl file");
+			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("Owl files", "owl");
+			fileChooser.addChoosableFileFilter(filter);
+			String path = null;
+			try {
+				path = ResourceFinding.getResource(OntManager.PROTOCOL_FILE).toURI().getPath();
+			} catch (URISyntaxException e2) {
+				e2.printStackTrace();
+			}
+			fileChooser.setCurrentDirectory(new File(path.substring(1, path.length() - OntManager.PROTOCOL_FILE.length())));
+			int retval = fileChooser.showOpenDialog(null);
+			if (retval == JFileChooser.APPROVE_OPTION) {
+				File file = fileChooser.getSelectedFile();
+				if (file == null) {
+					UiUtils.showDialog(jProtocolTree, "Cannot open the file");
+					return;
 				}
-				fileChooser.setCurrentDirectory(new File(path.substring(1, path.length() - OntManager.PROTOCOL_FILE.length())));
-				int retval = fileChooser.showOpenDialog(null);
-				if (retval == JFileChooser.APPROVE_OPTION) {
-					File file = fileChooser.getSelectedFile();
-					if (file == null) {
-						UiUtils.showDialog(jProtocolTree, "Cannot open the file");
-						return;
-					}
-					OntManager.resetInstance(file.getAbsolutePath());
-//					DefaultTreeModel model = (DefaultTreeModel) jProtocolTree.getModel();
-//					DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
-//					model.reload(root);//maybe not necessary
-					initiateOrRefreshTreeModelAndRest();
-					//System.out.println(OntManager.getOntologyModel().listIndividuals().toList());
-				}
+				OntManager.resetInstance(file.getAbsolutePath());
+				// DefaultTreeModel model = (DefaultTreeModel) jProtocolTree.getModel();
+				// DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
+				// model.reload(root);//maybe not necessary
+				initiateOrRefreshTreeModelAndRest();
+				// System.out.println(OntManager.getOntologyModel().listIndividuals().toList());
 			}
 		});
 		deleteChildNodeButton.addActionListener(e -> {
@@ -248,7 +254,6 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 
 	// private void initHelp() {
 	// String s = "TreeDemoHelp.html";
-	// helpURL = ResourceFindingDummyClass.getResource(s);
 	// if (helpURL == null) {
 	// System.err.println("Couldn't open help file: " + s);
 	// } else if (DEBUG) {
@@ -276,5 +281,9 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		// creating and showing this application's GUI.
 		// Create and set up the content pane.
 		javax.swing.SwingUtilities.invokeLater(() -> UiUtils.createAndShowNewFrameGUI(new WetProtocolMainPanel(), "Wet Protocol"));
+	}
+
+	public enum WhereToAddStepNode {
+		NEW_SIBBLING_STEP_NODE, NEW_CHILD_STEP_NODE
 	}
 }

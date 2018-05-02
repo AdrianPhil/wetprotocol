@@ -9,7 +9,7 @@ import org.apache.jena.rdf.model.Literal;
 import org.junit.Test;
 
 import ont.*;
-import resources.ResourceFindingDummyClass;
+import resources.ResourceFinding;
 import ui.property.ClassPropertyEditorPanel.NodeType;
 
 class OntologyTest {
@@ -42,16 +42,7 @@ class OntologyTest {
 //		System.out.println("-------------");
 //	}
 
-	public PropertyAndIndividual getTopPropertyAndIndividual() {
-		if (TOP_PROPERTY_AND_INDIVIDUAL == null) {
-			Individual dummyIndividual = ontologyModel.getIndividual(OntManager.NS + "dummyIndividual");
-			TOP_PROPERTY_AND_INDIVIDUAL = new PropertyAndIndividual(ontologyModel.getOntProperty(OntManager.NS + "dummyDataProperty"), dummyIndividual, NodeType.TOP_PROPERTY_AND_INDIVIDUAL);
-			// the value will be null
-			// no values for properties as this ode will be invisible
-		}
-		// System.out.println("topPropertyInstance:" + topPropertyInstance);
-		return TOP_PROPERTY_AND_INDIVIDUAL;
-	}
+
 
 	public void printStringClassNames() {
 		ontologyManager.getClassesInSignature().forEach(System.out::println);

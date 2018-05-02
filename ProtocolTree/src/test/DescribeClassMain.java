@@ -11,7 +11,7 @@ import java.util.Iterator;
 import org.apache.jena.ontology.*;
 import org.apache.jena.rdf.model.ModelFactory;
 
-import resources.ResourceFindingDummyClass;
+import resources.ResourceFinding;
 
 /**
  * <p>
@@ -36,7 +36,7 @@ public class DescribeClassMain {
 
 	public static void main(String[] args) {
 		OntModel m = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, null);
-		m.read(ResourceFindingDummyClass.getResource("AdrianProtocol.owl").getFile());
+		m.read(ResourceFinding.getResource("AdrianProtocol.owl").getFile());
 		System.out.println("get all classes as objects");
 		
 		m.listClasses();

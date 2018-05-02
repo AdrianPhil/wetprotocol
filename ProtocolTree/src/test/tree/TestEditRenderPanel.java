@@ -10,12 +10,12 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import resources.ResourceFindingDummyClass;
+import resources.ResourceFinding;
 import ui.UiUtils;
 
 public class TestEditRenderPanel extends JPanel {
 
-	static final ImageIcon createImageIcon = ResourceFindingDummyClass.createImageIcon("icons/lab_coat.png");
+	//static final ImageIcon createImageIcon = ResourceFindingDummyClass.createImageIcon("icons/lab_coat.png");
 	JButton saveButton = new JButton("Save");
 	JLabel field1Component = new JLabel("");
 	JTextField field2Component = new JTextField(" ");

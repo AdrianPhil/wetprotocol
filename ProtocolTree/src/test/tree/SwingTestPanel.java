@@ -1,6 +1,6 @@
 package test.tree;
 
-import resources.ResourceFindingDummyClass;
+import resources.ResourceFinding;
 import ui.UiUtils;
 
 import javax.swing.*;
