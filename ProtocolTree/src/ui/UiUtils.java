@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class UiUtils {
-	private static boolean debug = false;
+	public static final boolean DEBUG = false;
 
 	/**
 	 * Create the GUI and show it. For thread safety, this method should be invoked from the event-dispatching thread.
@@ -67,7 +67,7 @@ public class UiUtils {
 	public static void createEmpyClassNodes(JTree jTree) {// for classChooserPanel
 		OntClass stepOntClass = OntManager.getInstance().getOntClass("Step");// TODO cache
 		Set<OntClass> stepClasses;
-		if (debug) {
+		if (DEBUG) {
 			stepClasses = OntManager.getInstance().getClassesInSignature();
 		} else {
 			stepClasses = stepOntClass.listSubClasses().toSet();
@@ -93,7 +93,7 @@ public class UiUtils {
 		for (int i = 0; i < list.size(); i++) {// skip the top
 			Individual step = list.get(i);
 			NodeCoordinates nodeLocation = new NodeCoordinates(step);
-			step.removeAll(STEP_COORDINATES_PROPERTY);// clean up the memory model once the tree is reassembled
+			step.removeAll(STEP_COORDINATES_PROPERTY);// clean up saved coordinates from the memory model once the tree is reassembled
 			DefaultMutableTreeNode newStep = new DefaultMutableTreeNode(step);
 			if (lastAddedNode.getLevel() == nodeLocation.depth) {// add sibling
 				((DefaultMutableTreeNode) lastAddedNode.getParent()).add(newStep);

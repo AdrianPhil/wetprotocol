@@ -45,7 +45,6 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 	private JButton loadProtocolButton = new JButton("Load Protocol");
 	private JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 	private JTree jProtocolTree;
-	private static boolean DEBUG = true; // adrian
 	public static final int WITH_OF_PROTOCOL_TREE = 120;
 	private final static String FRAME_TITLE = "Wet Protocol";
 	private DefaultTreeModel protocolTreeModel;
@@ -192,7 +191,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 					UiUtils.showDialog(jProtocolTree, "Cannot open the file");
 					return;
 				}
-				OntManager.resetInstance(file.getAbsolutePath());
+				OntManager.resetModelInstance(file.getAbsolutePath());
 				UiUtils.getProtocolFrame(this).setTitle(FRAME_TITLE+" "+file.getAbsolutePath());
 				// DefaultTreeModel model = (DefaultTreeModel) jProtocolTree.getModel();
 				// DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
