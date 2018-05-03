@@ -46,7 +46,8 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 	private JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 	private JTree jProtocolTree;
 	private static boolean DEBUG = true; // adrian
-	public static final int WITH_OF_PROTOCOL_TREE = 150;
+	public static final int WITH_OF_PROTOCOL_TREE = 120;
+	private final static String FRAME_TITLE = "Wet Protocol";
 	private DefaultTreeModel protocolTreeModel;
 
 	private WetProtocolMainPanel() {
@@ -192,6 +193,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 					return;
 				}
 				OntManager.resetInstance(file.getAbsolutePath());
+				UiUtils.getProtocolFrame(this).setTitle(FRAME_TITLE+" "+file.getAbsolutePath());
 				// DefaultTreeModel model = (DefaultTreeModel) jProtocolTree.getModel();
 				// DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
 				// model.reload(root);//maybe not necessary
@@ -280,7 +282,9 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		// Schedule a job for the event-dispatching thread:
 		// creating and showing this application's GUI.
 		// Create and set up the content pane.
-		javax.swing.SwingUtilities.invokeLater(() -> UiUtils.createAndShowNewFrameGUI(new WetProtocolMainPanel(), "Wet Protocol"));
+		javax.swing.SwingUtilities.invokeLater(() -> {
+			UiUtils.createAndShowNewFrameGUI(new WetProtocolMainPanel(), FRAME_TITLE+OntManager.ONTOLOGY_LOCATION);
+		});
 	}
 
 	public enum WhereToAddStepNode {

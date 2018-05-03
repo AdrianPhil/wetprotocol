@@ -56,11 +56,11 @@ public class OntManager {
 	private static OntManager instance;
 	private static OntModel ontologyModel;
 	public static final String PROTOCOL_FILE = "WetProtocolWithTopProtocolInstanceFromProteje.owl";
-	private static String ONTOLOGY_LOCATION = ResourceFinding.getResource(PROTOCOL_FILE).getFile();
+	public static String ONTOLOGY_LOCATION = ResourceFinding.getResource(PROTOCOL_FILE).getFile();
 	public static final String NS = "http://www.wet.protocol#";// namespace and #
 	public static OntProperty STANDALONE;
 	private static Individual topProtocolInstance;
-	private static OntProperty stepLevelProperty;// to rename to stepCoordinatesProperty
+	private static OntProperty stepCoordinatesProperty;
 	// public static Resource NOTHING_SUBCLASS;
 	public static AtomicInteger counter = new AtomicInteger(0);
 	//
@@ -77,13 +77,13 @@ public class OntManager {
 		ontologyModel = ModelFactory.createOntologyModel();// OntModelSpec.OWL_MEM);// OntModelSpec.OWL_LITE_MEM);// "" isfull? hierarchy reasoner; OWL_MEM
 		ontologyModel.read(pathOfOntFileToLoad);
 		ontologyModel.setStrictMode(true);
-		System.out.println("after reload:" + OntManager.getOntologyModel().listIndividuals().toList());
+		System.out.println("after loding the ontology the individuals are:" + OntManager.getOntologyModel().listIndividuals().toList());
 		STANDALONE = ontologyModel.getOntProperty(NS + "standalone");
 		// NOTHING_SUBCLASS = ontologyModel.getOntClass("owl:Nothing");
 		topProtocolInstance= ontologyModel.getIndividual(NS + "topProtocolInstance");
 		topProtocolInstance.setOntClass(getOntClass("Protocol"));// need to correct the NamedIndividual nonsense that appears when saving in Jena
 		//topProtocolInstance.setPropertyValue(ontologyModel.getOntProperty(NS + "version"), ontologyModel.createTypedLiteral("Version 0.0")); //TODO reinstate
-		stepLevelProperty = (ontologyModel.getOntProperty(NS + "stepLevel"));
+		stepCoordinatesProperty = (ontologyModel.getOntProperty(NS + "stepCoordinatesProperty"));
 		return instance;
 	}
 
@@ -262,7 +262,7 @@ public class OntManager {
 	}
 
 	public static OntProperty getStepCoordinatesProperty() {
-		return stepLevelProperty;
+		return stepCoordinatesProperty;
 	}
 }
 //TODO for some reason it seams that only the top protocol is saved with rdf type as   </owl:NamedIndividual> but all the other newly created nodes are saved withe the right class and without rdf t

@@ -89,11 +89,11 @@ public class UiUtils {
 		List<Individual> list = OntManager.getInstance().calculateStepIndividuals();
 		list.sort((Individual i1, Individual i2) -> i1.getPropertyValue(OntManager.getStepCoordinatesProperty()).asLiteral().getString().compareTo(i2.getPropertyValue(OntManager.getStepCoordinatesProperty()).asLiteral().getString()));
 		DefaultMutableTreeNode lastAddedNode = topStepNode;
-		OntProperty STPE_LEVEL_PROPERTY = OntManager.getStepCoordinatesProperty();
-		for (int i = 1; i < list.size(); i++) {// skip the top
+		OntProperty STEP_COORDINATES_PROPERTY = OntManager.getStepCoordinatesProperty();
+		for (int i = 0; i < list.size(); i++) {// skip the top
 			Individual step = list.get(i);
 			NodeCoordinates nodeLocation = new NodeCoordinates(step);
-			step.removeAll(STPE_LEVEL_PROPERTY);// clean up the memory model once the tree is reassembled
+			step.removeAll(STEP_COORDINATES_PROPERTY);// clean up the memory model once the tree is reassembled
 			DefaultMutableTreeNode newStep = new DefaultMutableTreeNode(step);
 			if (lastAddedNode.getLevel() == nodeLocation.depth) {// add sibling
 				((DefaultMutableTreeNode) lastAddedNode.getParent()).add(newStep);
@@ -166,7 +166,7 @@ public class UiUtils {
 		int depth;
 
 		NodeCoordinates(Individual i) {
-			String coordinates = i.getPropertyValue(OntManager.getInstance().getStepCoordinatesProperty()).asLiteral().getString();
+			String coordinates = i.getPropertyValue(OntManager.getStepCoordinatesProperty()).asLiteral().getString();
 			String[] split = coordinates.split("\\.");
 			vertical = new Integer(split[0]);
 			depth = new Integer(split[1]);
