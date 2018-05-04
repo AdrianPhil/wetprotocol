@@ -48,6 +48,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -55,6 +56,7 @@ import java.util.stream.Collectors;
 
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
+import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 public class OntManager {
@@ -276,34 +278,52 @@ public class OntManager {
 		}
 	}
 
-	public static void renameNode(Individual resource, String newValue, DefaultMutableTreeNode topStepNode) {
+	public static Individual renameNode(Individual resource, String newValue, DefaultMutableTreeNode topStepNode, JTree jStepsTree) {
 		Path tempFile;
 		try {
 			tempFile = Files.createTempFile("wettempfile", ".tmp");
 		} catch (IOException e) {
 			UiUtils.showDialog(null, "some issues creating temp ontology file" + e.getLocalizedMessage());
 			e.printStackTrace();
-			return;
+			return resource;// did no rename
 		}
 		File file = tempFile.toFile();
+		System.out.println("temporary file created at:"+file.getAbsolutePath());
 		file.deleteOnExit();
-		Path path=null;
+		Path path = null;
+		saveOntologyAndCoordinates(file, jStepsTree);
 		try (FileOutputStream output = new FileOutputStream(file)) {
-			OntManager.getOntologyModel().writeAll(output, "RDF/XML", OntManager.NS);// TODO maybe without NS
-			 path = Paths.get(file.getAbsolutePath());
+			OntManager.getOntologyModel().writeAll(output, "RDF/XML");// TODO maybe without NS
+			path = Paths.get(file.getAbsolutePath());
 			Charset charset = StandardCharsets.UTF_8;
 			String content = new String(Files.readAllBytes(path), charset);
-			content = content.replaceAll(resource.getLocalName(), newValue);
+			content = content.replaceAll(resource.getLocalName(), NS + newValue);
 			Files.write(path, content.getBytes(charset));
 		} catch (Exception e1) {
 			UiUtils.showDialog(null, "some issues writing temp ontology file" + e1.getLocalizedMessage());
 		}
 		OntManager.resetModelInstance(path.toString());// these 2 lines reset the whole model and UI
-		UiUtils.loadStepsTreeFromModel(topStepNode);
+		// UiUtils.loadStepsTreeFromModel(topStepNode);
+		return OntManager.getOntologyModel().getIndividual(NS + newValue);
 	}
 
 	public static OntProperty getStepCoordinatesProperty() {
 		return stepCoordinatesProperty;
+	}
+
+	public static void saveOntologyAndCoordinates(File file, JTree jStepsTree) {
+		Enumeration<?> preorderEnumeration = ((DefaultMutableTreeNode) jStepsTree.getModel().getRoot()).preorderEnumeration();
+		int verticalDistance = 0;
+		while (preorderEnumeration.hasMoreElements()) {
+			DefaultMutableTreeNode defaultMutableTreeNode = (DefaultMutableTreeNode) (preorderEnumeration.nextElement());
+			Individual individual = (Individual) (defaultMutableTreeNode.getUserObject());
+			individual.addLiteral(OntManager.getStepCoordinatesProperty(), verticalDistance++ + "." + defaultMutableTreeNode.getLevel());
+		}
+		try (FileOutputStream output = new FileOutputStream(file)) {
+			OntManager.getOntologyModel().write(output, "RDF/XML", null);// OntManager.NS);
+		} catch (Exception e1) {
+			UiUtils.showDialog(jStepsTree, "Cannot open output file" + e1.getLocalizedMessage());
+		}
 	}
 }
 // TODO for some reason it seams that only the top protocol is saved with rdf type as </owl:NamedIndividual> but all the other newly created nodes are saved withe the right class and without rdf t

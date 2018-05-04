@@ -68,7 +68,7 @@ public class StepChooserPanel extends JPanel implements TreeSelectionListener {
 		Dimension minimumSize = new Dimension(100, 50);
 		htmlView.setMinimumSize(minimumSize);
 		treeView.setMinimumSize(minimumSize);
-		splitPane.setDividerLocation(600); // XXX: ignored in some releases
+		splitPane.setDividerLocation(500); // XXX: ignored in some releases
 		// of Swing. bug 4101306
 		// workaround for bug 4101306:
 		splitPane.setPreferredSize(new Dimension(400, 600));
@@ -139,20 +139,6 @@ public class StepChooserPanel extends JPanel implements TreeSelectionListener {
 	@Override
 	public void valueChanged(TreeSelectionEvent e) {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) jStepChooserTree.getLastSelectedPathComponent();
-		// if (node == null) return;
-		// Object nodeInfo = node.getUserObject();
-		// if (node.isLeaf()) {
-		// Operation book = (Operation) nodeInfo;
-		// displayURL(book.url);
-		// if (DEBUG) {
-		// System.out.print(book.url + ": \n ");
-		// }
-		// } else {
-		// displayURL(helpURL);
-		// }
-		// if (DEBUG) {
-		// System.out.println(nodeInfo.toString());
-		// }
 	}
 
 	private void addTreeNodeMouseListeners() {

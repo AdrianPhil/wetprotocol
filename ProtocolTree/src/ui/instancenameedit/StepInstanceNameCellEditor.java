@@ -19,14 +19,17 @@ import ui.property.PropertyAndIndividual;
 import ui.property.ClassPropertyEditorPanel.NodeType;
 
 public class StepInstanceNameCellEditor extends AbstractCellEditor implements TreeCellEditor {
-	private InstanceNameEditCellPanel instanceNameEditCellPanel;
+	private StepInstanceNameEditCellPanel instanceNameEditCellPanel;
 	Individual individual;
+	JTree jStepTree;// only for rename
 
+	public StepInstanceNameCellEditor(JTree jStepTree) {
+		this.jStepTree = jStepTree;//only for rename
+	}
 
-	@Override // I think it's called when somebody from outside want the edited value. Maybe when clicking outside
+	@Override // It's called when somebody from outside want the edited value. Maybe when clicking outside
 	public Object getCellEditorValue() { // builds and returns propertyAndIndividual from field EditRenderPanel, Returns the value contained in the editor.
-		Individual newIndividual= instanceNameEditCellPanel.getNewIndividualValueScrapedFromEditPanel();		
-		return individual;
+		return instanceNameEditCellPanel.getNewIndividualValueScrapedFromEditPanel();
 	}
 
 	// clearly this is called first of the 2 methods to show the display panel
@@ -35,8 +38,8 @@ public class StepInstanceNameCellEditor extends AbstractCellEditor implements Tr
 		if (individualNode != null && individualNode instanceof DefaultMutableTreeNode) {
 			Object userObject = ((DefaultMutableTreeNode) individualNode).getUserObject();
 			if (userObject instanceof Individual) {
-				individual =(Individual) userObject ;
-				instanceNameEditCellPanel = new InstanceNameEditCellPanel(individual, (DefaultMutableTreeNode)individualNode );
+				individual = (Individual) userObject;
+				instanceNameEditCellPanel = new StepInstanceNameEditCellPanel(individual, (DefaultMutableTreeNode) individualNode, jStepTree);
 			}
 		} else {
 			UiUtils.showDialog(tree, "Uknown object type:" + individualNode);

@@ -46,17 +46,17 @@ public class UiUtils {
 	}
 
 	public static void showStepChooserGuiAndCreateNewStepTree(WhereToAddStepNode whereToAddStepNode, JTree jProtocolTree) {// todo maybe in here we'll do a dialog
-		JFrame frame = new JFrame("Step Chooser");
+		JFrame stepChooserFrame = new JFrame("Step Chooser");
 		// frame.setDefaultCloseOperation(EXIT_ON_CLOSE);//todo
 		// Create and set up the content pane.
 		StepChooserPanel newContentPane = new StepChooserPanel(jProtocolTree, whereToAddStepNode);
 		newContentPane.setOpaque(true); // content panes must be opaque
-		frame.setContentPane(newContentPane);
+		stepChooserFrame.setContentPane(newContentPane);
 		// Display the window.
-		frame.pack();
+		stepChooserFrame.pack();
 		JFrame mainFrame = UiUtils.getProtocolFrame(jProtocolTree);
-		frame.setLocation(mainFrame.getX() + WITH_OF_PROTOCOL_TREE + 10, 0);
-		frame.setVisible(true);
+		stepChooserFrame.setLocation(mainFrame.getX() + mainFrame.getWidth() /2, 0);
+		stepChooserFrame.setVisible(true);
 	}
 
 	public static void expandTree(JTree jTree) {
