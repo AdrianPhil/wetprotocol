@@ -4,6 +4,7 @@ import ont.OntManager;
 import ui.WetProtocolMainPanel.WhereToAddStepNode;
 import ui.property.AbstractTreeCellPanel;
 import ui.property.ClassPropertyEditorPanel;
+import ui.stepchooser.StepChooserPanel;
 
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
@@ -48,7 +49,7 @@ public class UiUtils {
 		JFrame frame = new JFrame("Step Chooser");
 		// frame.setDefaultCloseOperation(EXIT_ON_CLOSE);//todo
 		// Create and set up the content pane.
-		ClassChooserPanel newContentPane = new ClassChooserPanel(jProtocolTree, whereToAddStepNode);
+		StepChooserPanel newContentPane = new StepChooserPanel(jProtocolTree, whereToAddStepNode);
 		newContentPane.setOpaque(true); // content panes must be opaque
 		frame.setContentPane(newContentPane);
 		// Display the window.
@@ -64,27 +65,9 @@ public class UiUtils {
 		}
 	}
 
-	public static void createEmpyClassNodes(JTree jTree) {// for classChooserPanel
-		OntClass stepOntClass = OntManager.getInstance().getOntClass("Step");// TODO cache
-		Set<OntClass> stepClasses;
-		if (DEBUG) {
-			stepClasses = OntManager.getInstance().getClassesInSignature();
-		} else {
-			stepClasses = stepOntClass.listSubClasses().toSet();
-		}
-		DefaultTreeModel model = (DefaultTreeModel) jTree.getModel();
-		DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
-		if (root.getChildCount() > 0) {
-			return; // tree is already populated
-		}
-		stepClasses.stream().forEach(ontClass -> {
-			DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(ontClass);
-			root.add(newNode);
-		});
-		model.reload(root);// TODO I dont't know if necessary
-	}
 
-	static void loadStepsTreeFromModel(DefaultMutableTreeNode topStepNode) {
+	// * this practically does the whole UI if the model was changed*/
+	public static void loadStepsTreeFromModel(DefaultMutableTreeNode topStepNode) {
 		topStepNode.removeAllChildren();
 		List<Individual> list = OntManager.getInstance().calculateStepIndividuals();
 		list.sort((Individual i1, Individual i2) -> i1.getPropertyValue(OntManager.getStepCoordinatesProperty()).asLiteral().getString().compareTo(i2.getPropertyValue(OntManager.getStepCoordinatesProperty()).asLiteral().getString()));
@@ -161,15 +144,20 @@ public class UiUtils {
 		}
 	}
 
-	private static class NodeCoordinates {
+	public static class NodeCoordinates {
 		int vertical;
 		int depth;
 
-		NodeCoordinates(Individual i) {
+		public NodeCoordinates(Individual i) {
 			String coordinates = i.getPropertyValue(OntManager.getStepCoordinatesProperty()).asLiteral().getString();
 			String[] split = coordinates.split("\\.");
 			vertical = new Integer(split[0]);
 			depth = new Integer(split[1]);
+		}
+
+		@Override
+		public String toString() {
+			return "NodeCoordinates [vertical=" + vertical + ", depth=" + depth + "]";
 		}
 	}
 }

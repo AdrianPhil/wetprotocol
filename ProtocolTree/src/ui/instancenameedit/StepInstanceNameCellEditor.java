@@ -14,25 +14,18 @@ import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.rdf.model.Literal;
 
 import ont.OntManager;
-import ont.PropertyAndIndividual;
 import ui.UiUtils;
+import ui.property.PropertyAndIndividual;
 import ui.property.ClassPropertyEditorPanel.NodeType;
 
-public class InstanceNameCellEditor extends AbstractCellEditor implements TreeCellEditor {
+public class StepInstanceNameCellEditor extends AbstractCellEditor implements TreeCellEditor {
 	private InstanceNameEditCellPanel instanceNameEditCellPanel;
-	//private DefaultMutableTreeNode currentTopNode;
 	Individual individual;
-	//JTree jTree;
 
-//	public InstanceNameCellEditor(JTree jTree) {
-//		this.jTree = jTree;
-//	}
 
 	@Override // I think it's called when somebody from outside want the edited value. Maybe when clicking outside
 	public Object getCellEditorValue() { // builds and returns propertyAndIndividual from field EditRenderPanel, Returns the value contained in the editor.
 		Individual newIndividual= instanceNameEditCellPanel.getNewIndividualValueScrapedFromEditPanel();		
-		//newIndividual.getOntClass();//todo remove used just to check for exceptions
-		//we disregard the editor!!!!
 		return individual;
 	}
 

@@ -1,7 +1,7 @@
 package ui;
 
 import resources.ResourceFinding;
-import ui.instancenameedit.InstanceNameCellEditor;
+import ui.instancenameedit.StepInstanceNameCellEditor;
 import ui.property.ClassPropertyEditorPanel;
 
 import javax.swing.*;
@@ -51,7 +51,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 
 	private WetProtocolMainPanel() {
 		super(new GridLayout(1, 1));
-		initiateTree();
+		initiateTreeAndTreeModel();
 		JPanel treeViewPanel = new JPanel(new BorderLayout());
 		treeViewPanel.add(jProtocolTree, BorderLayout.PAGE_START);
 		JPanel treeViewButtonPanel = new JPanel();
@@ -80,7 +80,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		// addNodeEventListeners();
 	}
 
-	private void initiateTree() {
+	private void initiateTreeAndTreeModel() {
 		jProtocolTree = new JTree();
 		jProtocolTree.setEditable(false);
 		jProtocolTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -91,16 +91,17 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 	}
 
 	private void initiateOrRefreshTreeModelAndRest() {
-		protocolTreeModel = new DefaultTreeModel(new DefaultMutableTreeNode(OntManager.getInstance().getTopProtocolInstance()));// todo we might not need this
+		OntManager.getInstance();//loads the seeded ont model or the initial one if not already seeded
+		protocolTreeModel = new DefaultTreeModel(new DefaultMutableTreeNode(OntManager.getTopProtocolInstance()));// todo we might not need this
 		jProtocolTree.setModel(protocolTreeModel);
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode) protocolTreeModel.getRoot();
 		// protocolTreeModel.reload(root);//maybe not necessary
-		loadStepsTreeFromModel((DefaultMutableTreeNode) (protocolTreeModel.getRoot()));
+		loadStepsTreeFromModel(root);
 		expandTree(jProtocolTree);
 		// Enable tool tips.
 		jProtocolTree.setCellRenderer(new StepInstanceCellRenderer());
-		// jProtocolTree.setCellEditor(new InstanceNameCellEditor());
-		// jProtocolTree.setEditable(true);
+		 jProtocolTree.setCellEditor(new StepInstanceNameCellEditor());
+		 jProtocolTree.setEditable(true);
 		// Listen for when the selection changes.
 		jProtocolTree.addTreeSelectionListener(this);
 		jProtocolTree.setSelectionRow(0);// select root

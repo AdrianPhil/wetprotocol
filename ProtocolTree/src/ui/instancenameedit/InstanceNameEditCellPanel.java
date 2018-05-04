@@ -37,10 +37,10 @@ public class InstanceNameEditCellPanel extends JPanel implements PropertyChangeL
 
 	public Individual getNewIndividualValueScrapedFromEditPanel() {
 		// OntManager.renameNode((OntResource)((DefaultMutableTreeNode) jProtocolTree.getLastSelectedPathComponent()).getUserObject());
-		//return (Individual)OntManager.renameNode((OntResource) individualNode.getUserObject(),  valueComponent.getText());
-		//Individual individual=
-				OntManager.renameNode((Individual) individualNode.getUserObject(),  valueComponent.getText());
+		// return (Individual)OntManager.renameNode((OntResource) individualNode.getUserObject(), valueComponent.getText());
+		// Individual individual=
+		OntManager.renameNode((Individual) individualNode.getUserObject(), valueComponent.getText(), (DefaultMutableTreeNode) (individualNode.getRoot()));
 		// (Individual)individualNode.getUserObject(); this works well
-		return null;//individual; 
+		return null;// individual;
 	}
 }

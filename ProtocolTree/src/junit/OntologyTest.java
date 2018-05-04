@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import ont.*;
 import resources.ResourceFinding;
+import ui.property.PropertyAndIndividual;
 import ui.property.ClassPropertyEditorPanel.NodeType;
 
 class OntologyTest {

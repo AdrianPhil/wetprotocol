@@ -3,7 +3,10 @@ package ont;
 import resources.ResourceFinding;
 import ui.property.ClassPropertyEditorPanel.NodeType;
 import ui.UiUtils;
+import ui.UiUtils.NodeCoordinates;
+import ui.WetProtocolMainPanel;
 import ui.property.WrappedOntResource;
+import ui.stepchooser.ClassAndIndividualName;
 
 import org.apache.jena.graph.Graph;
 import org.apache.jena.graph.Node;
@@ -27,6 +30,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.reasoner.InfGraph;
+import org.apache.jena.sparql.function.library.print;
 import org.apache.jena.util.ResourceUtils;
 import org.apache.jena.util.iterator.ExtendedIterator;
 import org.apache.jena.util.iterator.UniqueFilter;
@@ -36,6 +40,7 @@ import org.apache.jena.vocabulary.ReasonerVocabulary;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -55,9 +60,10 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class OntManager {
 	private static OntManager instance;
 	private static OntModel ontologyModel;
-	//public static final String PROTOCOL_FILE = "WetProtocolWithTopProtocolInstanceFromProteje.owl";
+	// public static final String PROTOCOL_FILE = "WetProtocolWithTopProtocolInstanceFromProteje.owl";
+	// it needs to be saved and reloaded in Jena to show the proper class
 	public static final String PROTOCOL_FILE = "WetProtocolWithBasicProvisions.owl";
-	public static String ONTOLOGY_LOCATION = ResourceFinding.getResource(PROTOCOL_FILE).getFile();//this will be in the bin directory because that is where the class is
+	public static String ONTOLOGY_LOCATION = ResourceFinding.getResource(PROTOCOL_FILE).getFile();// this will be in the bin directory because that is where the class is
 	public static final String NS = "http://www.wet.protocol#";// namespace and #
 	public static OntProperty STANDALONE;
 	private static Individual topProtocolInstance;
@@ -74,7 +80,9 @@ public class OntManager {
 	}
 
 	public static final OntManager resetModelInstance(String pathOfOntFileToLoad) {
+		instance = null;
 		instance = new OntManager();
+		ontologyModel = null;
 		ontologyModel = ModelFactory.createOntologyModel();// OntModelSpec.OWL_MEM);// OntModelSpec.OWL_LITE_MEM);// "" isfull? hierarchy reasoner; OWL_MEM
 		ontologyModel.read(pathOfOntFileToLoad);
 		ontologyModel.setStrictMode(true);
@@ -83,12 +91,13 @@ public class OntManager {
 		// NOTHING_SUBCLASS = ontologyModel.getOntClass("owl:Nothing");
 		topProtocolInstance = ontologyModel.getIndividual(NS + "topProtocolInstance");
 		//
-		//topProtocolInstance.setOntClass(getOntClass("Protocol"));// need to correct the NamedIndividual nonsense that appears when saving in Jena
-		Resource namedIndividual = ontologyModel.getResource("http://www.w3.org/2002/07/owl#NamedIndividual");
-		System.out.println("in resetModelInstance. Found NamedIndividual:"+namedIndividual);
-		if (namedIndividual != null && namedIndividual instanceof OntResource) {
-			((OntResource) namedIndividual).remove();
-		}
+		// topProtocolInstance.setOntClass(getOntClass("Protocol"));// need to correct the NamedIndividual nonsense that appears when saving in Jena
+		// Resource namedIndividual = ontologyModel.getResource("http://www.w3.org/2002/07/owl#NamedIndividual");
+		// System.out.println("in resetModelInstance. Found NamedIndividual:"+namedIndividual);
+		// if (namedIndividual != null && namedIndividual instanceof OntResource) {
+		// ((OntResource) namedIndividual).remove();
+		// System.out.println("in resetModelInstance. removed NamedIndividual:");
+		// }
 		//
 		// topProtocolInstance.setPropertyValue(ontologyModel.getOntProperty(NS + "version"), ontologyModel.createTypedLiteral("Version 0.0")); //TODO reinstate
 		stepCoordinatesProperty = (ontologyModel.getOntProperty(NS + "stepCoordinatesProperty"));
@@ -125,12 +134,26 @@ public class OntManager {
 		return ontologyModel.listClasses().toSet();
 	}
 
-	public Individual getTopProtocolInstance() {
+	public static Individual getTopProtocolInstance() {
 		return topProtocolInstance;
 	}
 
+	public static Individual createStepIndividual(ClassAndIndividualName classAndIndividualName) {
+		Individual createdIndividual = OntManager.getInstance().createIndividual(classAndIndividualName.getName() + counter.incrementAndGet(), classAndIndividualName.getOntClass());
+		if (createdIndividual == null) {
+			System.out.println("!!!!!!!!!!!createdIndividual == null");
+		}
+		createdIndividual.addLabel("Label:" + createdIndividual.getLocalName(), null);
+		return createdIndividual;
+	}
+
 	public static Individual createIndividual(OntClass ontClass, String prefix) {
-		return OntManager.getInstance().createIndividual(prefix + counter.incrementAndGet() + "_ofClass_" + ontClass.getLocalName(), ontClass);
+		Individual createdIndividual = OntManager.getInstance().createIndividual(prefix + counter.incrementAndGet() + "_ofClass_" + ontClass.getLocalName(), ontClass);
+		if (createdIndividual == null) {
+			System.out.println();
+		}
+		createdIndividual.addLabel("Label:" + createdIndividual.getLocalName(), null);
+		return createdIndividual;
 	}
 
 	/** base one */
@@ -253,19 +276,30 @@ public class OntManager {
 		}
 	}
 
-	public static void renameNode(Individual resource, String newValue) {
-		File file = new File("C:/eclipseworkspace/ProtocolTree/src/resources/adrianTempOnt.xml");
+	public static void renameNode(Individual resource, String newValue, DefaultMutableTreeNode topStepNode) {
+		Path tempFile;
+		try {
+			tempFile = Files.createTempFile("wettempfile", ".tmp");
+		} catch (IOException e) {
+			UiUtils.showDialog(null, "some issues creating temp ontology file" + e.getLocalizedMessage());
+			e.printStackTrace();
+			return;
+		}
+		File file = tempFile.toFile();
+		file.deleteOnExit();
+		Path path=null;
 		try (FileOutputStream output = new FileOutputStream(file)) {
-			OntManager.getOntologyModel().writeAll(output, "RDF/XML", OntManager.NS);
-			Path path = Paths.get(file.getAbsolutePath());
+			OntManager.getOntologyModel().writeAll(output, "RDF/XML", OntManager.NS);// TODO maybe without NS
+			 path = Paths.get(file.getAbsolutePath());
 			Charset charset = StandardCharsets.UTF_8;
 			String content = new String(Files.readAllBytes(path), charset);
 			content = content.replaceAll(resource.getLocalName(), newValue);
 			Files.write(path, content.getBytes(charset));
-			ontologyModel.read(ONTOLOGY_LOCATION);
 		} catch (Exception e1) {
 			UiUtils.showDialog(null, "some issues writing temp ontology file" + e1.getLocalizedMessage());
 		}
+		OntManager.resetModelInstance(path.toString());// these 2 lines reset the whole model and UI
+		UiUtils.loadStepsTreeFromModel(topStepNode);
 	}
 
 	public static OntProperty getStepCoordinatesProperty() {

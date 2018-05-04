@@ -1,4 +1,4 @@
-package ui;
+package ui.stepchooser;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -8,27 +8,30 @@ import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 
 import resources.ResourceFinding;
+import ui.UiUtils;
 
 import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.*;
 
-public class ClassCellRenderer implements TreeCellRenderer {
+public class StepChooserCellRenderer implements TreeCellRenderer {
 	static final ImageIcon createImageIcon = ResourceFinding.createImageIcon("icons/brick_add.png");
-	JLabel localName = new JLabel(" ");
 	JLabel imageLabel = new JLabel();
+	//JLabel localName = new JLabel(" ");
+	JLabel className = new JLabel(" ");
 	JPanel renderer = new JPanel();
 
 	DefaultTreeCellRenderer defaultRenderer = new DefaultTreeCellRenderer();
 	Color backgroundSelectionColor;
 	Color backgroundNonSelectionColor;
 
-	public ClassCellRenderer() {
+	public StepChooserCellRenderer() {
 		imageLabel.setIcon(createImageIcon);
 		renderer.add(imageLabel);
-		localName.setForeground(Color.BLACK);
-		renderer.add(localName);
+		//localName.setForeground(Color.BLACK);
+		//renderer.add(localName);
+		renderer.add(className);
 		renderer.setBorder(null);
 		backgroundSelectionColor = defaultRenderer.getBackgroundSelectionColor();
 		backgroundNonSelectionColor = defaultRenderer.getBackgroundNonSelectionColor();
@@ -49,9 +52,9 @@ public class ClassCellRenderer implements TreeCellRenderer {
 		if (userObject instanceof String) {// user has chosen the ont class chooser root "please choose a step" 
 			return defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 		}
-		if (userObject instanceof OntClass) {
-			OntClass ontClass = (OntClass) userObject;
-			localName.setText(ontClass.getLocalName());
+		if (userObject instanceof ClassAndIndividualName) {
+			//localName.setText(((ClassAndIndividualName)userObject).getName());
+			className.setText("<"+((ClassAndIndividualName)userObject).getOntClass().getLocalName()+">");
 			if (selected) {
 				renderer.setBackground(backgroundSelectionColor);
 			} else {

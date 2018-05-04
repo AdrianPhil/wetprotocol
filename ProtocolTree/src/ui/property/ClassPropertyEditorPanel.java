@@ -2,7 +2,6 @@ package ui.property;
 
 //root nodes) after tree.setRootVisible(false) call tree.setShowsRootHandles(true).
 import ont.OntManager;
-import ont.PropertyAndIndividual;
 import ui.UiUtils;
 
 import org.apache.jena.ontology.Individual;

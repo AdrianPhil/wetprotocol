@@ -8,7 +8,6 @@ import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntProperty;
 
 import ont.OntManager;
-import ont.PropertyAndIndividual;
 import ui.UiUtils;
 
 import java.awt.Color;

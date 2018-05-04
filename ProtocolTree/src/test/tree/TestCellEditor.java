@@ -10,8 +10,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellEditor;
 
 import ont.OntManager;
-import ont.PropertyAndIndividual;
 import ui.UiUtils;
+import ui.property.PropertyAndIndividual;
 
 public class TestCellEditor extends AbstractCellEditor implements TreeCellEditor {
 	private TestController controller = new TestController();

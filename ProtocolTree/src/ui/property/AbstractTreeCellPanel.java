@@ -25,7 +25,6 @@ import org.apache.jena.ontology.OntResource;
 import org.apache.jena.rdf.model.RDFNode;
 
 import ont.OntManager;
-import ont.PropertyAndIndividual;
 import resources.ResourceFinding;
 import ui.UiUtils;
 

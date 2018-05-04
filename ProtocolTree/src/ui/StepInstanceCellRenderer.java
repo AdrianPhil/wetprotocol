@@ -18,6 +18,7 @@ import javax.swing.*;
 public class StepInstanceCellRenderer implements TreeCellRenderer {
 	static final ImageIcon createImageIcon = ResourceFinding.createImageIcon("icons/package.png");// TODO probably singleton it
 	JLabel localName = new JLabel(" ");
+	JLabel labelName = new JLabel(" ");
 	JLabel ontClass = new JLabel(" ");
 	JLabel imageLabel = new JLabel();
 	JPanel renderer = new JPanel();
@@ -30,6 +31,7 @@ public class StepInstanceCellRenderer implements TreeCellRenderer {
 		renderer.add(imageLabel);
 		localName.setForeground(Color.BLACK);
 		renderer.add(localName);
+		renderer.add(labelName);
 		ontClass.setForeground(Color.BLACK);
 		renderer.add(ontClass);
 		renderer.setBorder(null);
@@ -58,12 +60,9 @@ public class StepInstanceCellRenderer implements TreeCellRenderer {
 				assert false : "class is null";
 			}
 			// localName.setText(individual.getLocalName()+" label:"+individual.getLabel(null)+" location:"+individual.getPropertyValue(OntManager.getInstance().getStepLevelProperty()).asLiteral().getString());//TODO rename part
-			RDFNode propertyValue = individual.getPropertyValue(OntManager.getInstance().getStepCoordinatesProperty());
-			if (propertyValue != null) {//TODO remove this later an we don't need to show this
-				localName.setText(individual.getLocalName() + " location:" + propertyValue.asLiteral().getString());// TODO rename part
-			} else {
-				localName.setText(individual.getLocalName());
-			}
+			// RDFNode propertyValue = individual.getPropertyValue(OntManager.getInstance().getStepCoordinatesProperty());
+			localName.setText(individual.getLocalName());
+			labelName.setText(" label:"+individual.getLabel(null));
 			ontClass.setText("<" + individual.getOntClass().getLocalName() + ">");
 			if (selected) {
 				renderer.setBackground(backgroundSelectionColor);

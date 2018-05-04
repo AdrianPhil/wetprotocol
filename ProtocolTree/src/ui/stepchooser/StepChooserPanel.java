@@ -1,7 +1,9 @@
-package ui;
+package ui.stepchooser;
 
 import ont.OntManager;
 import resources.ResourceFinding;
+import ui.UiUtils;
+import ui.WetProtocolMainPanel;
 import ui.WetProtocolMainPanel.WhereToAddStepNode;
 
 import javax.swing.*;
@@ -23,7 +25,7 @@ import java.util.Enumeration;
 
 import static ui.UiUtils.expandTree;
 
-public class ClassChooserPanel extends JPanel implements TreeSelectionListener {
+public class StepChooserPanel extends JPanel implements TreeSelectionListener {
 	private JEditorPane htmlPane;
 	private URL helpURL;
 	// private JButton addNewSiblingNodeButton = new JButton("New Sibling");
@@ -34,17 +36,17 @@ public class ClassChooserPanel extends JPanel implements TreeSelectionListener {
 	// most below could be cached
 	private final JTree jProtocolTree;
 	private final WhereToAddStepNode whereToAddStepNode;
-	private DefaultTreeModel classTreeModel = new DefaultTreeModel(new DefaultMutableTreeNode("Please choose a step"));
-	private JTree jClassTree = new JTree(classTreeModel);
-	private static boolean DEBUG = true; // adrian
+	private DefaultTreeModel stepChooserTreeModel = new DefaultTreeModel(new DefaultMutableTreeNode("Please choose a step"));
+	private JTree jStepChooserTree = new JTree(stepChooserTreeModel);
+	StepChooserCellEditor cellEditor ;//important for stop editing
 
-	public ClassChooserPanel(JTree jProtocolTree, WhereToAddStepNode whereToAddStepNode) {
+	public StepChooserPanel(JTree jProtocolTree, WhereToAddStepNode whereToAddStepNode) {
 		super(new GridLayout(1, 1));
 		this.jProtocolTree = jProtocolTree;
 		this.whereToAddStepNode = whereToAddStepNode;
 		initiateTree();
 		JPanel treeViewPanel = new JPanel(new BorderLayout());
-		treeViewPanel.add(jClassTree, BorderLayout.PAGE_START);
+		treeViewPanel.add(jStepChooserTree, BorderLayout.PAGE_START);
 		JPanel treeViewButtonPanel = new JPanel();
 		// treeViewButtonPanel.add(addNewSiblingNodeButton);
 		treeViewButtonPanel.add(okButton);
@@ -66,7 +68,7 @@ public class ClassChooserPanel extends JPanel implements TreeSelectionListener {
 		Dimension minimumSize = new Dimension(100, 50);
 		htmlView.setMinimumSize(minimumSize);
 		treeView.setMinimumSize(minimumSize);
-		splitPane.setDividerLocation(400); // XXX: ignored in some releases
+		splitPane.setDividerLocation(600); // XXX: ignored in some releases
 		// of Swing. bug 4101306
 		// workaround for bug 4101306:
 		splitPane.setPreferredSize(new Dimension(400, 600));
@@ -78,52 +80,57 @@ public class ClassChooserPanel extends JPanel implements TreeSelectionListener {
 	private void initiateTree() {
 		// Operation topOperation = (Operation) root.getUserObject();
 		// jClassTree.setEditable(true);
-		jClassTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		jClassTree.setShowsRootHandles(true);
-		UiUtils.createEmpyClassNodes(jClassTree);// this should be cached or we could cache the whole chooser
-		expandTree(jClassTree);
+		jStepChooserTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		jStepChooserTree.setShowsRootHandles(true);
+		StepChooserUtils.createEmpyStepNodesToChooseFrom(jStepChooserTree);// this should be cached or we could cache the whole chooser
+		expandTree(jStepChooserTree);
 		// Enable tool tips.
-		ToolTipManager.sharedInstance().registerComponent(jClassTree);
-		jClassTree.setCellRenderer(new ClassCellRenderer());
+		ToolTipManager.sharedInstance().registerComponent(jStepChooserTree);
+		jStepChooserTree.setCellRenderer(new StepChooserCellRenderer());
+		cellEditor = new StepChooserCellEditor();
+		jStepChooserTree.setCellEditor(cellEditor);
+		jStepChooserTree.setEditable(true);
 		// Listen for when the selection changes.
-		jClassTree.addTreeSelectionListener(this);
+		jStepChooserTree.addTreeSelectionListener(this);
 		addTreeNodeMouseListeners();
 	}
 
 	private void addTreeButtonListeners(Component splitPane) {
 		okButton.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) {				
 				classChosenResponse(splitPane);
 			}
 		});
 		expandTreeButton.addActionListener(e -> {
-			expandTree(jClassTree);
+			expandTree(jStepChooserTree);
 		});
 	}
 
 	private void classChosenResponse(Component splitPane) {
-		DefaultMutableTreeNode selectedClassNode = (DefaultMutableTreeNode) jClassTree.getLastSelectedPathComponent();
+		cellEditor.stopCellEditing();
+		DefaultMutableTreeNode selectedClassNode = (DefaultMutableTreeNode) jStepChooserTree.getLastSelectedPathComponent();
 		if (selectedClassNode == null) {
 			UiUtils.showDialog(splitPane, "Selected node is null");// should never get here because the root should be selected
 			return;
 		}
-		//TreeNode root = selectedClassNode.getRoot();
+		// TreeNode root = selectedClassNode.getRoot();
 		DefaultMutableTreeNode selectedStepNode = (DefaultMutableTreeNode) jProtocolTree.getLastSelectedPathComponent();
-		DefaultMutableTreeNode newChildStepNode = new DefaultMutableTreeNode(OntManager.createIndividual((OntClass) selectedClassNode.getUserObject(), "newProtocolStep"));
+		DefaultMutableTreeNode newChildStepNode = new DefaultMutableTreeNode
+				(OntManager.createStepIndividual((ClassAndIndividualName) selectedClassNode.getUserObject() ));
 		if (whereToAddStepNode == WetProtocolMainPanel.WhereToAddStepNode.NEW_CHILD_STEP_NODE) {// insert a child
 			selectedStepNode.insert(newChildStepNode, selectedStepNode.getChildCount());// insert as last child
-			//DefaultMutableTreeNode insertedChild = (DefaultMutableTreeNode) selectedStepNode.getChildAt(selectedStepNode.getChildCount() - 1);
+			// DefaultMutableTreeNode insertedChild = (DefaultMutableTreeNode) selectedStepNode.getChildAt(selectedStepNode.getChildCount() - 1);
 			// jProtocolTree.expandPath(new TreePath(protocolTreeParentNode.getPath()));
 			jProtocolTree.setSelectionPath(new TreePath(newChildStepNode.getPath()));// select it
 		} else {// insert sibling after the selected one
 			int childIndex = selectedStepNode.getParent().getIndex(selectedStepNode) + 1;
 			((DefaultMutableTreeNode) selectedStepNode.getParent()).insert(newChildStepNode, childIndex);
-			//DefaultMutableTreeNode addedChild = (DefaultMutableTreeNode) selectedStepNode.getParent().getChildAt(childIndex);
+			// DefaultMutableTreeNode addedChild = (DefaultMutableTreeNode) selectedStepNode.getParent().getChildAt(childIndex);
 			jProtocolTree.setSelectionPath(new TreePath(newChildStepNode.getPath()));// select it
 		}
 		jProtocolTree.updateUI();
-		((JFrame) ClassChooserPanel.this.getTopLevelAncestor()).dispose();
+		((JFrame) StepChooserPanel.this.getTopLevelAncestor()).dispose();
 	}
 
 	/**
@@ -131,7 +138,7 @@ public class ClassChooserPanel extends JPanel implements TreeSelectionListener {
 	 */
 	@Override
 	public void valueChanged(TreeSelectionEvent e) {
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) jClassTree.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) jStepChooserTree.getLastSelectedPathComponent();
 		// if (node == null) return;
 		// Object nodeInfo = node.getUserObject();
 		// if (node.isLeaf()) {
@@ -149,14 +156,14 @@ public class ClassChooserPanel extends JPanel implements TreeSelectionListener {
 	}
 
 	private void addTreeNodeMouseListeners() {
-		jClassTree.addMouseListener(new MouseAdapter() {
+		jStepChooserTree.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
-					DefaultMutableTreeNode node = (DefaultMutableTreeNode) jClassTree.getLastSelectedPathComponent();
+					DefaultMutableTreeNode node = (DefaultMutableTreeNode) jStepChooserTree.getLastSelectedPathComponent();
 					if (node == null)
 						return;
-					classChosenResponse(jClassTree);
+					classChosenResponse(jStepChooserTree);
 				}
 			}
 		});
@@ -177,7 +184,7 @@ public class ClassChooserPanel extends JPanel implements TreeSelectionListener {
 				htmlPane.setPage(url);
 			} else { // null url
 				htmlPane.setText("File Not Found");
-				if (DEBUG) {
+				if (UiUtils.DEBUG) {
 					System.out.println("Attempted to display a null URL.");
 				}
 			}
@@ -186,13 +193,4 @@ public class ClassChooserPanel extends JPanel implements TreeSelectionListener {
 		}
 	}
 
-	private int getRootDepth(TreeNode addedChild) {
-		int depth = 0;
-		TreeNode lastChild=addedChild;
-		while (lastChild.getParent() != null) {
-			lastChild=lastChild.getParent();
-			depth++;
-		}
-		return depth;
-	}
 }

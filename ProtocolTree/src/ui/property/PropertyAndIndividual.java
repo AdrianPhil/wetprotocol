@@ -1,4 +1,4 @@
-package ont;
+package ui.property;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
