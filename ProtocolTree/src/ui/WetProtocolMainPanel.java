@@ -48,7 +48,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 	private JButton loadProtocolButton = new JButton("Load Protocol");
 	private JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 	private JTree jProtocolTree;
-	public static final int WITH_OF_PROTOCOL_TREE = 200;
+	public static final int WITH_OF_PROTOCOL_TREE = 400;
 	private final static String FRAME_TITLE = "Wet Protocol";
 	private DefaultTreeModel protocolTreeModel;
 
@@ -58,6 +58,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		JPanel treeViewPanel = new JPanel(new BorderLayout());
 		treeViewPanel.add(jProtocolTree, BorderLayout.PAGE_START);
 		JPanel treeViewButtonPanel = new JPanel();
+		treeViewButtonPanel.setLayout(new GridLayout(2, 1));
 		treeViewButtonPanel.add(addNewSiblingNodeButton);
 		treeViewButtonPanel.add(addChildNodeButton);
 		treeViewButtonPanel.add(deleteChildNodeButton);
@@ -71,11 +72,12 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		splitPane.setLeftComponent(treeViewScrollPane);
 		createNewClassPropertyEditorPanel();
 		treeViewScrollPane.setMinimumSize(new Dimension(100, 50));
+		treeViewScrollPane.setPreferredSize(new Dimension(WITH_OF_PROTOCOL_TREE, 50));
 		splitPane.setDividerLocation(WITH_OF_PROTOCOL_TREE); // XXX: ignored in some releases
 		// of Swing. bug 4101306
 		// workaround for bug 4101306:
 		// treeView.setPreferredSize(new Dimension(100, 100));
-		splitPane.setPreferredSize(new Dimension(1200, 400));
+		splitPane.setPreferredSize(new Dimension(1300, 500));
 		// Add the split pane to this panel.
 		add(splitPane);
 		this.setLocation(100, this.getX());// todo remove
@@ -121,6 +123,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		// Enable tool tips.
 		jProtocolTree.setCellRenderer(new StepInstanceCellRenderer(jProtocolTree));
 		jProtocolTree.setCellEditor(new StepInstanceNameCellEditor(jProtocolTree));
+		jProtocolTree.setInvokesStopCellEditing(true);//keep the changes when focus is lost
 		//jProtocolTree.setEditable(true);
 		// jProtocolTree.setEditable(true);
 		// Listen for when the selection changes.

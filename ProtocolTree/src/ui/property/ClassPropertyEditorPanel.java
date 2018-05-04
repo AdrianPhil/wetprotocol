@@ -95,8 +95,9 @@ public class ClassPropertyEditorPanel extends JPanel implements TreeSelectionLis
 		createNodes();
 		expandTree(jPropertyAndIndividualTree);
 		jPropertyAndIndividualTree.setCellRenderer(new CellRenderer());
-		jPropertyAndIndividualTree.setEditable(true);
 		jPropertyAndIndividualTree.setCellEditor(new CellEditor(jPropertyAndIndividualTree));
+		jPropertyAndIndividualTree.setInvokesStopCellEditing(true);//keep the changes when focus is lost
+		jPropertyAndIndividualTree.setEditable(true);
 		// Enable tool tips.
 		ToolTipManager.sharedInstance().registerComponent(jPropertyAndIndividualTree);
 		// Listen for when the selection changes.
@@ -224,6 +225,7 @@ public class ClassPropertyEditorPanel extends JPanel implements TreeSelectionLis
 	 * Todo need to update the protocol tree node with the value of the properties and maybe change it's icon and refresh to show the changes
 	 */
 	private void acceptPropertiesResponse(Component splitPane) {
+		jPropertyAndIndividualTree.stopEditing();
 		// DefaultMutableTreeNode selectedClassNode = (DefaultMutableTreeNode)
 		// jTree.getLastSelectedPathComponent();
 		// if (selectedClassNode == null) {

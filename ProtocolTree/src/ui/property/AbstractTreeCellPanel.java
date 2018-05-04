@@ -37,7 +37,7 @@ public abstract class AbstractTreeCellPanel extends JPanel{
 	static final ImageIcon ICON_CHOICE_SUBCLASS = ResourceFinding.createImageIcon("icons/page_white_ruby.png");
 	JLabel icon = new JLabel("");
 	JLabel localComponent = new JLabel("dummy local");
-	JFormattedTextField valueComponent=new JFormattedTextField("dummy");// this seems to generate dummy on escape for JformattedTextField and no change for JText
+	JFormattedTextField valueComponent=new PropertyValueFormattedTextBox("dummy property value");// this seems to generate dummy on escape for JformattedTextField and no change for JText
 	JLabel rangeComponent = new JLabel("dummy range");
 	JLabel domainComponent = new JLabel("dummy domain");
 	JComboBox<WrappedOntResource> individualOrClassChooser = new JComboBox();
@@ -46,7 +46,7 @@ public abstract class AbstractTreeCellPanel extends JPanel{
 	public AbstractTreeCellPanel(PropertyAndIndividual propertyAndIndividual) {
 		this.propertyAndIndividual = propertyAndIndividual;
 		debug.setText("individual:" + propertyAndIndividual.getIndividual().getLocalName());
-		valueComponent.addPropertyChangeListener("value", new ValueChangeListener());
+		valueComponent.addPropertyChangeListener("value", new ValueChangeListener());//TODO not necessary?
 		RDFNode propertyValue = propertyAndIndividual.getIndividual().getPropertyValue(propertyAndIndividual.getOntProperty());
 		if (propertyValue != null) {
 			if (propertyValue.isLiteral()) {
@@ -57,7 +57,7 @@ public abstract class AbstractTreeCellPanel extends JPanel{
 				//System.out.println("in Abstract Cell Panel constructor setting the valueComponent to:"+valueComponent.getText());
 			}
 		} else {
-			valueComponent.setText("---");
+			valueComponent.setText("-");
 			//System.out.println("in Abstract Cell Panel constructor setting the valueComponent to:"+valueComponent.getText());
 		}
 	}

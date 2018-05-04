@@ -71,7 +71,8 @@ public class OntManager {
 	private static Individual topProtocolInstance;
 	private static OntProperty stepCoordinatesProperty;
 	// public static Resource NOTHING_SUBCLASS;
-	public static AtomicInteger counter = new AtomicInteger(0);
+	public static AtomicInteger counter = new AtomicInteger(0); todo make sure the counter value is saved to file and loaded when file is loaded
+	there still seem to be a problem with NamedIndividual
 	//
 
 	public static final OntManager getInstance() {
@@ -295,16 +296,19 @@ public class OntManager {
 		try (FileOutputStream output = new FileOutputStream(file)) {
 			OntManager.getOntologyModel().writeAll(output, "RDF/XML");// TODO maybe without NS
 			path = Paths.get(file.getAbsolutePath());
-			Charset charset = StandardCharsets.UTF_8;
+			Charset charset = StandardCharsets.US_ASCII;
 			String content = new String(Files.readAllBytes(path), charset);
-			content = content.replaceAll(resource.getLocalName(), NS + newValue);
+			content = content.replace(resource.getURI(),resource.getNameSpace()+ newValue);
 			Files.write(path, content.getBytes(charset));
 		} catch (Exception e1) {
 			UiUtils.showDialog(null, "some issues writing temp ontology file" + e1.getLocalizedMessage());
 		}
 		OntManager.resetModelInstance(path.toString());// these 2 lines reset the whole model and UI
 		// UiUtils.loadStepsTreeFromModel(topStepNode);
-		return OntManager.getOntologyModel().getIndividual(NS + newValue);
+		Individual newIndividual = OntManager.getOntologyModel().getIndividual(NS+newValue);
+		System.out.println("Rename returned node:"+newIndividual);
+		return newIndividual;//NS + newValue);
+		
 	}
 
 	public static OntProperty getStepCoordinatesProperty() {

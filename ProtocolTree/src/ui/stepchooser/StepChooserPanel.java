@@ -27,7 +27,6 @@ import static ui.UiUtils.expandTree;
 
 public class StepChooserPanel extends JPanel implements TreeSelectionListener {
 	private JEditorPane htmlPane;
-	private URL helpURL;
 	// private JButton addNewSiblingNodeButton = new JButton("New Sibling");
 	private JButton okButton = new JButton("OK");
 	private JButton expandTreeButton = new JButton("Expand Tree");
@@ -38,7 +37,7 @@ public class StepChooserPanel extends JPanel implements TreeSelectionListener {
 	private final WhereToAddStepNode whereToAddStepNode;
 	private DefaultTreeModel stepChooserTreeModel = new DefaultTreeModel(new DefaultMutableTreeNode("Please choose a step"));
 	private JTree jStepChooserTree = new JTree(stepChooserTreeModel);
-	StepChooserCellEditor cellEditor ;//important for stop editing
+	StepChooserCellEditor cellEditor ;//important for stop editing but I can do it by configuration too
 
 	public StepChooserPanel(JTree jProtocolTree, WhereToAddStepNode whereToAddStepNode) {
 		super(new GridLayout(1, 1));
@@ -90,6 +89,7 @@ public class StepChooserPanel extends JPanel implements TreeSelectionListener {
 		cellEditor = new StepChooserCellEditor();
 		jStepChooserTree.setCellEditor(cellEditor);
 		jStepChooserTree.setEditable(true);
+		jStepChooserTree.setInvokesStopCellEditing(true);//keep the changes when focus is lost
 		// Listen for when the selection changes.
 		jStepChooserTree.addTreeSelectionListener(this);
 		addTreeNodeMouseListeners();
@@ -108,6 +108,7 @@ public class StepChooserPanel extends JPanel implements TreeSelectionListener {
 	}
 
 	private void classChosenResponse(Component splitPane) {
+		System.out.println("Demanded stop cell editing!!!");
 		cellEditor.stopCellEditing();
 		DefaultMutableTreeNode selectedClassNode = (DefaultMutableTreeNode) jStepChooserTree.getLastSelectedPathComponent();
 		if (selectedClassNode == null) {

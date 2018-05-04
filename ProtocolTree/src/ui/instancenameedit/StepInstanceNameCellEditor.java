@@ -53,8 +53,9 @@ public class StepInstanceNameCellEditor extends AbstractCellEditor implements Tr
 	}
 
 	@Override
-	protected void fireEditingStopped() {
-		// controller.setMode(Mode.RENDER);
+	protected void fireEditingStopped() {	
+		System.out.println("fireEditingStopped");
 		super.fireEditingStopped();
+		jStepTree.setEditable(false);
 	}
 }

@@ -17,12 +17,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntResource;
 import ont.OntManager;
+import ui.OntResourceNameFormattedTextBox;
 
 public class StepInstanceNameEditCellPanel extends JPanel implements PropertyChangeListener {
 	private JButton saveButton;
 	final DefaultMutableTreeNode individualNode;
 	JLabel icon = new JLabel("");
-	JFormattedTextField valueComponent = new JFormattedTextField("dummy value 2");
+	JFormattedTextField valueComponent = new OntResourceNameFormattedTextBox("dummy value 2");
 	JTree jStepTree;// only for rename
 
 	public StepInstanceNameEditCellPanel(Individual individual, DefaultMutableTreeNode individualNode, JTree jStepTree) {

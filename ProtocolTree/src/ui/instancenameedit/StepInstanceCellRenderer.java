@@ -40,7 +40,7 @@ public class StepInstanceCellRenderer implements TreeCellRenderer {
 		renderer.setBorder(null);
 		backgroundSelectionColor = defaultRenderer.getBackgroundSelectionColor();
 		backgroundNonSelectionColor = defaultRenderer.getBackgroundNonSelectionColor();
-		imageLabel.addMouseListener(new MouseAdapter() {
+		imageLabel.addMouseListener(new MouseAdapter() {//TODO not used
 			public void mouseClicked(MouseEvent e) {
 				System.out.println("Icon clicked!!");
 				 jProtocolTree.setEditable(true);

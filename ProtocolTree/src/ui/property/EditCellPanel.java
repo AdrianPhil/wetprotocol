@@ -43,7 +43,7 @@ public class EditCellPanel extends AbstractTreeCellPanel {
 		if (propertyAndIndividual.getNodeType() == NodeType.LITERAL_NODE) {
 			RDFNode propertyValue = propertyAndIndividual.getIndividual().getPropertyValue(ontProperty);
 			valueComponent.setEditable(true);
-			setProperFormatter(valueComponent, propertyAndIndividual);
+			//setProperFormatter(valueComponent, propertyAndIndividual);
 			individualOrClassChooser.setVisible(false);
 		} else if (propertyAndIndividual.getNodeType() == NodeType.DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS || propertyAndIndividual.getNodeType() == NodeType.DATA_TYPE_NODE_FOR_CHOICE_STANDALONE_OBJECT) {
 			RDFNode existingIndividual = propertyAndIndividual.getIndividual().getPropertyValue(ontProperty);// the value for existing individual
@@ -75,7 +75,6 @@ public class EditCellPanel extends AbstractTreeCellPanel {
 			});
 			saveButton.setEnabled(true);
 			add(saveButton, this.getComponentCount() - 3);
-			System.out.println();
 			individualOrClassChooser.setVisible(true);
 		}
 	}
@@ -127,20 +126,20 @@ public class EditCellPanel extends AbstractTreeCellPanel {
 		}
 	}
 
-	private void setProperFormatter(JFormattedTextField valueComponent, PropertyAndIndividual propertyAndIndividual) {
-		switch (propertyAndIndividual.getOntProperty().getRange().getLocalName()) {
-		case "int":
-		case "integer":
-			System.out.println("integer");
-			break;
-		case "decimal":
-			System.out.println("decimal");
-			break;
-		case "string":
-			System.out.println("string");
-			break;
-		}
-	}
+//	private void setProperFormatter(JFormattedTextField valueComponent, PropertyAndIndividual propertyAndIndividual) {
+//		switch (propertyAndIndividual.getOntProperty().getRange().getLocalName()) {
+//		case "int":
+//		case "integer":
+//			System.out.println("integer");
+//			break;
+//		case "decimal":
+//			System.out.println("decimal");
+//			break;
+//		case "string":
+//			System.out.println("string");
+//			break;
+//		}
+//	}
 
 	public void setTextAndAddComponents() {
 		super.setTextAndAddComponents();

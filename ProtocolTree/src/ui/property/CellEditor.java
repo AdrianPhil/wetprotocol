@@ -40,9 +40,6 @@ public class CellEditor extends AbstractCellEditor implements TreeCellEditor {
 		System.out.print("In EDITOR getTreeCellEditorComponent called on property:");
 		if (propertyAndIndividualNode != null && propertyAndIndividualNode instanceof DefaultMutableTreeNode) {
 			Object userObject = ((DefaultMutableTreeNode) propertyAndIndividualNode).getUserObject();
-			// if (userObject instanceof OntClass) {
-			// return null;//new DefaultCellEditor().getTreeCellEditorComponent( tree, propertyAndIndividualObject, isSelected, expanded, leaf, row);
-			// }
 			if (userObject instanceof PropertyAndIndividual) {
 				propertyAndIndividual = (PropertyAndIndividual) userObject;
 				System.out.println("on property:" + propertyAndIndividual.getOntProperty().getLocalName());
@@ -62,7 +59,6 @@ public class CellEditor extends AbstractCellEditor implements TreeCellEditor {
 
 	@Override
 	protected void fireEditingStopped() {
-		// controller.setMode(Mode.RENDER);
 		System.out.println("fireEditingStopped called");
 		super.fireEditingStopped();
 	}

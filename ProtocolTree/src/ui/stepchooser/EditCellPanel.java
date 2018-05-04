@@ -21,6 +21,7 @@ import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntResource;
 import ont.OntManager;
+import ui.OntResourceNameFormattedTextBox;
 import ui.property.PropertyAndIndividual;
 
 public class EditCellPanel extends JPanel implements PropertyChangeListener {
@@ -28,7 +29,7 @@ public class EditCellPanel extends JPanel implements PropertyChangeListener {
 	final DefaultMutableTreeNode theNode;
 	JLabel icon = new JLabel("");
 	JLabel classNameComponent = new JLabel();
-	JTextField editableValueComponent = new JFormattedTextField("yyyyy");
+	JTextField editableValueComponent = new OntResourceNameFormattedTextBox("DummyValue");
 
 	public EditCellPanel(ClassAndIndividualName classAndIndividualName, DefaultMutableTreeNode theNode) {
 		this.classAndIndividualName = classAndIndividualName;
@@ -39,12 +40,12 @@ public class EditCellPanel extends JPanel implements PropertyChangeListener {
 		editableValueComponent.setEditable(true);
 		add(editableValueComponent);
 		add(classNameComponent);
-		setBorder(BorderFactory.createLineBorder(Color.RED));		
+		setBorder(BorderFactory.createLineBorder(Color.RED));
 	}
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		//System.out.println("EditCellPanel property change event:" + evt);
+		// System.out.println("EditCellPanel property change event:" + evt);
 		// classAndIndividualName.setName(""+evt.getNewValue());
 	}
 
