@@ -200,7 +200,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 					UiUtils.showDialog(jProtocolTree, "Cannot open the file");
 					return;
 				}
-				OntManager.resetModelInstance(file.getAbsolutePath());
+				OntManager.loadModelFromFileAndResetOntManager(file.getAbsolutePath());
 				UiUtils.getProtocolFrame(this).setTitle(FRAME_TITLE + " " + file.getAbsolutePath());
 				// DefaultTreeModel model = (DefaultTreeModel) jProtocolTree.getModel();
 				// DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();

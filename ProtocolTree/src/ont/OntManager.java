@@ -1,44 +1,6 @@
 package ont;
 
-import resources.ResourceFinding;
-import ui.property.ClassPropertyEditorPanel.NodeType;
-import ui.UiUtils;
-import ui.UiUtils.NodeCoordinates;
-import ui.WetProtocolMainPanel;
-import ui.property.WrappedOntResource;
-import ui.stepchooser.ClassAndIndividualName;
-
-import org.apache.jena.graph.Graph;
-import org.apache.jena.graph.Node;
-import org.apache.jena.graph.Triple;
-import org.apache.jena.ontology.Individual;
-import org.apache.jena.ontology.OntClass;
-import org.apache.jena.ontology.OntModel;
-import org.apache.jena.ontology.OntModelSpec;
-import org.apache.jena.ontology.OntProperty;
-import org.apache.jena.ontology.OntResource;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QueryFactory;
-import org.apache.jena.query.ResultSet;
-import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.reasoner.InfGraph;
-import org.apache.jena.sparql.function.library.print;
-import org.apache.jena.util.ResourceUtils;
-import org.apache.jena.util.iterator.ExtendedIterator;
-import org.apache.jena.util.iterator.UniqueFilter;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.ReasonerVocabulary;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -46,7 +8,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -55,44 +16,60 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
+
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntProperty;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Statement;
+
+import resources.ResourceFinding;
+import ui.UiUtils;
+import ui.property.WrappedOntResource;
+import ui.stepchooser.ClassAndIndividualName;
 
 public class OntManager {
 	private static OntManager instance;
 	private static OntModel ontologyModel;
-	// public static final String PROTOCOL_FILE = "WetProtocolWithTopProtocolInstanceFromProteje.owl";
+	 public static final String PROTOCOL_FILE = "WetProtocolEmpty.owl";
 	// it needs to be saved and reloaded in Jena to show the proper class
-	public static final String PROTOCOL_FILE = "WetProtocolWithBasicProvisions.owl";
+	//public static final String PROTOCOL_FILE = "WetProtocolWithBasicProvisions.owl";
 	public static String ONTOLOGY_LOCATION = ResourceFinding.getResource(PROTOCOL_FILE).getFile();// this will be in the bin directory because that is where the class is
 	public static final String NS = "http://www.wet.protocol#";// namespace and #
 	public static OntProperty STANDALONE;
-	private static Individual topProtocolInstance;
-	private static OntProperty stepCoordinatesProperty;
+	public static OntProperty COUNTER_PROPERTY;
+	private static Individual TOP_PROTOCOL_INSTANCE;
+	private static OntProperty STEP_COORDINATES_PROPERTY;
 	// public static Resource NOTHING_SUBCLASS;
-	public static AtomicInteger counter = new AtomicInteger(0); todo make sure the counter value is saved to file and loaded when file is loaded
-	there still seem to be a problem with NamedIndividual
+	public static AtomicInteger counter = new AtomicInteger(0); // todo make sure the counter value is saved to file and loaded when file is loaded
+	// there still seem to be a problem with NamedIndividual
 	//
 
 	public static final OntManager getInstance() {
 		if (instance == null) {
-			instance = resetModelInstance(ONTOLOGY_LOCATION);
+			instance = loadModelFromFileAndResetOntManager(ONTOLOGY_LOCATION);
 		}
 		return instance;
 	}
 
-	public static final OntManager resetModelInstance(String pathOfOntFileToLoad) {
+	public static final OntManager loadModelFromFileAndResetOntManager(String pathOfOntFileToLoad) {
 		instance = null;
 		instance = new OntManager();
 		ontologyModel = null;
 		ontologyModel = ModelFactory.createOntologyModel();// OntModelSpec.OWL_MEM);// OntModelSpec.OWL_LITE_MEM);// "" isfull? hierarchy reasoner; OWL_MEM
 		ontologyModel.read(pathOfOntFileToLoad);
+		//
 		ontologyModel.setStrictMode(true);
 		System.out.println("after loding the ontology the individuals are:" + OntManager.getOntologyModel().listIndividuals().toList());
 		STANDALONE = ontologyModel.getOntProperty(NS + "standalone");
+		COUNTER_PROPERTY = ontologyModel.getOntProperty(NS + "protocolCounter");
 		// NOTHING_SUBCLASS = ontologyModel.getOntClass("owl:Nothing");
-		topProtocolInstance = ontologyModel.getIndividual(NS + "topProtocolInstance");
+		TOP_PROTOCOL_INSTANCE = ontologyModel.getIndividual(NS + "topProtocolInstance");
+		counter.set(TOP_PROTOCOL_INSTANCE.getPropertyValue(COUNTER_PROPERTY).asLiteral().getInt());
 		//
 		// topProtocolInstance.setOntClass(getOntClass("Protocol"));// need to correct the NamedIndividual nonsense that appears when saving in Jena
 		// Resource namedIndividual = ontologyModel.getResource("http://www.w3.org/2002/07/owl#NamedIndividual");
@@ -103,7 +80,7 @@ public class OntManager {
 		// }
 		//
 		// topProtocolInstance.setPropertyValue(ontologyModel.getOntProperty(NS + "version"), ontologyModel.createTypedLiteral("Version 0.0")); //TODO reinstate
-		stepCoordinatesProperty = (ontologyModel.getOntProperty(NS + "stepCoordinatesProperty"));
+		STEP_COORDINATES_PROPERTY = (ontologyModel.getOntProperty(NS + "stepCoordinatesProperty"));
 		return instance;
 	}
 
@@ -138,7 +115,7 @@ public class OntManager {
 	}
 
 	public static Individual getTopProtocolInstance() {
-		return topProtocolInstance;
+		return TOP_PROTOCOL_INSTANCE;
 	}
 
 	public static Individual createStepIndividual(ClassAndIndividualName classAndIndividualName) {
@@ -289,7 +266,7 @@ public class OntManager {
 			return resource;// did no rename
 		}
 		File file = tempFile.toFile();
-		System.out.println("temporary file created at:"+file.getAbsolutePath());
+		System.out.println("temporary file created at:" + file.getAbsolutePath());
 		file.deleteOnExit();
 		Path path = null;
 		saveOntologyAndCoordinates(file, jStepsTree);
@@ -298,26 +275,26 @@ public class OntManager {
 			path = Paths.get(file.getAbsolutePath());
 			Charset charset = StandardCharsets.US_ASCII;
 			String content = new String(Files.readAllBytes(path), charset);
-			content = content.replace(resource.getURI(),resource.getNameSpace()+ newValue);
+			content = content.replace(resource.getURI(), resource.getNameSpace() + newValue);
 			Files.write(path, content.getBytes(charset));
 		} catch (Exception e1) {
 			UiUtils.showDialog(null, "some issues writing temp ontology file" + e1.getLocalizedMessage());
 		}
-		OntManager.resetModelInstance(path.toString());// these 2 lines reset the whole model and UI
+		OntManager.loadModelFromFileAndResetOntManager(path.toString());// these 2 lines reset the whole model and UI
 		// UiUtils.loadStepsTreeFromModel(topStepNode);
-		Individual newIndividual = OntManager.getOntologyModel().getIndividual(NS+newValue);
-		System.out.println("Rename returned node:"+newIndividual);
-		return newIndividual;//NS + newValue);
-		
+		Individual newIndividual = OntManager.getOntologyModel().getIndividual(NS + newValue);
+		System.out.println("Rename returned node:" + newIndividual);
+		return newIndividual;// NS + newValue);
 	}
 
 	public static OntProperty getStepCoordinatesProperty() {
-		return stepCoordinatesProperty;
+		return STEP_COORDINATES_PROPERTY;
 	}
 
 	public static void saveOntologyAndCoordinates(File file, JTree jStepsTree) {
 		Enumeration<?> preorderEnumeration = ((DefaultMutableTreeNode) jStepsTree.getModel().getRoot()).preorderEnumeration();
 		int verticalDistance = 0;
+		TOP_PROTOCOL_INSTANCE.setPropertyValue(COUNTER_PROPERTY, OntManager.getInstance().getOntologyModel().createTypedLiteral(counter.get()));//will create as int
 		while (preorderEnumeration.hasMoreElements()) {
 			DefaultMutableTreeNode defaultMutableTreeNode = (DefaultMutableTreeNode) (preorderEnumeration.nextElement());
 			Individual individual = (Individual) (defaultMutableTreeNode.getUserObject());
