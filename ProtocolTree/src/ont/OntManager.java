@@ -38,7 +38,7 @@ public class OntManager {
 	 public static final String PROTOCOL_FILE = "WetProtocolEmpty.owl";
 	// it needs to be saved and reloaded in Jena to show the proper class
 	//public static final String PROTOCOL_FILE = "WetProtocolWithBasicProvisions.owl";
-	public static String ONTOLOGY_LOCATION = ResourceFinding.getResource(PROTOCOL_FILE).getFile();// this will be in the bin directory because that is where the class is
+	public static String ONTOLOGY_LOCATION = new File(ResourceFinding.getOntFileDir(), PROTOCOL_FILE).getAbsolutePath();// this will be in the bin directory because that is where the class is
 	public static final String NS = "http://www.wet.protocol#";// namespace and #
 	public static OntProperty STANDALONE;
 	public static OntProperty COUNTER_PROPERTY;

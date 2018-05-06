@@ -8,6 +8,7 @@ import ui.property.ClassPropertyEditorPanel;
 import javax.swing.*;
 import javax.swing.tree.*;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.util.ResourceUtils;
 import org.apache.jena.ontology.OntResource;
@@ -164,18 +165,18 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			FileNameExtensionFilter filter = new FileNameExtensionFilter("Owl files", "owl");
 			fileChooser.addChoosableFileFilter(filter);
-			String path = null;
-			try {
-				path = ResourceFinding.getResource(OntManager.PROTOCOL_FILE).toURI().getPath();
-			} catch (URISyntaxException e2) {
-				e2.printStackTrace();
-			}
-			fileChooser.setCurrentDirectory(new File(path.substring(1, path.length() - OntManager.PROTOCOL_FILE.length())));
+			fileChooser.setCurrentDirectory(new File(ResourceFinding.getOntFileDir()));
 			int retval = fileChooser.showSaveDialog(null);
 			if (retval == JFileChooser.APPROVE_OPTION) {
 				File file = fileChooser.getSelectedFile();
 				if (file == null) {
 					return;
+				}
+				if (FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("owl")) {
+				    // filename is OK as-is
+				} else {
+				    file = new File(file.toString() + ".owl"); 
+				    //file = new File(file.getParentFile(), FilenameUtils.getBaseName(file.getName())+".xml"); // ALTERNATIVELY: remove the extension (if any) and replace it with ".xml"
 				}
 				OntManager.saveOntologyAndCoordinates(file, jProtocolTree);
 			}
@@ -186,13 +187,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			FileNameExtensionFilter filter = new FileNameExtensionFilter("Owl files", "owl");
 			fileChooser.addChoosableFileFilter(filter);
-			String path = null;
-			try {
-				path = ResourceFinding.getResource(OntManager.PROTOCOL_FILE).toURI().getPath();
-			} catch (URISyntaxException e2) {
-				e2.printStackTrace();
-			}
-			fileChooser.setCurrentDirectory(new File(path.substring(1, path.length() - OntManager.PROTOCOL_FILE.length())));
+			fileChooser.setCurrentDirectory(new File(ResourceFinding.getOntFileDir()));
 			int retval = fileChooser.showOpenDialog(null);
 			if (retval == JFileChooser.APPROVE_OPTION) {
 				File file = fileChooser.getSelectedFile();
