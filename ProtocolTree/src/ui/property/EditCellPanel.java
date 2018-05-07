@@ -3,6 +3,8 @@ package ui.property;
 import static ui.UiUtils.expandTree;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -27,10 +29,10 @@ import org.apache.jena.rdf.model.RDFNode;
 import ont.OntManager;
 import resources.ResourceFinding;
 import ui.UiUtils;
-import ui.property.ClassPropertyEditorPanel.NodeType;
+import ui.property.PropertyEditorBigPanel.NodeType;
 
 public class EditCellPanel extends AbstractTreeCellPanel {
-	private JButton saveButton;
+	private JButton applyButton;
 	final CellEditor cellEditor;// just to fire the stop edit when the save button in pressed
 	// final DefaultMutableTreeNode propertyAndIndividualNode;
 
@@ -43,26 +45,30 @@ public class EditCellPanel extends AbstractTreeCellPanel {
 		if (propertyAndIndividual.getNodeType() == NodeType.LITERAL_NODE) {
 			RDFNode propertyValue = propertyAndIndividual.getIndividual().getPropertyValue(ontProperty);
 			valueComponent.setEditable(true);
-			//setProperFormatter(valueComponent, propertyAndIndividual);
+			// setProperFormatter(valueComponent, propertyAndIndividual);
 			individualOrClassChooser.setVisible(false);
-		} else if (propertyAndIndividual.getNodeType() == NodeType.DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS || propertyAndIndividual.getNodeType() == NodeType.DATA_TYPE_NODE_FOR_CHOICE_STANDALONE_OBJECT) {
+		} else if (propertyAndIndividual.getNodeType() == NodeType.DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS || propertyAndIndividual.getNodeType() == NodeType.DATA_TYPE_NODE_FOR_CHOICE_PREEXISTING_OBJECT) {
 			RDFNode existingIndividual = propertyAndIndividual.getIndividual().getPropertyValue(ontProperty);// the value for existing individual
-			if (existingIndividual != null && propertyAndIndividual.getNodeType() != NodeType.DATA_TYPE_NODE_FOR_CHOICE_STANDALONE_OBJECT) {
+			if (existingIndividual != null && propertyAndIndividual.getNodeType() != NodeType.DATA_TYPE_NODE_FOR_CHOICE_PREEXISTING_OBJECT) {
 				individualOrClassChooser.setEnabled(false);
 				return;// --------------------------------------->
 			}
-			saveButton = new JButton("Apply Choice");
-			saveButton.addActionListener(e -> {
+			applyButton = new JButton("Apply Choice");
+			applyButton.addActionListener(e -> {
 				cellEditor.stopCellEditing();
 				Individual newIndividual;
-				if (propertyAndIndividual.getNodeType() == NodeType.DATA_TYPE_NODE_FOR_CHOICE_STANDALONE_OBJECT) {
+				if (propertyAndIndividual.getNodeType() == NodeType.DATA_TYPE_NODE_FOR_CHOICE_PREEXISTING_OBJECT) {
+					if (individualOrClassChooser.getModel().getSize() == 0) {// I can have an empty box
+						return;//-------------------------------------->
+					}
 					newIndividual = (Individual) getComboClassOrIndividualSelection();
 					propertyAndIndividual.getIndividual().setPropertyValue(ontProperty, newIndividual);
 				} else {
 					OntClass ontClass = (OntClass) getComboClassOrIndividualSelection();
-					newIndividual = OntManager.createIndividual(ontClass,"newIndividual");
+					newIndividual = OntManager.createNewIndividualOfSelectedClass(ontClass, createNiceIdividualName(ontClass));
+					System.out.println("As result of apply we Created a new individual:" + newIndividual.getLocalName());
 					propertyAndIndividual.getIndividual().setPropertyValue(ontProperty, newIndividual);
-					ClassPropertyEditorPanel.createNodesForClass(ontClass, (DefaultMutableTreeNode) propertyAndIndividualNode, propertyAndIndividual.getIndividual());
+					PropertyEditorBigPanel.createNodesForClass(ontClass, (DefaultMutableTreeNode) propertyAndIndividualNode, newIndividual);
 				}
 				// if (existingIndividual != null) {// individual already existing
 				// UiUtils.showDialog(this, "we will overwrite the current individual:" + ((OntResource) existingIndividual).asIndividual().getLocalName() + " with a new individual of other class:" + newIndividual);
@@ -73,17 +79,26 @@ public class EditCellPanel extends AbstractTreeCellPanel {
 				// propertyAndIndividualNode.set
 				UiUtils.expandTree(cellEditor.jTree);
 			});
-			saveButton.setEnabled(true);
-			add(saveButton, this.getComponentCount() - 3);
+			applyButton.setEnabled(true);
+			add(applyButton, this.getComponentCount() - 3);
 			individualOrClassChooser.setVisible(true);
 		}
 	}
 
-	public Object getNewIndividualValueScrapedFromEditPanel() {
+	private String createNiceIdividualName(OntClass ontClass) {
+		if (valueComponent.isCustomText()) {
+			return valueComponent.getText();
+		} else {
+			return "my" + ontClass.getLocalName();
+		}
+	}
+
+	public Object getNewIndividualValuesScrapedFromEditPanel() {
 		Object value = getValue();
 		System.out.println("in getCellEditorValue value returned is:" + value);
 		if (value instanceof String) {
 			Literal literalPropertyValue = OntManager.getInstance().createValueAsStringLiteral((String) value);
+			System.out.println("Putting: " + literalPropertyValue + " value in:" + propertyAndIndividual.getIndividual().getLocalName());
 			propertyAndIndividual.getIndividual().setPropertyValue(propertyAndIndividual.getOntProperty(), literalPropertyValue);
 		}
 		return propertyAndIndividual;
@@ -113,7 +128,7 @@ public class EditCellPanel extends AbstractTreeCellPanel {
 			// });
 			// icon.setIcon(EditCellPanel.ICON_CHOICE_SUBCLASS);
 			return null;
-		case DATA_TYPE_NODE_FOR_CHOICE_STANDALONE_OBJECT:
+		case DATA_TYPE_NODE_FOR_CHOICE_PREEXISTING_OBJECT:
 			// localComponent.setForeground(Color.PINK);
 			// individualOrClassChooser.setVisible(true);
 			// extractPossibleIndividualValues(individualOrClassChooser);
@@ -126,29 +141,41 @@ public class EditCellPanel extends AbstractTreeCellPanel {
 		}
 	}
 
-//	private void setProperFormatter(JFormattedTextField valueComponent, PropertyAndIndividual propertyAndIndividual) {
-//		switch (propertyAndIndividual.getOntProperty().getRange().getLocalName()) {
-//		case "int":
-//		case "integer":
-//			System.out.println("integer");
-//			break;
-//		case "decimal":
-//			System.out.println("decimal");
-//			break;
-//		case "string":
-//			System.out.println("string");
-//			break;
-//		}
-//	}
-
+	// private void setProperFormatter(JFormattedTextField valueComponent, PropertyAndIndividual propertyAndIndividual) {
+	// switch (propertyAndIndividual.getOntProperty().getRange().getLocalName()) {
+	// case "int":
+	// case "integer":
+	// System.out.println("integer");
+	// break;
+	// case "decimal":
+	// System.out.println("decimal");
+	// break;
+	// case "string":
+	// System.out.println("string");
+	// break;
+	// }
+	// }
 	public void setTextAndAddComponents() {
 		super.setTextAndAddComponents();
+		if (individualOrClassChooser.isVisible()) {
+			individualOrClassChooser.setEnabled(true);
+			individualOrClassChooser.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {// just to default the new instanceName
+					WrappedOntResource<?> selectedProperty = (WrappedOntResource<?>) (individualOrClassChooser.getSelectedItem());
+					OntResource wrappedResource = ((WrappedOntResource) individualOrClassChooser.getSelectedItem()).getWrappedResource();
+					if (wrappedResource instanceof OntClass) {
+						valueComponent.setText(createNiceIdividualName((OntClass) wrappedResource));
+					}
+					System.out.println("selected:" + selectedProperty);
+				}
+			});
+		}
 		setBorder(BorderFactory.createLineBorder(Color.RED));
 	}
 
-
-
-	public Object getComboClassOrIndividualSelection() {
-		return ((WrappedOntResource) individualOrClassChooser.getSelectedItem()).getWrappedResource();
+	public OntResource getComboClassOrIndividualSelection() {// returns Individual or ontClass from the combo box
+		OntResource wrappedResource = ((WrappedOntResource) individualOrClassChooser.getSelectedItem()).getWrappedResource();
+		return wrappedResource;
 	}
 }

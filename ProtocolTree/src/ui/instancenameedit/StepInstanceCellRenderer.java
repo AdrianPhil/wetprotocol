@@ -18,7 +18,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.*;
 
-public class StepInstanceCellRenderer implements TreeCellRenderer {
+public class StepInstanceCellRenderer extends DefaultTreeCellRenderer implements TreeCellRenderer {
 	public static final ImageIcon createImageIcon = ResourceFinding.createImageIcon("icons/package.png");// TODO probably singleton it
 	JLabel localName = new JLabel(" ");
 	JLabel labelName = new JLabel(" ");

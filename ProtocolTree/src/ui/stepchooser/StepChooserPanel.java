@@ -2,6 +2,7 @@ package ui.stepchooser;
 
 import ont.OntManager;
 import resources.ResourceFinding;
+import ui.ToolTipJTree;
 import ui.UiUtils;
 import ui.WetProtocolMainPanel;
 import ui.WetProtocolMainPanel.WhereToAddStepNode;
@@ -36,7 +37,7 @@ public class StepChooserPanel extends JPanel implements TreeSelectionListener {
 	private final JTree jProtocolTree;
 	private final WhereToAddStepNode whereToAddStepNode;
 	private DefaultTreeModel stepChooserTreeModel = new DefaultTreeModel(new DefaultMutableTreeNode("Please choose a step"));
-	private JTree jStepChooserTree = new JTree(stepChooserTreeModel);
+	private JTree jStepChooserTree = new ToolTipJTree(stepChooserTreeModel);
 	StepChooserCellEditor cellEditor ;//important for stop editing but I can do it by configuration too
 
 	public StepChooserPanel(JTree jProtocolTree, WhereToAddStepNode whereToAddStepNode) {

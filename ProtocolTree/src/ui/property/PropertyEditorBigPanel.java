@@ -2,6 +2,7 @@ package ui.property;
 
 //root nodes) after tree.setRootVisible(false) call tree.setShowsRootHandles(true).
 import ont.OntManager;
+import ui.ToolTipJTree;
 import ui.UiUtils;
 
 import org.apache.jena.ontology.Individual;
@@ -26,7 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static ui.UiUtils.expandTree;
 
-public class ClassPropertyEditorPanel extends JPanel implements TreeSelectionListener {
+public class PropertyEditorBigPanel extends JPanel implements TreeSelectionListener {
 	Object defaultCellRenderer = new DefaultTreeCellRenderer();
 	private JEditorPane htmlPane;
 	private URL helpURL;
@@ -38,11 +39,11 @@ public class ClassPropertyEditorPanel extends JPanel implements TreeSelectionLis
 	// most below could be cached
 	private JTree jProtocolTree;
 	Individual individual = null;
-	DefaultMutableTreeNode topNodeAsPropertyHolder = new DefaultMutableTreeNode("dummy");// this is empty
-	private DefaultTreeModel protocolTreeModel = new DefaultTreeModel(topNodeAsPropertyHolder);
-	private JTree jPropertyAndIndividualTree = new JTree(protocolTreeModel);// my property tree
+	private final DefaultMutableTreeNode TOP_NODE_AS_PROPERTY_HOLDER = new DefaultMutableTreeNode("dummy");// this is empty
+	private DefaultTreeModel protocolTreeModel = new DefaultTreeModel(TOP_NODE_AS_PROPERTY_HOLDER);
+	private JTree jPropertyAndIndividualTree = new ToolTipJTree(protocolTreeModel);// my property tree
 
-	public ClassPropertyEditorPanel(DefaultMutableTreeNode protocolTreeNode, JTree jProtocolTree) {// todo we don't need to pass the tree in here ?
+	public PropertyEditorBigPanel(DefaultMutableTreeNode protocolTreeNode, JTree jProtocolTree) {// todo we don't need to pass the tree in here ?
 		super(new GridLayout(1, 1));
 		this.jProtocolTree = jProtocolTree;
 		this.protocolTreeNode = protocolTreeNode;
@@ -149,55 +150,57 @@ public class ClassPropertyEditorPanel extends JPanel implements TreeSelectionLis
 		Object userObject = protocolTreeNode.getUserObject();// in protocol we have individuals
 		assert userObject instanceof Individual;
 		Individual individual = ((Individual) userObject);
-		createNodesForClass(individual.getOntClass(), topNodeAsPropertyHolder, individual);
+		createNodesForClass(individual.getOntClass(), TOP_NODE_AS_PROPERTY_HOLDER, individual);
 	}
 
-	public static void createNodesForClass(OntClass ontClass, DefaultMutableTreeNode currentTopNode, Individual individual) {
+	public static void createNodesForClass(OntClass ontClass, DefaultMutableTreeNode currentTopNode, Individual stepIndividual) {
 		Set<OntProperty> props = OntManager.getInstance().calculateHierarchicalPropertiesForAClass(ontClass);
 		for (OntProperty ontProperty : props) {
-			System.out.println("creating first level prop node for " + ontProperty.getLocalName());
-			createNode(ontProperty, currentTopNode, individual);
+			System.out.println("creating first level prop node for property:" + ontProperty.getLocalName());
+			createNode(ontProperty, currentTopNode, stepIndividual);
 		}
 	}
 
 	// recursive
-	private static DefaultMutableTreeNode createNode(OntProperty ontProperty, DefaultMutableTreeNode currentTopNode, Individual individual) {
+	private static DefaultMutableTreeNode createNode(OntProperty ontProperty, DefaultMutableTreeNode currentTopNode, Individual individualThatHasTheProperty) {
 		if (ontProperty.isDatatypeProperty()) {
 			System.out.println("\tcreating literal prop node for " + ontProperty.getLocalName());
-			currentTopNode.add(new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individual, NodeType.LITERAL_NODE)));
-			return currentTopNode;
+			currentTopNode.add(new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individualThatHasTheProperty, NodeType.LITERAL_NODE)));
+			return currentTopNode;//--------------------->
 		} else {// object type property
-			System.out.println("\tcreating object type prop node for " + ontProperty.getLocalName());
-			if (OntManager.isStandalone(ontProperty)) { // standalone takes precedence
-				DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individual, NodeType.DATA_TYPE_NODE_FOR_CHOICE_STANDALONE_OBJECT));// Pop up
+			System.out.println("\tcreating object type prop node for property: " + ontProperty.getLocalName());
+			if (OntManager.isPreexisting(ontProperty)) { //PREEXISTING INDIVIDUAL DROPBOX  takes precedence 
+				DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individualThatHasTheProperty, NodeType.DATA_TYPE_NODE_FOR_CHOICE_PREEXISTING_OBJECT));// Pop up
 				currentTopNode.add(newChild);// would be Read Only as it's an object property
-				return currentTopNode;
+				return currentTopNode;//--------------------->
 				// return createNode(ontProperty, newChild);
 			} // else it must be an object property
 			OntResource range = ontProperty.getRange();
 			System.out.println("\trange:" + range);
 			if (OntManager.isLeafClass(range.asClass())) {// subClass(OntologyManager.NOTHING_SUBCLASS)) { // no subclasses like volume for instance //todo use subclass for speed
-				Object subIndividualObject = individual.getPropertyValue(ontProperty);
+				Object subIndividualObject = individualThatHasTheProperty.getPropertyValue(ontProperty);
 				Individual subIndividual;
 				if (subIndividualObject == null) {
 					subIndividual = OntManager.createIndividual(ontProperty.getRange().asClass(),"newLeafIndividual");
-					individual.setPropertyValue(ontProperty, subIndividual);
+					System.out.println("We Created a new LEAF CLASS individual:"+subIndividual.getLocalName()+
+							" and we insert it in:"+individualThatHasTheProperty.getLocalName() );
+					individualThatHasTheProperty.setPropertyValue(ontProperty, subIndividual);
 				} else {
 					subIndividual=((OntResource)subIndividualObject).asIndividual();
 				}
-				DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individual, NodeType.DATA_TYPE_NODE_FOR_LEAF_CLASS));// Pop up
+				DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individualThatHasTheProperty, NodeType.DATA_TYPE_NODE_FOR_LEAF_CLASS));// Pop up
 				currentTopNode.add(newChild);// would be Read Only as it's an object property
 				Set<OntProperty> rangeProps = OntManager.getInstance().calculateHierarchicalPropertiesForAClass(range.asClass());
 				for (OntProperty rageProperty : rangeProps) {
 					System.out.println("creating range property for " + ontProperty.getLocalName());
 					createNode(rageProperty, newChild, subIndividual);// ---------------------> recursion
 				}
-				return newChild;
-			} else {
-				System.out.println("nasty case where the property could be ANY number of classes coming from range subclasses");
-				DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individual, NodeType.DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS));// , ontProperty.getRange().asClass().listSubClasses(false).toSet()));// Pop up
+				return newChild;//--------------------->
+			} else {//SELECT A CLASS DROPOX
+				System.out.println("nasty case where the property value is an instance and could be ANY number of classes coming from range subclasses");
+				DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individualThatHasTheProperty, NodeType.DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS));// , ontProperty.getRange().asClass().listSubClasses(false).toSet()));// Pop up
 				currentTopNode.add(newChild);// would be Read Only as it's an object property
-				RDFNode propertyValueAsIndividual = (individual.getPropertyValue(ontProperty));
+				RDFNode propertyValueAsIndividual = (individualThatHasTheProperty.getPropertyValue(ontProperty));
 				if(propertyValueAsIndividual!=null) {//already selected at one point
 					//same as for DATA_TYPE_NODE_FOR_LEAF_CLASS					
 					Individual subIndividual = propertyValueAsIndividual.as(Individual.class);;
@@ -207,7 +210,7 @@ public class ClassPropertyEditorPanel extends JPanel implements TreeSelectionLis
 						createNode(rageProperty, newChild, subIndividual);// ---------------------> recursion
 					}
 				}
-				return currentTopNode;
+				return currentTopNode;//--------------------->
 			}
 		}
 	}
@@ -218,41 +221,13 @@ public class ClassPropertyEditorPanel extends JPanel implements TreeSelectionLis
 	}
 
 	public enum NodeType {
-		LITERAL_NODE, DATA_TYPE_NODE_FOR_CHOICE_STANDALONE_OBJECT, DATA_TYPE_NODE_FOR_LEAF_CLASS, DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS, TOP_PROPERTY_AND_INDIVIDUAL
+		LITERAL_NODE, DATA_TYPE_NODE_FOR_CHOICE_PREEXISTING_OBJECT, DATA_TYPE_NODE_FOR_LEAF_CLASS, DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS, TOP_PROPERTY_AND_INDIVIDUAL
 	}
 
 	/**
-	 * Todo need to update the protocol tree node with the value of the properties and maybe change it's icon and refresh to show the changes
+	 * Todo need to update the  tree node with the value of the properties and maybe change it's icon and refresh to show the changes
 	 */
 	private void acceptPropertiesResponse(Component splitPane) {
-		jPropertyAndIndividualTree.stopEditing();
-		// DefaultMutableTreeNode selectedClassNode = (DefaultMutableTreeNode)
-		// jTree.getLastSelectedPathComponent();
-		// if (selectedClassNode == null) {
-		// UiUtils.showDialog(splitPane, "Selected node is null");
-		// } else {
-		// // UiUtils.showDialog(splitPane, "okButton called");
-		// DefaultMutableTreeNode selectedProtocolNode = (DefaultMutableTreeNode)
-		// jProtocolTree.getLastSelectedPathComponent();
-		// if (selectedProtocolNode == protocolTreeNode) {// insert child as last child
-		// of parent
-		// protocolTreeNode.insert(selectedClassNode, protocolTreeNode.getChildCount());
-		// DefaultMutableTreeNode insertedChild = (DefaultMutableTreeNode)
-		// protocolTreeNode.getChildAt(protocolTreeNode.getChildCount() - 1);
-		// jProtocolTree.expandPath(new TreePath(protocolTreeNode.getPath()));
-		// jProtocolTree.setSelectionPath(new TreePath(insertedChild.getPath()));//
-		// select it
-		// } else {// insert sibling after the selected one
-		// protocolTreeNode.insert(selectedClassNode,
-		// selectedProtocolNode.getParent().getIndex(selectedProtocolNode) + 1);
-		// DefaultMutableTreeNode addedChild = (DefaultMutableTreeNode)
-		// protocolTreeNode.getChildAt(selectedProtocolNode.getParent().getIndex(selectedProtocolNode)
-		// + 1);
-		// jProtocolTree.setSelectionPath(new TreePath(addedChild.getPath()));// select
-		// it
-		// }
-		// jProtocolTree.updateUI();
-		// ((JFrame) ClassPropertyEditorPanel.this.getTopLevelAncestor()).dispose();
-		// }
+		jPropertyAndIndividualTree.stopEditing();	
 	}
 }

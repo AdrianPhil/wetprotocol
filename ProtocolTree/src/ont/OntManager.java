@@ -40,7 +40,7 @@ public class OntManager {
 	//public static final String PROTOCOL_FILE = "WetProtocolWithBasicProvisions.owl";
 	public static String ONTOLOGY_LOCATION = new File(ResourceFinding.getOntFileDir(), PROTOCOL_FILE).getAbsolutePath();// this will be in the bin directory because that is where the class is
 	public static final String NS = "http://www.wet.protocol#";// namespace and #
-	public static OntProperty STANDALONE;
+	public static OntProperty PREEXISTING;
 	public static OntProperty COUNTER_PROPERTY;
 	private static Individual TOP_PROTOCOL_INSTANCE;
 	private static OntProperty STEP_COORDINATES_PROPERTY;
@@ -65,7 +65,7 @@ public class OntManager {
 		//
 		ontologyModel.setStrictMode(true);
 		System.out.println("after loding the ontology the individuals are:" + OntManager.getOntologyModel().listIndividuals().toList());
-		STANDALONE = ontologyModel.getOntProperty(NS + "standalone");
+		PREEXISTING = ontologyModel.getOntProperty(NS + "preexisting");
 		COUNTER_PROPERTY = ontologyModel.getOntProperty(NS + "protocolCounter");
 		// NOTHING_SUBCLASS = ontologyModel.getOntClass("owl:Nothing");
 		TOP_PROTOCOL_INSTANCE = ontologyModel.getIndividual(NS + "topProtocolInstance");
@@ -122,6 +122,15 @@ public class OntManager {
 		Individual createdIndividual = OntManager.getInstance().createIndividual(classAndIndividualName.getName() + counter.incrementAndGet(), classAndIndividualName.getOntClass());
 		if (createdIndividual == null) {
 			System.out.println("!!!!!!!!!!!createdIndividual == null");
+		}
+		createdIndividual.addLabel("Label:" + createdIndividual.getLocalName(), null);
+		return createdIndividual;
+	}
+	
+	public static Individual createNewIndividualOfSelectedClass(OntClass ontClass, String prefix) {
+		Individual createdIndividual = OntManager.getInstance().createIndividual(prefix + counter.incrementAndGet(), ontClass);
+		if (createdIndividual == null) {
+			System.out.println();
 		}
 		createdIndividual.addLabel("Label:" + createdIndividual.getLocalName(), null);
 		return createdIndividual;
@@ -233,8 +242,8 @@ public class OntManager {
 		return ontologyModel.getIndividual(NS + "myProtejeCreatedMicroCentrifugeTube");
 	}
 
-	public static boolean isStandalone(OntProperty ontProperty) {
-		return ontProperty.hasSuperProperty(OntManager.STANDALONE, true);
+	public static boolean isPreexisting(OntProperty ontProperty) {
+		return ontProperty.hasSuperProperty(OntManager.PREEXISTING, true);
 	}
 
 	public static OntModel getOntologyModel() {

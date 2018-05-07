@@ -11,7 +11,7 @@ import org.junit.Test;
 import ont.*;
 import resources.ResourceFinding;
 import ui.property.PropertyAndIndividual;
-import ui.property.ClassPropertyEditorPanel.NodeType;
+import ui.property.PropertyEditorBigPanel.NodeType;
 
 class OntologyTest {
 	private static PropertyAndIndividual TOP_PROPERTY_AND_INDIVIDUAL;

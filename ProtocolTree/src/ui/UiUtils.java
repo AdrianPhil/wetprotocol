@@ -3,7 +3,7 @@ package ui;
 import ont.OntManager;
 import ui.WetProtocolMainPanel.WhereToAddStepNode;
 import ui.property.AbstractTreeCellPanel;
-import ui.property.ClassPropertyEditorPanel;
+import ui.property.PropertyEditorBigPanel;
 import ui.stepchooser.StepChooserPanel;
 
 import org.apache.jena.ontology.Individual;

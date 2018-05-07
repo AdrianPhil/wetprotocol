@@ -3,7 +3,7 @@ package ui;
 import resources.ResourceFinding;
 import ui.instancenameedit.StepInstanceCellRenderer;
 import ui.instancenameedit.StepInstanceNameCellEditor;
-import ui.property.ClassPropertyEditorPanel;
+import ui.property.PropertyEditorBigPanel;
 
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -87,7 +87,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 	}
 
 	private void initiateTreeAndTreeModel() {
-		jProtocolTree = new JTree();
+		jProtocolTree = new ToolTipJTree();
 		jProtocolTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		ToolTipManager.sharedInstance().registerComponent(jProtocolTree);
 		jProtocolTree.setShowsRootHandles(true);
@@ -109,7 +109,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 				}
 			}
 		};
-		//jProtocolTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "startEditing");//also need to jProtocolTree.setEditable(true);
+		// jProtocolTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "startEditing");//also need to jProtocolTree.setEditable(true);
 		jProtocolTree.addMouseListener(ml);
 	}
 
@@ -124,12 +124,12 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		// Enable tool tips.
 		jProtocolTree.setCellRenderer(new StepInstanceCellRenderer(jProtocolTree));
 		jProtocolTree.setCellEditor(new StepInstanceNameCellEditor(jProtocolTree));
-		jProtocolTree.setInvokesStopCellEditing(true);//keep the changes when focus is lost
-		//jProtocolTree.setEditable(true);
+		jProtocolTree.setInvokesStopCellEditing(true);// keep the changes when focus is lost
+		// jProtocolTree.setEditable(true);
 		// jProtocolTree.setEditable(true);
 		// Listen for when the selection changes.
 		jProtocolTree.addTreeSelectionListener(this);
-		jProtocolTree.setSelectionRow(0);// select root
+		jProtocolTree.setSelectionRow(0);// select root and this should refresh the ClassPropertyEditorPanel
 	}
 
 	private void AddTreeButtonListeners(JSplitPane splitPane) {
@@ -173,10 +173,10 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 					return;
 				}
 				if (FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("owl")) {
-				    // filename is OK as-is
+					// filename is OK as-is
 				} else {
-				    file = new File(file.toString() + ".owl"); 
-				    //file = new File(file.getParentFile(), FilenameUtils.getBaseName(file.getName())+".xml"); // ALTERNATIVELY: remove the extension (if any) and replace it with ".xml"
+					file = new File(file.toString() + ".owl");
+					// file = new File(file.getParentFile(), FilenameUtils.getBaseName(file.getName())+".xml"); // ALTERNATIVELY: remove the extension (if any) and replace it with ".xml"
 				}
 				OntManager.saveOntologyAndCoordinates(file, jProtocolTree);
 			}
@@ -250,11 +250,14 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		if (node == null) {
 			node = (DefaultMutableTreeNode) protocolTreeModel.getRoot();
 		}
-		ClassPropertyEditorPanel classPropertyEditorPanel = new ClassPropertyEditorPanel(node, jProtocolTree);
-		classPropertyEditorPanel.setMinimumSize(new Dimension(50, 50));
-		classPropertyEditorPanel.setPreferredSize(new Dimension(200, 200));
-		classPropertyEditorPanel.setMaximumSize(new Dimension(200, 200));
-		splitPane.setRightComponent(new JScrollPane(classPropertyEditorPanel));
+		PropertyEditorBigPanel classPropertyEditorBigPanel = new PropertyEditorBigPanel(node, jProtocolTree);
+		classPropertyEditorBigPanel.setMinimumSize(new Dimension(50, 50));
+		classPropertyEditorBigPanel.setPreferredSize(new Dimension(200, 400));
+		classPropertyEditorBigPanel.setMaximumSize(new Dimension(200, 200));
+		if (splitPane.getRightComponent() != null) {// in case we want to refresh it
+			this.remove(splitPane.getRightComponent());
+		}
+		splitPane.setRightComponent(new JScrollPane(classPropertyEditorBigPanel));
 	}
 
 	// private void initHelp() {

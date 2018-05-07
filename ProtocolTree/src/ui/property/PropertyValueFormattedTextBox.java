@@ -1,5 +1,9 @@
 package ui.property;
 
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.regex.Matcher;
@@ -10,6 +14,7 @@ import javax.swing.text.DefaultFormatter;
 
 public class PropertyValueFormattedTextBox extends JFormattedTextField {
 	Pattern pattern = Pattern.compile(".*]*"); // starts with letter followed by letter, digit or - w allows some chars too!!!
+	boolean customText;
 
 	public PropertyValueFormattedTextBox(String text) {
 		super(text);
@@ -28,5 +33,17 @@ public class PropertyValueFormattedTextBox extends JFormattedTextField {
 				}
 			}
 		});
+		//
+		//
+		addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+				customText = true;
+			}
+		});
+	}
+
+	public boolean isCustomText() {
+		return customText;
 	}
 }

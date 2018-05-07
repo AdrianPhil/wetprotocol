@@ -15,19 +15,20 @@ import java.awt.Component;
 
 import javax.swing.*;
 
-public class CellRenderer implements TreeCellRenderer {
+public class CellRenderer extends DefaultTreeCellRenderer implements TreeCellRenderer {
 	DefaultTreeCellRenderer defaultRenderer = new DefaultTreeCellRenderer();
 	Color backgroundSelectionColor;
 	Color backgroundNonSelectionColor;
 
+
 	public CellRenderer() {
 		backgroundSelectionColor = defaultRenderer.getBackgroundSelectionColor();
 		backgroundNonSelectionColor = defaultRenderer.getBackgroundNonSelectionColor();
+
 	}
 
 	@Override // gets the user object returns the panel
 	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-		// System.out.println("getTreeCell RENDERER Component called");
 		if ((((DefaultMutableTreeNode) value).getUserObject() instanceof String))// for the dummy string
 		{
 			return defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);

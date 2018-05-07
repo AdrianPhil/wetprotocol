@@ -14,7 +14,7 @@ import org.apache.jena.rdf.model.Literal;
 
 import ont.OntManager;
 import ui.UiUtils;
-import ui.property.ClassPropertyEditorPanel.NodeType;
+import ui.property.PropertyEditorBigPanel.NodeType;
 
 public class StepChooserCellEditor extends AbstractCellEditor implements TreeCellEditor {
 	private EditCellPanel stepChooserNameEditCellPanel;

@@ -6,9 +6,14 @@ import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.rdf.model.RDFNode;
 
-import ui.property.ClassPropertyEditorPanel.NodeType;
+import ui.property.PropertyEditorBigPanel.NodeType;
 
 public class PropertyAndIndividual {
+	@Override
+	public String toString() {
+		return "PropertyAndIndividual [ontProperty=" + ontProperty.getLocalName() + ", individual=" + individual.getLocalName() + ", fromRangeSuperclasses=" + fromRangeSuperclasses + ", nodeType=" + nodeType + "]";
+	}
+
 	OntProperty ontProperty;
 	Individual individual;
 	boolean fromRangeSuperclasses = false;
