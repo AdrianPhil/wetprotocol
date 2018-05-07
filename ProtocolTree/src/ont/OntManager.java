@@ -24,8 +24,10 @@ import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.riot.RDFDataMgr;
 
 import resources.ResourceFinding;
 import ui.UiUtils;
@@ -61,6 +63,7 @@ public class OntManager {
 		instance = new OntManager();
 		ontologyModel = null;
 		ontologyModel = ModelFactory.createOntologyModel();// OntModelSpec.OWL_MEM);// OntModelSpec.OWL_LITE_MEM);// "" isfull? hierarchy reasoner; OWL_MEM
+		//Model model = RDFDataMgr.loadModel("data.ttl") ;
 		ontologyModel.read(pathOfOntFileToLoad);
 		//
 		ontologyModel.setStrictMode(true);

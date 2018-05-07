@@ -23,6 +23,7 @@ import org.apache.jena.ontology.OntResource;
 import ont.OntManager;
 import ui.OntResourceNameFormattedTextBox;
 import ui.property.PropertyAndIndividual;
+import utils.Utils;
 
 public class EditCellPanel extends JPanel implements PropertyChangeListener {
 	protected ClassAndIndividualName classAndIndividualName;
@@ -35,7 +36,7 @@ public class EditCellPanel extends JPanel implements PropertyChangeListener {
 		this.classAndIndividualName = classAndIndividualName;
 		this.theNode = theNode;
 		classNameComponent.setText("<" + classAndIndividualName.getOntClass().getLocalName() + ">");
-		editableValueComponent.setText("my" + classAndIndividualName.getOntClass().getLocalName());
+		editableValueComponent.setText(Utils.firstLetterLowerCase(classAndIndividualName.getOntClass().getLocalName()));
 		editableValueComponent.addPropertyChangeListener("value", this);
 		editableValueComponent.setEditable(true);
 		add(editableValueComponent);

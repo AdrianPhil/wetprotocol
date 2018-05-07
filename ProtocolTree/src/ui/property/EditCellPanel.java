@@ -30,6 +30,7 @@ import ont.OntManager;
 import resources.ResourceFinding;
 import ui.UiUtils;
 import ui.property.PropertyEditorBigPanel.NodeType;
+import utils.Utils;
 
 public class EditCellPanel extends AbstractTreeCellPanel {
 	private JButton applyButton;
@@ -65,7 +66,7 @@ public class EditCellPanel extends AbstractTreeCellPanel {
 					propertyAndIndividual.getIndividual().setPropertyValue(ontProperty, newIndividual);
 				} else {
 					OntClass ontClass = (OntClass) getComboClassOrIndividualSelection();
-					newIndividual = OntManager.createNewIndividualOfSelectedClass(ontClass, createNiceIdividualName(ontClass));
+					newIndividual = OntManager.createNewIndividualOfSelectedClass(ontClass, Utils.createNiceIdividualName(ontClass, valueComponent));
 					System.out.println("As result of apply we Created a new individual:" + newIndividual.getLocalName());
 					propertyAndIndividual.getIndividual().setPropertyValue(ontProperty, newIndividual);
 					PropertyEditorBigPanel.createNodesForClass(ontClass, (DefaultMutableTreeNode) propertyAndIndividualNode, newIndividual);
@@ -82,14 +83,6 @@ public class EditCellPanel extends AbstractTreeCellPanel {
 			applyButton.setEnabled(true);
 			add(applyButton, this.getComponentCount() - 3);
 			individualOrClassChooser.setVisible(true);
-		}
-	}
-
-	private String createNiceIdividualName(OntClass ontClass) {
-		if (valueComponent.isCustomText()) {
-			return valueComponent.getText();
-		} else {
-			return "my" + ontClass.getLocalName();
 		}
 	}
 
@@ -165,7 +158,7 @@ public class EditCellPanel extends AbstractTreeCellPanel {
 					WrappedOntResource<?> selectedProperty = (WrappedOntResource<?>) (individualOrClassChooser.getSelectedItem());
 					OntResource wrappedResource = ((WrappedOntResource) individualOrClassChooser.getSelectedItem()).getWrappedResource();
 					if (wrappedResource instanceof OntClass) {
-						valueComponent.setText(createNiceIdividualName((OntClass) wrappedResource));
+						valueComponent.setText(Utils.createNiceIdividualName((OntClass) wrappedResource, valueComponent));
 					}
 					System.out.println("selected:" + selectedProperty);
 				}
