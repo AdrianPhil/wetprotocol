@@ -1,4 +1,9 @@
+/**
+  docs
+  
+  load from proteje save then remove the 
 
+ */
 public class Utils {
 	public static  String firstLetterLowerCase(String string) {
 		if(string==null) {
@@ -9,4 +14,6 @@ public class Utils {
 		}
 		return string.substring(0, 0).toLowerCase()+string.substring(1, string.length());
 	}
+	
+
 }

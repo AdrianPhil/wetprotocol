@@ -19,15 +19,20 @@ import javax.swing.JComboBox;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.apache.jena.ext.com.google.common.collect.Lists;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.reasoner.Reasoner;
 import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.util.iterator.ExtendedIterator;
 
 import resources.ResourceFinding;
 import ui.UiUtils;
@@ -37,9 +42,9 @@ import ui.stepchooser.ClassAndIndividualName;
 public class OntManager {
 	private static OntManager instance;
 	private static OntModel ontologyModel;
-	 public static final String PROTOCOL_FILE = "WetProtocolEmpty.owl";
+	public static final String PROTOCOL_FILE = "WetProtocolEmptyFromWet.owl";
 	// it needs to be saved and reloaded in Jena to show the proper class
-	//public static final String PROTOCOL_FILE = "WetProtocolWithBasicProvisions.owl";
+	// public static final String PROTOCOL_FILE = "WetProtocolWithBasicProvisions.owl";
 	public static String ONTOLOGY_LOCATION = new File(ResourceFinding.getOntFileDir(), PROTOCOL_FILE).getAbsolutePath();// this will be in the bin directory because that is where the class is
 	public static final String NS = "http://www.wet.protocol#";// namespace and #
 	public static OntProperty PREEXISTING;
@@ -62,11 +67,10 @@ public class OntManager {
 		instance = null;
 		instance = new OntManager();
 		ontologyModel = null;
-		ontologyModel = ModelFactory.createOntologyModel();// OntModelSpec.OWL_MEM);// OntModelSpec.OWL_LITE_MEM);// "" isfull? hierarchy reasoner; OWL_MEM
-		//Model model = RDFDataMgr.loadModel("data.ttl") ;
-		ontologyModel.read(pathOfOntFileToLoad);
+		ontologyModel = ModelFactory.createOntologyModel(); // OntModelSpec.OWL_LITE_MEM);//OntModelSpec.OWL_MEM);// OntModelSpec.OWL_LITE_MEM);// "" isfull? hierarchy reasoner; OWL_MEM
+		ontologyModel.read(pathOfOntFileToLoad, "RDF/XML");
 		//
-		ontologyModel.setStrictMode(true);
+		// ontologyModel.setStrictMode(true);
 		System.out.println("after loding the ontology the individuals are:" + OntManager.getOntologyModel().listIndividuals().toList());
 		PREEXISTING = ontologyModel.getOntProperty(NS + "preexisting");
 		COUNTER_PROPERTY = ontologyModel.getOntProperty(NS + "protocolCounter");
@@ -100,16 +104,31 @@ public class OntManager {
 
 	public List<Individual> calculateStepIndividuals() {
 		// the top protocol is already added so we can filter out
-		OntClass stepOntClass = OntManager.getInstance().getOntClass("Step");// TODO cache
-		return ontologyModel.listIndividuals(stepOntClass).toList();
-		// List<Individual> allIndividuals = ontologyModel.listIndividuals().toList();
-		// for (Individual ind : allIndividuals) {
-		// System.out.println("Individual :" + ind);
-		// Resource rdfType = ind.getRDFType(false);
-		// System.out.println("hasOntClass:"+ ind.hasOntClass(stepOntClass));
-		// System.out.println("\trdfType:"+rdfType +" and OntClass:"+ind.listOntClasses(true).toList()+" primary class:"+ind.getOntClass(false));
-		// System.out.println("\trdfType:"+rdfType +" primary class:"+ind.getOntClass(false));
-		// }
+		// OntClass stepOntClass = OntManager.getInstance().getOntClass("Step");// TODO cache
+		// Reasoner reasoner = ontologyModel.getReasoner();
+		// OntModelSpec
+		// ontologyModel.getOntModelSpec().setReasoner ();
+		List<Individual> allSteps = Lists.newArrayList();
+		List<Individual> allIndividuals = ontologyModel.listIndividuals().toList();
+		
+		
+		 OntClass stepOntClass = OntManager.getInstance().getOntClass("Step");
+		 ontologyModel.listIndividuals(stepOntClass).toList()
+		for (Individual ind : allIndividuals) {
+			System.out.println("Individual :" + ind);
+			List<Resource> listRDFTypes = ind.getOntClass().listRDFTypes(false).toList();
+			OntClass stepOntClass = OntManager.getInstance().getOntClass("Step");// TODO cache
+			for (Resource r : listRDFTypes) {
+				if (r.getClass().equals(stepOntClass)) {
+					allSteps.add(ind);
+					System.out.println("found step individual:" + ind);
+				}
+			}
+			// System.out.println("hasOntClass:" + ind.hasOntClass(stepOntClass));
+			// System.out.println("\trdfType:" + rdfType + " and OntClass:" + ind.listOntClasses(true).toList() + " primary class:" + ind.getOntClass(false));
+			// System.out.println("\trdfType:" + rdfType + " primary class:" + ind.getOntClass(false));
+		}
+		return allSteps;
 	}
 
 	public Set<OntClass> getClassesInSignature() {
@@ -129,7 +148,7 @@ public class OntManager {
 		createdIndividual.addLabel("Label:" + createdIndividual.getLocalName(), null);
 		return createdIndividual;
 	}
-	
+
 	public static Individual createNewIndividualOfSelectedClass(OntClass ontClass, String prefix) {
 		Individual createdIndividual = OntManager.getInstance().createIndividual(prefix + counter.incrementAndGet(), ontClass);
 		if (createdIndividual == null) {
@@ -283,7 +302,7 @@ public class OntManager {
 		Path path = null;
 		saveOntologyAndCoordinates(file, jStepsTree);
 		try (FileOutputStream output = new FileOutputStream(file)) {
-			OntManager.getOntologyModel().writeAll(output, "RDF/XML");// TODO maybe without NS
+			OntManager.getOntologyModel().writeAll(output, "RDF/XML", NS);// TODO maybe without NS
 			path = Paths.get(file.getAbsolutePath());
 			Charset charset = StandardCharsets.US_ASCII;
 			String content = new String(Files.readAllBytes(path), charset);
@@ -306,7 +325,7 @@ public class OntManager {
 	public static void saveOntologyAndCoordinates(File file, JTree jStepsTree) {
 		Enumeration<?> preorderEnumeration = ((DefaultMutableTreeNode) jStepsTree.getModel().getRoot()).preorderEnumeration();
 		int verticalDistance = 0;
-		TOP_PROTOCOL_INSTANCE.setPropertyValue(COUNTER_PROPERTY, OntManager.getInstance().getOntologyModel().createTypedLiteral(counter.get()));//will create as int
+		TOP_PROTOCOL_INSTANCE.setPropertyValue(COUNTER_PROPERTY, OntManager.getInstance().getOntologyModel().createTypedLiteral(counter.get()));// will create as int
 		while (preorderEnumeration.hasMoreElements()) {
 			DefaultMutableTreeNode defaultMutableTreeNode = (DefaultMutableTreeNode) (preorderEnumeration.nextElement());
 			Individual individual = (Individual) (defaultMutableTreeNode.getUserObject());
