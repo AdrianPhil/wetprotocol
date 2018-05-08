@@ -61,6 +61,7 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 			valueComponent.setText("-");
 			// System.out.println("in Abstract Cell Panel constructor setting the valueComponent to:"+valueComponent.getText());
 		}
+		individualOrClassChooser.setMaximumRowCount(200);
 	}
 
 	public void setIcon(Icon icon) {

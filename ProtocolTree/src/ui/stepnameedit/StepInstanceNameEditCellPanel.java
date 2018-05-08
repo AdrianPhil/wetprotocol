@@ -1,4 +1,4 @@
-package ui.instancenameedit;
+package ui.stepnameedit;
 
 import java.awt.Color;
 import java.awt.event.MouseAdapter;

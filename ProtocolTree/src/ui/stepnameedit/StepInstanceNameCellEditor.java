@@ -1,4 +1,4 @@
-package ui.instancenameedit;
+package ui.stepnameedit;
 
 import static ui.UiUtils.expandTree;
 

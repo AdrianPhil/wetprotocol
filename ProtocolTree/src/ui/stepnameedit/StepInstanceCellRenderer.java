@@ -1,4 +1,4 @@
-package ui.instancenameedit;
+package ui.stepnameedit;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -69,10 +69,8 @@ public class StepInstanceCellRenderer extends DefaultTreeCellRenderer implements
 			if (individual.getOntClass() == null) {
 				assert false : "class is null";
 			}
-			// localName.setText(individual.getLocalName()+" label:"+individual.getLabel(null)+" location:"+individual.getPropertyValue(OntManager.getInstance().getStepLevelProperty()).asLiteral().getString());//TODO rename part
-			// RDFNode propertyValue = individual.getPropertyValue(OntManager.getInstance().getStepCoordinatesProperty());
 			localName.setText(individual.getLocalName());
-			labelName.setText(" label:" + individual.getLabel(null));
+			//labelName.setText(" label:" + individual.getLabel(null));
 			ontClass.setText("<" + individual.getOntClass().getLocalName() + ">");
 			if (selected) {
 				renderer.setBackground(backgroundSelectionColor);

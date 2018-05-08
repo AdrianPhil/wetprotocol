@@ -39,7 +39,7 @@ public class PropertyEditorBigPanel extends JPanel implements TreeSelectionListe
 	// most below could be cached
 	private JTree jProtocolTree;
 	Individual individual = null;
-	private final DefaultMutableTreeNode TOP_NODE_AS_PROPERTY_HOLDER = new DefaultMutableTreeNode("dummy");// this is empty
+	private final DefaultMutableTreeNode TOP_NODE_AS_PROPERTY_HOLDER = new DefaultMutableTreeNode("top");// this is empty
 	private DefaultTreeModel protocolTreeModel = new DefaultTreeModel(TOP_NODE_AS_PROPERTY_HOLDER);
 	private JTree jPropertyAndIndividualTree = new ToolTipJTree(protocolTreeModel);// my property tree
 
@@ -56,6 +56,7 @@ public class PropertyEditorBigPanel extends JPanel implements TreeSelectionListe
 			UiUtils.showDialog(jProtocolTree, "In ClassPropertyEditorPanel constructor. Passed node is null or not an instance of Individual");
 		}
 		individual = (Individual) userObject;
+		TOP_NODE_AS_PROPERTY_HOLDER.setUserObject("Properties for Individual:" + individual.getLocalName());
 		initiateTree();
 		JPanel treeViewPanel = new JPanel(new BorderLayout());
 		treeViewPanel.add(jPropertyAndIndividualTree, BorderLayout.PAGE_START);
@@ -181,9 +182,9 @@ public class PropertyEditorBigPanel extends JPanel implements TreeSelectionListe
 				Object subIndividualObject = individualThatHasTheProperty.getPropertyValue(ontProperty);
 				Individual subIndividual;
 				if (subIndividualObject == null) {
-					subIndividual = OntManager.createIndividual(ontProperty.getRange().asClass(),"newLeafIndividual");
-					System.out.println("We Created a new LEAF CLASS individual:"+subIndividual.getLocalName()+
-							" and we insert it in:"+individualThatHasTheProperty.getLocalName() );
+					subIndividual = OntManager.createLeafIndividual(ontProperty.getRange().asClass(),"newLeafIndividual");
+//					System.out.println("We Created a new LEAF CLASS individual:"+subIndividual.getLocalName()+
+//							" and we insert it in:"+individualThatHasTheProperty.getLocalName() );
 					individualThatHasTheProperty.setPropertyValue(ontProperty, subIndividual);
 				} else {
 					subIndividual=((OntResource)subIndividualObject).asIndividual();

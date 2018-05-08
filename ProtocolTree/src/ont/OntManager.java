@@ -51,6 +51,7 @@ public class OntManager {
 	public static OntProperty COUNTER_PROPERTY;
 	private static Individual TOP_PROTOCOL_INSTANCE;
 	private static OntProperty STEP_COORDINATES_PROPERTY;
+	private static OntClass STEP_ONT_CLASS;
 	// public static Resource NOTHING_SUBCLASS;
 	public static AtomicInteger counter = new AtomicInteger(0); // todo make sure the counter value is saved to file and loaded when file is loaded
 	// there still seem to be a problem with NamedIndividual
@@ -77,6 +78,7 @@ public class OntManager {
 		// NOTHING_SUBCLASS = ontologyModel.getOntClass("owl:Nothing");
 		TOP_PROTOCOL_INSTANCE = ontologyModel.getIndividual(NS + "topProtocolInstance");
 		counter.set(TOP_PROTOCOL_INSTANCE.getPropertyValue(COUNTER_PROPERTY).asLiteral().getInt());
+		STEP_ONT_CLASS = OntManager.getInstance().getOntClass("Step");
 		//
 		// topProtocolInstance.setOntClass(getOntClass("Protocol"));// need to correct the NamedIndividual nonsense that appears when saving in Jena
 		// Resource namedIndividual = ontologyModel.getResource("http://www.w3.org/2002/07/owl#NamedIndividual");
@@ -104,33 +106,27 @@ public class OntManager {
 
 	public List<Individual> calculateStepIndividuals() {
 		// the top protocol is already added so we can filter out
-		// OntClass stepOntClass = OntManager.getInstance().getOntClass("Step");// TODO cache
-		// Reasoner reasoner = ontologyModel.getReasoner();
-		// OntModelSpec
-		// ontologyModel.getOntModelSpec().setReasoner ();
-		List<Individual> allSteps = Lists.newArrayList();
 		List<Individual> allIndividuals = ontologyModel.listIndividuals().toList();
-		
-		
-		 OntClass stepOntClass = OntManager.getInstance().getOntClass("Step");
-		 ontologyModel.listIndividuals(stepOntClass).toList()
+		List<Individual> allSteps = Lists.newArrayList();
 		for (Individual ind : allIndividuals) {
-			System.out.println("Individual :" + ind);
-			List<Resource> listRDFTypes = ind.getOntClass().listRDFTypes(false).toList();
-			OntClass stepOntClass = OntManager.getInstance().getOntClass("Step");// TODO cache
-			for (Resource r : listRDFTypes) {
-				if (r.getClass().equals(stepOntClass)) {
-					allSteps.add(ind);
-					System.out.println("found step individual:" + ind);
-				}
+			if (ind.getOntClass().hasSuperClass(STEP_ONT_CLASS)) {
+				allSteps.add(ind);
+				System.out.println("found step individual:" + ind);
 			}
-			// System.out.println("hasOntClass:" + ind.hasOntClass(stepOntClass));
-			// System.out.println("\trdfType:" + rdfType + " and OntClass:" + ind.listOntClasses(true).toList() + " primary class:" + ind.getOntClass(false));
-			// System.out.println("\trdfType:" + rdfType + " primary class:" + ind.getOntClass(false));
 		}
 		return allSteps;
 	}
 
+
+	// will load in the combo box all existing individuals of the given class
+	// TODO I think this one should be done like the calculateStepIndividuals
+	public static void loadPossibleIndividualValues(JComboBox individualOrClassChooser, OntClass ontClass) {
+		Set<Individual> individualsSet = getOntologyModel().listIndividuals(ontClass).toSet();
+		for (Individual individual : individualsSet) {
+			individualOrClassChooser.addItem(new WrappedOntResource(individual));
+		}
+	}	
+	
 	public Set<OntClass> getClassesInSignature() {
 		// used to populate the add step pop-up
 		return ontologyModel.listClasses().toSet();
@@ -158,7 +154,7 @@ public class OntManager {
 		return createdIndividual;
 	}
 
-	public static Individual createIndividual(OntClass ontClass, String prefix) {
+	public static Individual createLeafIndividual(OntClass ontClass, String prefix) {// for the leaf individuals
 		Individual createdIndividual = OntManager.getInstance().createIndividual(prefix + counter.incrementAndGet() + "_ofClass_" + ontClass.getLocalName(), ontClass);
 		if (createdIndividual == null) {
 			System.out.println();
@@ -173,11 +169,6 @@ public class OntManager {
 		return createdIndividual;
 	}
 
-	//
-	// private Individual createIndividual(String instanceName, String className) {
-	// OntClass ontClass = OntManager.getInstance().getOntClass(className);
-	// return ontologyModel.createIndividual(instanceName, ontClass);
-	// }
 	public static OntClass getOntClass(String clazz) {
 		return OntManager.getInstance().getOntologyModel().getOntClass(NS + clazz);
 	}
@@ -278,14 +269,6 @@ public class OntManager {
 		return ontClass.listSubClasses().toList().isEmpty();
 	}
 
-	// will load in the combo box all existing individuals of the given class
-	// TODO I think this one should be done like the listStepIndividuals
-	public static void loadPossibleIndividualValues(JComboBox individualOrClassChooser, OntClass ontClass) {
-		Set<Individual> individualsSet = getOntologyModel().listIndividuals(ontClass).toSet();
-		for (Individual individual : individualsSet) {
-			individualOrClassChooser.addItem(new WrappedOntResource(individual));
-		}
-	}
 
 	public static Individual renameNode(Individual resource, String newValue, DefaultMutableTreeNode topStepNode, JTree jStepsTree) {
 		Path tempFile;
@@ -302,7 +285,7 @@ public class OntManager {
 		Path path = null;
 		saveOntologyAndCoordinates(file, jStepsTree);
 		try (FileOutputStream output = new FileOutputStream(file)) {
-			OntManager.getOntologyModel().writeAll(output, "RDF/XML", NS);// TODO maybe without NS
+			writeOntModelToDisk(output);
 			path = Paths.get(file.getAbsolutePath());
 			Charset charset = StandardCharsets.US_ASCII;
 			String content = new String(Files.readAllBytes(path), charset);
@@ -332,10 +315,14 @@ public class OntManager {
 			individual.addLiteral(OntManager.getStepCoordinatesProperty(), verticalDistance++ + "." + defaultMutableTreeNode.getLevel());
 		}
 		try (FileOutputStream output = new FileOutputStream(file)) {
-			OntManager.getOntologyModel().write(output, "RDF/XML", null);// OntManager.NS);
+			writeOntModelToDisk(output);
 		} catch (Exception e1) {
 			UiUtils.showDialog(jStepsTree, "Cannot open output file" + e1.getLocalizedMessage());
 		}
+	}
+
+	private static void writeOntModelToDisk(FileOutputStream output) {
+		OntManager.getOntologyModel().write(output, "RDF/XML", null);// OntManager.NS);
 	}
 }
 // TODO for some reason it seams that only the top protocol is saved with rdf type as </owl:NamedIndividual> but all the other newly created nodes are saved withe the right class and without rdf t

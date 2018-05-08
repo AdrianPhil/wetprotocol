@@ -1,9 +1,9 @@
 package ui;
 
 import resources.ResourceFinding;
-import ui.instancenameedit.StepInstanceCellRenderer;
-import ui.instancenameedit.StepInstanceNameCellEditor;
 import ui.property.PropertyEditorBigPanel;
+import ui.stepnameedit.StepInstanceCellRenderer;
+import ui.stepnameedit.StepInstanceNameCellEditor;
 
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -12,6 +12,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.util.ResourceUtils;
 import org.apache.jena.ontology.OntResource;
+import org.apache.jena.rdf.model.Resource;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -207,7 +208,12 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		deleteChildNodeButton.addActionListener(e -> {
 			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jProtocolTree.getLastSelectedPathComponent();
 			if (selectedNode.getParent() != null && !selectedNode.isRoot()) {
-				protocolTreeModel.removeNodeFromParent(selectedNode);
+				if (selectedNode.getUserObject() instanceof Individual) {
+					protocolTreeModel.removeNodeFromParent(selectedNode);
+					OntManager.getInstance().getOntologyModel().removeAll((Resource) selectedNode.getUserObject(), null, null);
+				} else {
+					UiUtils.showDialog(this, "Could not remove node. Not an instance of an Individual");
+				}
 			}
 		});
 	}
