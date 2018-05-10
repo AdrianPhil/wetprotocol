@@ -1,6 +1,5 @@
 package ui.stepnameedit;
 
-import static ui.UiUtils.expandTree;
 
 import java.awt.Component;
 
@@ -9,22 +8,18 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellEditor;
 
 import org.apache.jena.ontology.Individual;
-import org.apache.jena.ontology.OntClass;
-import org.apache.jena.ontology.OntProperty;
-import org.apache.jena.rdf.model.Literal;
 
-import ont.OntManager;
 import ui.UiUtils;
-import ui.property.PropertyAndIndividual;
-import ui.property.PropertyEditorBigPanel.NodeType;
+import ui.WetProtocolMainPanel;
 
+@SuppressWarnings("serial")
 public class StepInstanceNameCellEditor extends AbstractCellEditor implements TreeCellEditor {
 	private StepInstanceNameEditCellPanel instanceNameEditCellPanel;
 	Individual individual;
-	JTree jStepTree;// only for rename
+	WetProtocolMainPanel wetProtocolMainPanel;// only for rename
 
-	public StepInstanceNameCellEditor(JTree jStepTree) {
-		this.jStepTree = jStepTree;//only for rename
+	public StepInstanceNameCellEditor(WetProtocolMainPanel wetProtocolMainPanel) {
+		this.wetProtocolMainPanel = wetProtocolMainPanel;//only for rename
 	}
 
 	@Override // It's called when somebody from outside want the edited value. Maybe when clicking outside
@@ -39,7 +34,7 @@ public class StepInstanceNameCellEditor extends AbstractCellEditor implements Tr
 			Object userObject = ((DefaultMutableTreeNode) individualNode).getUserObject();
 			if (userObject instanceof Individual) {
 				individual = (Individual) userObject;
-				instanceNameEditCellPanel = new StepInstanceNameEditCellPanel(individual, (DefaultMutableTreeNode) individualNode, jStepTree);
+				instanceNameEditCellPanel = new StepInstanceNameEditCellPanel(individual, (DefaultMutableTreeNode) individualNode, wetProtocolMainPanel);
 			}
 		} else {
 			UiUtils.showDialog(tree, "Uknown object type:" + individualNode);
@@ -56,6 +51,6 @@ public class StepInstanceNameCellEditor extends AbstractCellEditor implements Tr
 	protected void fireEditingStopped() {	
 		System.out.println("fireEditingStopped");
 		super.fireEditingStopped();
-		jStepTree.setEditable(false);
+		wetProtocolMainPanel.getjStepTree().setEditable(false);
 	}
 }

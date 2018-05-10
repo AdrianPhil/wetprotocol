@@ -7,6 +7,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+@SuppressWarnings("serial")
 public class ToolTipJTree extends JTree {
 	public ToolTipJTree(DefaultTreeModel stepChooserTreeModel) {
 		super(stepChooserTreeModel);

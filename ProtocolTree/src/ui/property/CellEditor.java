@@ -1,32 +1,27 @@
 package ui.property;
 
-import static ui.UiUtils.expandTree;
 
 import java.awt.Component;
-import java.awt.Event;
 import java.util.EventObject;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellEditor;
 
-import org.apache.jena.ontology.Individual;
-import org.apache.jena.ontology.OntClass;
-import org.apache.jena.ontology.OntProperty;
-import org.apache.jena.rdf.model.Literal;
 
-import ont.OntManager;
 import ui.UiUtils;
-import ui.property.PropertyEditorBigPanel.NodeType;
+import ui.WetProtocolMainPanel;
 
+@SuppressWarnings("serial")
 public class CellEditor extends AbstractCellEditor implements TreeCellEditor {
 	private EditCellPanel editPanel;
 	private PropertyAndIndividual propertyAndIndividual;
-	private DefaultMutableTreeNode currentTopNode;
-	JTree jTree;
+	JTree jPropertyAndIndividualTree;
+	WetProtocolMainPanel wetProtocolMainPanel;
 
-	public CellEditor(JTree jTree) {
-		this.jTree = jTree;
+	public CellEditor(JTree jPropertyAndIndividualTree, WetProtocolMainPanel wetProtocolMainPanel/* for rename only*/) {
+		this.jPropertyAndIndividualTree = jPropertyAndIndividualTree;
+		this.wetProtocolMainPanel=wetProtocolMainPanel;
 	}
 
 	@Override // I think it's called when somebody from outside want the edited value. Maybe when clicking outside

@@ -4,12 +4,12 @@ package ui.property;
 import ont.OntManager;
 import ui.ToolTipJTree;
 import ui.UiUtils;
+import ui.WetProtocolMainPanel;
 
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.ontology.OntResource;
-import org.apache.jena.ontology.impl.OntResourceImpl;
 import org.apache.jena.rdf.model.RDFNode;
 
 import javax.swing.*;
@@ -21,39 +21,38 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.net.URL;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static ui.UiUtils.expandTree;
 
+@SuppressWarnings("serial")
 public class PropertyEditorBigPanel extends JPanel implements TreeSelectionListener {
 	Object defaultCellRenderer = new DefaultTreeCellRenderer();
 	private JEditorPane htmlPane;
-	private URL helpURL;
+	//private URL helpURL;
 	// private JButton addNewSiblingNodeButton = new JButton("New Sibling");
 	private JButton okButton = new JButton("OK");
 	private JButton expandTreeButton = new JButton("Expand Tree");
 	// Create the nodes.
 	private DefaultMutableTreeNode protocolTreeNode;// the individual to change properties for
 	// most below could be cached
-	private JTree jProtocolTree;
+	WetProtocolMainPanel wetProtocolMainPanel;
 	Individual individual = null;
 	private final DefaultMutableTreeNode TOP_NODE_AS_PROPERTY_HOLDER = new DefaultMutableTreeNode("top");// this is empty
 	private DefaultTreeModel protocolTreeModel = new DefaultTreeModel(TOP_NODE_AS_PROPERTY_HOLDER);
 	private JTree jPropertyAndIndividualTree = new ToolTipJTree(protocolTreeModel);// my property tree
 
-	public PropertyEditorBigPanel(DefaultMutableTreeNode protocolTreeNode, JTree jProtocolTree) {// todo we don't need to pass the tree in here ?
+	public PropertyEditorBigPanel(DefaultMutableTreeNode protocolTreeNode, WetProtocolMainPanel wetProtocolMainPanel) {// we pass the panel so we can get the pstepTree so we could rename property node individuals
 		super(new GridLayout(1, 1));
-		this.jProtocolTree = jProtocolTree;
+		this.wetProtocolMainPanel = wetProtocolMainPanel;
 		this.protocolTreeNode = protocolTreeNode;
 		if (protocolTreeNode == null) {
-			UiUtils.showDialog(jProtocolTree, "In ClassPropertyEditorPanel constructor. Passed node is null");
+			UiUtils.showDialog(this, "In ClassPropertyEditorPanel constructor. Passed node is null");
 			return;// todo should close this window?
 		}
 		Object userObject = protocolTreeNode.getUserObject();
 		if (userObject == null || !(userObject instanceof Individual)) {
-			UiUtils.showDialog(jProtocolTree, "In ClassPropertyEditorPanel constructor. Passed node is null or not an instance of Individual");
+			UiUtils.showDialog(this, "In ClassPropertyEditorPanel constructor. Passed node is null or not an instance of Individual");
 		}
 		individual = (Individual) userObject;
 		TOP_NODE_AS_PROPERTY_HOLDER.setUserObject("Properties for Individual:" + individual.getLocalName());
@@ -97,7 +96,7 @@ public class PropertyEditorBigPanel extends JPanel implements TreeSelectionListe
 		createNodes();
 		expandTree(jPropertyAndIndividualTree);
 		jPropertyAndIndividualTree.setCellRenderer(new CellRenderer());
-		jPropertyAndIndividualTree.setCellEditor(new CellEditor(jPropertyAndIndividualTree));
+		jPropertyAndIndividualTree.setCellEditor(new CellEditor(jPropertyAndIndividualTree,wetProtocolMainPanel));
 		jPropertyAndIndividualTree.setInvokesStopCellEditing(true);//keep the changes when focus is lost
 		jPropertyAndIndividualTree.setEditable(true);
 		// Enable tool tips.
@@ -128,7 +127,7 @@ public class PropertyEditorBigPanel extends JPanel implements TreeSelectionListe
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) jPropertyAndIndividualTree.getLastSelectedPathComponent();
 		if (node == null)
 			return;
-		Object nodeInfo = node.getUserObject();
+		//Object nodeInfo = node.getUserObject();
 		// displayURL(null);
 		System.out.println(" PropertyTreeSelectionChanged");
 	}
@@ -167,13 +166,13 @@ public class PropertyEditorBigPanel extends JPanel implements TreeSelectionListe
 		if (ontProperty.isDatatypeProperty()) {
 			System.out.println("\tcreating literal prop node for " + ontProperty.getLocalName());
 			currentTopNode.add(new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individualThatHasTheProperty, NodeType.LITERAL_NODE)));
-			return currentTopNode;//--------------------->
+			return currentTopNode;// --------------------->
 		} else {// object type property
 			System.out.println("\tcreating object type prop node for property: " + ontProperty.getLocalName());
-			if (OntManager.isPreexisting(ontProperty)) { //PREEXISTING INDIVIDUAL DROPBOX  takes precedence 
+			if (OntManager.isPreexisting(ontProperty)) { // PREEXISTING INDIVIDUAL DROPBOX takes precedence
 				DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individualThatHasTheProperty, NodeType.DATA_TYPE_NODE_FOR_CHOICE_PREEXISTING_OBJECT));// Pop up
 				currentTopNode.add(newChild);// would be Read Only as it's an object property
-				return currentTopNode;//--------------------->
+				return currentTopNode;// --------------------->
 				// return createNode(ontProperty, newChild);
 			} // else it must be an object property
 			OntResource range = ontProperty.getRange();
@@ -182,12 +181,12 @@ public class PropertyEditorBigPanel extends JPanel implements TreeSelectionListe
 				Object subIndividualObject = individualThatHasTheProperty.getPropertyValue(ontProperty);
 				Individual subIndividual;
 				if (subIndividualObject == null) {
-					subIndividual = OntManager.createLeafIndividual(ontProperty.getRange().asClass(),"newLeafIndividual");
-//					System.out.println("We Created a new LEAF CLASS individual:"+subIndividual.getLocalName()+
-//							" and we insert it in:"+individualThatHasTheProperty.getLocalName() );
+					subIndividual = OntManager.createLeafIndividual(ontProperty.getRange().asClass(), "newLeafIndividual");
+					// System.out.println("We Created a new LEAF CLASS individual:"+subIndividual.getLocalName()+
+					// " and we insert it in:"+individualThatHasTheProperty.getLocalName() );
 					individualThatHasTheProperty.setPropertyValue(ontProperty, subIndividual);
 				} else {
-					subIndividual=((OntResource)subIndividualObject).asIndividual();
+					subIndividual = ((OntResource) subIndividualObject).asIndividual();
 				}
 				DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individualThatHasTheProperty, NodeType.DATA_TYPE_NODE_FOR_LEAF_CLASS));// Pop up
 				currentTopNode.add(newChild);// would be Read Only as it's an object property
@@ -196,22 +195,23 @@ public class PropertyEditorBigPanel extends JPanel implements TreeSelectionListe
 					System.out.println("creating range property for " + ontProperty.getLocalName());
 					createNode(rageProperty, newChild, subIndividual);// ---------------------> recursion
 				}
-				return newChild;//--------------------->
-			} else {//SELECT A CLASS DROPOX
+				return newChild;// --------------------->
+			} else {// SELECT A CLASS DROPOX
 				System.out.println("nasty case where the property value is an instance and could be ANY number of classes coming from range subclasses");
 				DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(new PropertyAndIndividual(ontProperty, individualThatHasTheProperty, NodeType.DATA_TYPE_NODE_FOR_CHOICE_SUBCLASS));// , ontProperty.getRange().asClass().listSubClasses(false).toSet()));// Pop up
 				currentTopNode.add(newChild);// would be Read Only as it's an object property
 				RDFNode propertyValueAsIndividual = (individualThatHasTheProperty.getPropertyValue(ontProperty));
-				if(propertyValueAsIndividual!=null) {//already selected at one point
-					//same as for DATA_TYPE_NODE_FOR_LEAF_CLASS					
-					Individual subIndividual = propertyValueAsIndividual.as(Individual.class);;
+				if (propertyValueAsIndividual != null) {// already selected at one point
+					// same as for DATA_TYPE_NODE_FOR_LEAF_CLASS
+					Individual subIndividual = propertyValueAsIndividual.as(Individual.class);
+					;
 					Set<OntProperty> rangeProps = OntManager.getInstance().calculateHierarchicalPropertiesForAClass(subIndividual.getOntClass());
 					for (OntProperty rageProperty : rangeProps) {
 						System.out.println("creating range property for " + ontProperty.getLocalName());
 						createNode(rageProperty, newChild, subIndividual);// ---------------------> recursion
 					}
 				}
-				return currentTopNode;//--------------------->
+				return currentTopNode;// --------------------->
 			}
 		}
 	}
@@ -226,9 +226,9 @@ public class PropertyEditorBigPanel extends JPanel implements TreeSelectionListe
 	}
 
 	/**
-	 * Todo need to update the  tree node with the value of the properties and maybe change it's icon and refresh to show the changes
+	 * Todo need to update the tree node with the value of the properties and maybe change it's icon and refresh to show the changes
 	 */
 	private void acceptPropertiesResponse(Component splitPane) {
-		jPropertyAndIndividualTree.stopEditing();	
+		jPropertyAndIndividualTree.stopEditing();
 	}
 }

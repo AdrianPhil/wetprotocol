@@ -1,5 +1,9 @@
 package utils;
 
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+
 import org.apache.jena.ontology.OntClass;
 
 import ui.property.PropertyValueFormattedTextBox;
@@ -22,5 +26,12 @@ public class Utils {
 			return string.toLowerCase();
 		}
 		return string.substring(0, 1).toLowerCase()+string.substring(1, string.length());
+	}
+
+	public static DefaultMutableTreeNode getRoot(JTree jTree) {
+		return (DefaultMutableTreeNode)(getModel(jTree).getRoot());
+	}
+	public static DefaultTreeModel getModel(JTree jTree) {
+		return (DefaultTreeModel) (jTree.getModel());
 	}
 }

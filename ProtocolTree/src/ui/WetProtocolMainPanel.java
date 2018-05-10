@@ -4,44 +4,33 @@ import resources.ResourceFinding;
 import ui.property.PropertyEditorBigPanel;
 import ui.stepnameedit.StepInstanceCellRenderer;
 import ui.stepnameedit.StepInstanceNameCellEditor;
+import utils.Utils;
 
 import javax.swing.*;
 import javax.swing.tree.*;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.jena.ontology.Individual;
-import org.apache.jena.util.ResourceUtils;
-import org.apache.jena.ontology.OntResource;
 import org.apache.jena.rdf.model.Resource;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
 
 import ont.OntManager;
 
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Enumeration;
 
 import static ui.UiUtils.*;
 
+@SuppressWarnings("serial")
 public class WetProtocolMainPanel extends JPanel implements TreeSelectionListener {
-	private URL helpURL;
+	//private URL helpURL;
 	private JButton addNewSiblingNodeButton = new JButton("New Step");
 	private JButton addChildNodeButton = new JButton("New Substep");
 	private JButton deleteChildNodeButton = new JButton("Delete Step");
@@ -49,16 +38,17 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 	private JButton saveProtocolButton = new JButton("Save Protocol");
 	private JButton loadProtocolButton = new JButton("Load Protocol");
 	private JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-	private JTree jProtocolTree;
-	public static final int WITH_OF_PROTOCOL_TREE = 400;
+	private JTree jStepTree;
+
+	public static final int WITH_OF_STEPS_TREE = 400;
 	private final static String FRAME_TITLE = "Wet Protocol";
-	private DefaultTreeModel protocolTreeModel;
+	//private DefaultTreeModel stepsTreeModel;
 
 	private WetProtocolMainPanel() {
 		super(new GridLayout(1, 1));
 		initiateTreeAndTreeModel();
 		JPanel treeViewPanel = new JPanel(new BorderLayout());
-		treeViewPanel.add(jProtocolTree, BorderLayout.PAGE_START);
+		treeViewPanel.add(jStepTree, BorderLayout.PAGE_START);
 		JPanel treeViewButtonPanel = new JPanel();
 		treeViewButtonPanel.setLayout(new GridLayout(2, 1));
 		treeViewButtonPanel.add(addNewSiblingNodeButton);
@@ -74,8 +64,8 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		splitPane.setLeftComponent(treeViewScrollPane);
 		createNewClassPropertyEditorPanel();
 		treeViewScrollPane.setMinimumSize(new Dimension(100, 50));
-		treeViewScrollPane.setPreferredSize(new Dimension(WITH_OF_PROTOCOL_TREE, 50));
-		splitPane.setDividerLocation(WITH_OF_PROTOCOL_TREE); // XXX: ignored in some releases
+		treeViewScrollPane.setPreferredSize(new Dimension(WITH_OF_STEPS_TREE, 50));
+		splitPane.setDividerLocation(WITH_OF_STEPS_TREE); // XXX: ignored in some releases
 		// of Swing. bug 4101306
 		// workaround for bug 4101306:
 		// treeView.setPreferredSize(new Dimension(100, 100));
@@ -88,60 +78,59 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 	}
 
 	private void initiateTreeAndTreeModel() {
-		jProtocolTree = new ToolTipJTree();
-		jProtocolTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		ToolTipManager.sharedInstance().registerComponent(jProtocolTree);
-		jProtocolTree.setShowsRootHandles(true);
+		jStepTree = new ToolTipJTree();
+		jStepTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		ToolTipManager.sharedInstance().registerComponent(jStepTree);
+		jStepTree.setShowsRootHandles(true);
 		initiateOrRefreshTreeModelAndRest();
-		jProtocolTree.setExpandsSelectedPaths(true);
+		jStepTree.setExpandsSelectedPaths(true);
 		MouseListener ml = new MouseAdapter() {// right click enters edit mode
 			public void mousePressed(MouseEvent e) {
-				int selRow = jProtocolTree.getRowForLocation(e.getX(), e.getY());
-				TreePath selPath = jProtocolTree.getPathForLocation(e.getX(), e.getY());
+				//int selRow = jStepsTree.getRowForLocation(e.getX(), e.getY());
+				//TreePath selPath = jStepsTree.getPathForLocation(e.getX(), e.getY());
 				if (SwingUtilities.isRightMouseButton(e)) {
-					int row = jProtocolTree.getRowForLocation(e.getX(), e.getY());
-					TreePath path = jProtocolTree.getPathForLocation(e.getX(), e.getY());
+					int row = jStepTree.getRowForLocation(e.getX(), e.getY());
+					TreePath path = jStepTree.getPathForLocation(e.getX(), e.getY());
 					if (row != -1) {
 						// if (e.getClickCount() == 1) {
-						jProtocolTree.setEditable(true);
-						jProtocolTree.startEditingAtPath(path);
+						jStepTree.setEditable(true);
+						jStepTree.startEditingAtPath(path);
 						// }
 					}
 				}
 			}
 		};
 		// jProtocolTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "startEditing");//also need to jProtocolTree.setEditable(true);
-		jProtocolTree.addMouseListener(ml);
+		jStepTree.addMouseListener(ml);
 	}
 
-	private void initiateOrRefreshTreeModelAndRest() {
-		OntManager.getInstance();// loads the seeded ont model or the initial one if not already seeded
-		protocolTreeModel = new DefaultTreeModel(new DefaultMutableTreeNode(OntManager.getTopProtocolInstance()));// todo we might not need this
-		jProtocolTree.setModel(protocolTreeModel);
-		DefaultMutableTreeNode root = (DefaultMutableTreeNode) protocolTreeModel.getRoot();
+	public void initiateOrRefreshTreeModelAndRest() {
+		OntManager.getInstance();// loads the seeded ontology model or the initial one if not already seeded
+		DefaultTreeModel stepsTreeModel = new DefaultTreeModel(new DefaultMutableTreeNode(OntManager.getTopStepsInstance()));// todo we might not need this
+		jStepTree.setModel(stepsTreeModel);
 		// protocolTreeModel.reload(root);//maybe not necessary
-		loadStepsTreeFromModel(root);
-		expandTree(jProtocolTree);
+		UiUtils.loadStepsTreeFromModel(jStepTree);
+		expandTree(jStepTree);
 		// Enable tool tips.
-		jProtocolTree.setCellRenderer(new StepInstanceCellRenderer(jProtocolTree));
-		jProtocolTree.setCellEditor(new StepInstanceNameCellEditor(jProtocolTree));
-		jProtocolTree.setInvokesStopCellEditing(true);// keep the changes when focus is lost
+		jStepTree.setCellRenderer(new StepInstanceCellRenderer(jStepTree));// no need to change to WetProtocolMainPanel because is not stored
+		jStepTree.setCellEditor(new StepInstanceNameCellEditor(this));
+		jStepTree.setInvokesStopCellEditing(true);// keep the changes when focus is lost
 		// jProtocolTree.setEditable(true);
 		// jProtocolTree.setEditable(true);
 		// Listen for when the selection changes.
-		jProtocolTree.addTreeSelectionListener(this);
-		jProtocolTree.setSelectionRow(0);// select root and this should refresh the ClassPropertyEditorPanel
+		jStepTree.addTreeSelectionListener(this);
+		jStepTree.setSelectionRow(0);// select root and this should refresh the ClassPropertyEditorPanel
 	}
 
 	private void AddTreeButtonListeners(JSplitPane splitPane) {
-		DefaultMutableTreeNode root = (DefaultMutableTreeNode) jProtocolTree.getModel().getRoot();
+		DefaultMutableTreeNode root = (DefaultMutableTreeNode) jStepTree.getModel().getRoot();
 		addNewSiblingNodeButton.addActionListener(e -> {
 			// display/center the jDialog when the button is pressed
-			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jProtocolTree.getLastSelectedPathComponent();
+			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jStepTree.getLastSelectedPathComponent();
 			if (selectedNode == null) {
-				TreeModel model = jProtocolTree.getModel();
+				TreeModel model = jStepTree.getModel();
 				if (model.getChildCount(root) == 0) {// empty model
-					jProtocolTree.setSelectionRow(0);
+					jStepTree.setSelectionRow(0);
 				} else {
 					selectedNode = (DefaultMutableTreeNode) model.getChild(root, model.getChildCount(root) - 1);// add sibling to last root
 				}
@@ -151,14 +140,13 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 				UiUtils.showDialog(splitPane, "Can not add a sibling to root");
 				return;
 			}
-			UiUtils.showStepChooserGuiAndCreateNewStepTree(WhereToAddStepNode.NEW_SIBBLING_STEP_NODE, jProtocolTree);// this will update the protocol tree model
+			UiUtils.showStepChooserGuiAndCreateNewStepTree(WhereToAddStepNode.NEW_SIBBLING_STEP_NODE, jStepTree);// this will update the protocol tree model
 		});
 		addChildNodeButton.addActionListener(e -> {
-			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jProtocolTree.getLastSelectedPathComponent();
-			UiUtils.showStepChooserGuiAndCreateNewStepTree(WhereToAddStepNode.NEW_CHILD_STEP_NODE, jProtocolTree);// this will update the protocol tree model
+			UiUtils.showStepChooserGuiAndCreateNewStepTree(WhereToAddStepNode.NEW_CHILD_STEP_NODE, jStepTree);// this will update the protocol tree model
 		});
 		expandTreeButton.addActionListener(e -> {
-			expandTree(jProtocolTree);
+			expandTree(jStepTree);
 		});
 		saveProtocolButton.addActionListener(e -> {
 			JFileChooser fileChooser = new JFileChooser();
@@ -179,7 +167,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 					file = new File(file.toString() + ".owl");
 					// file = new File(file.getParentFile(), FilenameUtils.getBaseName(file.getName())+".xml"); // ALTERNATIVELY: remove the extension (if any) and replace it with ".xml"
 				}
-				OntManager.saveOntologyAndCoordinates(file, jProtocolTree);
+				OntManager.saveOntologyAndCoordinates(file, jStepTree);
 			}
 		});
 		loadProtocolButton.addActionListener(e -> {
@@ -193,7 +181,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 			if (retval == JFileChooser.APPROVE_OPTION) {
 				File file = fileChooser.getSelectedFile();
 				if (file == null) {
-					UiUtils.showDialog(jProtocolTree, "Cannot open the file");
+					UiUtils.showDialog(jStepTree, "Cannot open the file");
 					return;
 				}
 				OntManager.loadModelFromFileAndResetOntManager(file.getAbsolutePath());
@@ -206,11 +194,12 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 			}
 		});
 		deleteChildNodeButton.addActionListener(e -> {
-			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jProtocolTree.getLastSelectedPathComponent();
+			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jStepTree.getLastSelectedPathComponent();
 			if (selectedNode.getParent() != null && !selectedNode.isRoot()) {
 				if (selectedNode.getUserObject() instanceof Individual) {
-					protocolTreeModel.removeNodeFromParent(selectedNode);
-					OntManager.getInstance().getOntologyModel().removeAll((Resource) selectedNode.getUserObject(), null, null);
+					((DefaultTreeModel)jStepTree.getModel()).removeNodeFromParent(selectedNode);
+					OntManager.getInstance();
+					OntManager.getOntologyModel().removeAll((Resource) selectedNode.getUserObject(), null, null);
 				} else {
 					UiUtils.showDialog(this, "Could not remove node. Not an instance of an Individual");
 				}
@@ -252,11 +241,11 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 	}
 
 	private void createNewClassPropertyEditorPanel() {
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) jProtocolTree.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) jStepTree.getLastSelectedPathComponent();
 		if (node == null) {
-			node = (DefaultMutableTreeNode) protocolTreeModel.getRoot();
+			node =  Utils.getRoot(jStepTree);
 		}
-		PropertyEditorBigPanel classPropertyEditorBigPanel = new PropertyEditorBigPanel(node, jProtocolTree);
+		PropertyEditorBigPanel classPropertyEditorBigPanel = new PropertyEditorBigPanel(node, this);
 		classPropertyEditorBigPanel.setMinimumSize(new Dimension(50, 50));
 		classPropertyEditorBigPanel.setPreferredSize(new Dimension(200, 400));
 		classPropertyEditorBigPanel.setMaximumSize(new Dimension(200, 200));
@@ -266,29 +255,12 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		splitPane.setRightComponent(new JScrollPane(classPropertyEditorBigPanel));
 	}
 
-	// private void initHelp() {
-	// String s = "TreeDemoHelp.html";
-	// if (helpURL == null) {
-	// System.err.println("Couldn't open help file: " + s);
-	// } else if (DEBUG) {
-	// System.out.println("Help URL is " + helpURL);
-	// }
-	// showEditorPanel(null);// todo this should be the protocol node
-	// }
-	private void showEditorPanel(DefaultMutableTreeNode node) {// todo maybe put a real class in here
-		try {
-			if (node != null) {
-				// classPropertyEditorPanel.setPage(url);
-			} else { // null url
-				// classPropertyEditorPanel.setText("File Not Found");
-				if (DEBUG) {
-					System.out.println("Attempted to display a null URL.");
-				}
-			}
-		} catch (Exception e) {// todo
-			System.err.println("Attempted to read a bad node: " + node.getUserObject().toString());
-		}
+
+	
+	public JTree getjStepTree() {
+		return jStepTree;
 	}
+
 
 	public static void main(String[] args) {
 		// Schedule a job for the event-dispatching thread:

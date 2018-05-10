@@ -5,9 +5,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
 import org.apache.jena.ontology.OntClass;
-import org.apache.jena.ontology.OntProperty;
-
-import ont.OntManager;
 import ui.UiUtils;
 
 import java.awt.Color;
@@ -15,6 +12,7 @@ import java.awt.Component;
 
 import javax.swing.*;
 
+@SuppressWarnings("serial")
 public class CellRenderer extends DefaultTreeCellRenderer implements TreeCellRenderer {
 	DefaultTreeCellRenderer defaultRenderer = new DefaultTreeCellRenderer();
 	Color backgroundSelectionColor;
@@ -56,10 +54,10 @@ public class CellRenderer extends DefaultTreeCellRenderer implements TreeCellRen
 		}
 		renderPanel.setEnabled(tree.isEnabled());
 		returnComponent = renderPanel;
-		if (returnComponent == null) {
-			UiUtils.showDialog(tree, "The propertyAndIndividual to be rendered for:" + ((PropertyAndIndividual) userObject).getOntProperty().getLocalName() + " is wrong!!. Using default renderer");
-			returnComponent = defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
-		}
+//		if (returnComponent == null) {
+//			UiUtils.showDialog(tree, "The propertyAndIndividual to be rendered for:" + ((PropertyAndIndividual) userObject).getOntProperty().getLocalName() + " is wrong!!. Using default renderer");
+//			returnComponent = defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+//		}
 		return returnComponent;
 	}
 }

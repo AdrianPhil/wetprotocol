@@ -1,6 +1,5 @@
 package ui.property;
 
-import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntProperty;

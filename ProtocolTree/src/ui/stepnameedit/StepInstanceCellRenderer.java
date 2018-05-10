@@ -5,9 +5,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
 import org.apache.jena.ontology.Individual;
-import org.apache.jena.rdf.model.RDFNode;
-
-import ont.OntManager;
 import resources.ResourceFinding;
 import ui.UiUtils;
 
@@ -18,6 +15,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.*;
 
+@SuppressWarnings("serial")
 public class StepInstanceCellRenderer extends DefaultTreeCellRenderer implements TreeCellRenderer {
 	public static final ImageIcon createImageIcon = ResourceFinding.createImageIcon("icons/package.png");// TODO probably singleton it
 	JLabel localName = new JLabel(" ");
@@ -61,11 +59,11 @@ public class StepInstanceCellRenderer extends DefaultTreeCellRenderer implements
 		}
 		Component returnValue = null;
 		Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
+		if (userObject == null) {
+			assert false : "userObject is null";
+		}
 		if (userObject instanceof Individual) {
 			Individual individual = (Individual) userObject;
-			if (individual == null) {
-				assert false : "individual is null";
-			}
 			if (individual.getOntClass() == null) {
 				assert false : "class is null";
 			}

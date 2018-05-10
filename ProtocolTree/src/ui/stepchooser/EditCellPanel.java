@@ -1,30 +1,20 @@
 package ui.stepchooser;
 
-import static ui.UiUtils.expandTree;
 
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.apache.jena.ontology.Individual;
-import org.apache.jena.ontology.OntClass;
-import org.apache.jena.ontology.OntResource;
-import ont.OntManager;
 import ui.OntResourceNameFormattedTextBox;
-import ui.property.PropertyAndIndividual;
 import utils.Utils;
 
+@SuppressWarnings("serial")
 public class EditCellPanel extends JPanel implements PropertyChangeListener {
 	protected ClassAndIndividualName classAndIndividualName;
 	final DefaultMutableTreeNode theNode;

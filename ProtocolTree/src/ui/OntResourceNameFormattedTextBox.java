@@ -1,6 +1,5 @@
 package ui;
 
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -8,6 +7,7 @@ import java.util.regex.Pattern;
 import javax.swing.JFormattedTextField;
 import javax.swing.text.DefaultFormatter;
 
+@SuppressWarnings("serial")
 public class OntResourceNameFormattedTextBox extends JFormattedTextField {
 	Pattern pattern = Pattern.compile("\\p{Alpha}[\\w\\d-_]*"); // starts with letter followed by letter, digit or - w allows some chars too!!!
 

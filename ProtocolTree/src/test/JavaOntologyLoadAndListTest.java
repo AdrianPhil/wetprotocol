@@ -31,7 +31,7 @@ public class JavaOntologyLoadAndListTest {
 		}
 	}
 
-	public static void printSet(Collection set) {
+	public static void printSet(Collection<?> set) {
 		set.forEach(System.out::println);
 
 	}

@@ -2,31 +2,20 @@ package ui;
 
 import ont.OntManager;
 import ui.WetProtocolMainPanel.WhereToAddStepNode;
-import ui.property.AbstractTreeCellPanel;
-import ui.property.PropertyEditorBigPanel;
 import ui.stepchooser.StepChooserPanel;
+import utils.Utils;
 
 import org.apache.jena.ontology.Individual;
-import org.apache.jena.ontology.OntClass;
-import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntProperty;
-import org.apache.jena.ontology.OntResource;
-import org.apache.jena.rdf.model.RDFNode;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
-import static ui.WetProtocolMainPanel.WITH_OF_PROTOCOL_TREE;
 
 import java.awt.*;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class UiUtils {
 	public static final boolean DEBUG = false;
@@ -67,7 +56,8 @@ public class UiUtils {
 
 
 	// * this practically does the whole UI if the model was changed*/
-	public static void loadStepsTreeFromModel(DefaultMutableTreeNode topStepNode) {
+	public static void loadStepsTreeFromModel(JTree jStepsTree) {
+		DefaultMutableTreeNode topStepNode=Utils.getRoot(jStepsTree);
 		topStepNode.removeAllChildren();
 		List<Individual> list = OntManager.getInstance().calculateStepIndividuals();
 		list.sort((Individual i1, Individual i2) -> i1.getPropertyValue(OntManager.getStepCoordinatesProperty()).asLiteral().getString().compareTo(i2.getPropertyValue(OntManager.getStepCoordinatesProperty()).asLiteral().getString()));

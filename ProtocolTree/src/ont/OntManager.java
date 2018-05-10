@@ -23,19 +23,14 @@ import org.apache.jena.ext.com.google.common.collect.Lists;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
-import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.reasoner.Reasoner;
-import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.util.iterator.ExtendedIterator;
 
 import resources.ResourceFinding;
 import ui.UiUtils;
+import ui.WetProtocolMainPanel;
 import ui.property.WrappedOntResource;
 import ui.stepchooser.ClassAndIndividualName;
 
@@ -49,7 +44,7 @@ public class OntManager {
 	public static final String NS = "http://www.wet.protocol#";// namespace and #
 	public static OntProperty PREEXISTING;
 	public static OntProperty COUNTER_PROPERTY;
-	private static Individual TOP_PROTOCOL_INSTANCE;
+	private static Individual TOP_STEPS_INSTANCE;
 	private static OntProperty STEP_COORDINATES_PROPERTY;
 	private static OntClass STEP_ONT_CLASS;
 	// public static Resource NOTHING_SUBCLASS;
@@ -76,19 +71,10 @@ public class OntManager {
 		PREEXISTING = ontologyModel.getOntProperty(NS + "preexisting");
 		COUNTER_PROPERTY = ontologyModel.getOntProperty(NS + "protocolCounter");
 		// NOTHING_SUBCLASS = ontologyModel.getOntClass("owl:Nothing");
-		TOP_PROTOCOL_INSTANCE = ontologyModel.getIndividual(NS + "topProtocolInstance");
-		counter.set(TOP_PROTOCOL_INSTANCE.getPropertyValue(COUNTER_PROPERTY).asLiteral().getInt());
-		STEP_ONT_CLASS = OntManager.getInstance().getOntClass("Step");
+		TOP_STEPS_INSTANCE = ontologyModel.getIndividual(NS + "topProtocolInstance");
+		counter.set(TOP_STEPS_INSTANCE.getPropertyValue(COUNTER_PROPERTY).asLiteral().getInt());
+		STEP_ONT_CLASS = OntManager.getOntClass("Step");
 		//
-		// topProtocolInstance.setOntClass(getOntClass("Protocol"));// need to correct the NamedIndividual nonsense that appears when saving in Jena
-		// Resource namedIndividual = ontologyModel.getResource("http://www.w3.org/2002/07/owl#NamedIndividual");
-		// System.out.println("in resetModelInstance. Found NamedIndividual:"+namedIndividual);
-		// if (namedIndividual != null && namedIndividual instanceof OntResource) {
-		// ((OntResource) namedIndividual).remove();
-		// System.out.println("in resetModelInstance. removed NamedIndividual:");
-		// }
-		//
-		// topProtocolInstance.setPropertyValue(ontologyModel.getOntProperty(NS + "version"), ontologyModel.createTypedLiteral("Version 0.0")); //TODO reinstate
 		STEP_COORDINATES_PROPERTY = (ontologyModel.getOntProperty(NS + "stepCoordinatesProperty"));
 		return instance;
 	}
@@ -120,10 +106,10 @@ public class OntManager {
 
 	// will load in the combo box all existing individuals of the given class
 	// TODO I think this one should be done like the calculateStepIndividuals
-	public static void loadPossibleIndividualValues(JComboBox individualOrClassChooser, OntClass ontClass) {
+	public static void loadPossibleIndividualValues(JComboBox<WrappedOntResource<?>> individualOrClassChooser, OntClass ontClass) {
 		Set<Individual> individualsSet = getOntologyModel().listIndividuals(ontClass).toSet();
 		for (Individual individual : individualsSet) {
-			individualOrClassChooser.addItem(new WrappedOntResource(individual));
+			individualOrClassChooser.addItem(new WrappedOntResource<>(individual));
 		}
 	}	
 	
@@ -132,12 +118,12 @@ public class OntManager {
 		return ontologyModel.listClasses().toSet();
 	}
 
-	public static Individual getTopProtocolInstance() {
-		return TOP_PROTOCOL_INSTANCE;
+	public static Individual getTopStepsInstance() {
+		return TOP_STEPS_INSTANCE;
 	}
 
 	public static Individual createStepIndividual(ClassAndIndividualName classAndIndividualName) {
-		Individual createdIndividual = OntManager.getInstance().createIndividual(classAndIndividualName.getName() + counter.incrementAndGet(), classAndIndividualName.getOntClass());
+		Individual createdIndividual =createIndividual(classAndIndividualName.getName() + counter.incrementAndGet(), classAndIndividualName.getOntClass());
 		if (createdIndividual == null) {
 			System.out.println("!!!!!!!!!!!createdIndividual == null");
 		}
@@ -146,7 +132,7 @@ public class OntManager {
 	}
 
 	public static Individual createNewIndividualOfSelectedClass(OntClass ontClass, String prefix) {
-		Individual createdIndividual = OntManager.getInstance().createIndividual(prefix + counter.incrementAndGet(), ontClass);
+		Individual createdIndividual = createIndividual(prefix + counter.incrementAndGet(), ontClass);
 		if (createdIndividual == null) {
 			System.out.println();
 		}
@@ -155,7 +141,7 @@ public class OntManager {
 	}
 
 	public static Individual createLeafIndividual(OntClass ontClass, String prefix) {// for the leaf individuals
-		Individual createdIndividual = OntManager.getInstance().createIndividual(prefix + counter.incrementAndGet() + "_ofClass_" + ontClass.getLocalName(), ontClass);
+		Individual createdIndividual = createIndividual(prefix + counter.incrementAndGet() + "_ofClass_" + ontClass.getLocalName(), ontClass);
 		if (createdIndividual == null) {
 			System.out.println();
 		}
@@ -164,13 +150,13 @@ public class OntManager {
 	}
 
 	/** base one */
-	private Individual createIndividual(String instanceName, OntClass ontClass) {
-		Individual createdIndividual = ontologyModel.createIndividual(NS + instanceName, ontClass);
+	private static Individual createIndividual(String instanceName, OntClass ontClass) {
+		Individual createdIndividual = OntManager.getOntologyModel().createIndividual(NS + instanceName, ontClass);
 		return createdIndividual;
 	}
 
 	public static OntClass getOntClass(String clazz) {
-		return OntManager.getInstance().getOntologyModel().getOntClass(NS + clazz);
+		return OntManager.getOntologyModel().getOntClass(NS + clazz);
 	}
 
 	public void dumpPropertiesAndValuesInIndividual(Individual individual) {
@@ -194,34 +180,34 @@ public class OntManager {
 		// printSet(instance.getPropertiesInIndividual(tinyValueIndividual));
 	}
 
-	private void dumpPropertiesForAllClasses() {
-		Set<OntClass> classesSet = ontologyModel.listClasses().toSet();
-		final int indent = 1;
-		classesSet.forEach(ontClass -> {
-			dumpAllPropertiesForAClass(ontClass);
-		});
-	}
+//	private void dumpPropertiesForAllClasses() {
+//		Set<OntClass> classesSet = ontologyModel.listClasses().toSet();
+//		final int indent = 1;
+//		classesSet.forEach(ontClass -> {
+//			dumpAllPropertiesForAClass(ontClass);
+//		});
+//	}
 
-	public void dumpAllPropertiesForAClass(OntClass ontClass) {
-		final int indent = 1;
-		Set<OntProperty> declaredOntProperties = ontClass.listDeclaredProperties().toSet();
-		ontClass.listSuperClasses(true).toSet().forEach(superClass -> {
-			dumpAllDirectPropertiesForAClass(superClass, declaredOntProperties);
-		});
-		declaredOntProperties.forEach(ontProperty -> {
-			System.out.println(String.join("", Collections.nCopies(indent, "\t")) + (ontProperty.isObjectProperty() ? "object property:" : "data property:") + ontProperty.getLocalName() + "<" + ontProperty.getRange() + "> of Type:" + ontProperty.getRDFType());
-		});
-	}
+//	public void dumpAllPropertiesForAClass(OntClass ontClass) {
+//		final int indent = 1;
+//		Set<OntProperty> declaredOntProperties = ontClass.listDeclaredProperties().toSet();
+//		ontClass.listSuperClasses(true).toSet().forEach(superClass -> {
+//			dumpAllDirectPropertiesForAClass(superClass, declaredOntProperties);
+//		});
+//		declaredOntProperties.forEach(ontProperty -> {
+//			System.out.println(String.join("", Collections.nCopies(indent, "\t")) + (ontProperty.isObjectProperty() ? "object property:" : "data property:") + ontProperty.getLocalName() + "<" + ontProperty.getRange() + "> of Type:" + ontProperty.getRDFType());
+//		});
+//	}
 
-	public void dumpAllDirectPropertiesForAClass(OntClass ontClass, Set<OntProperty> declaredOntProperties) {
-		final int indent = 1;
-		System.out.println("class:" + ontClass.getLocalName());
-		declaredOntProperties.addAll(ontClass.listDeclaredProperties().toSet());
-		ontClass.listSuperClasses(true).toSet().forEach(superClass -> {
-			dumpAllDirectPropertiesForAClass(superClass, declaredOntProperties);
-		});
-		System.out.println("class:" + ontClass.getLocalName());
-	}
+//	public void dumpAllDirectPropertiesForAClass(OntClass ontClass, Set<OntProperty> declaredOntProperties) {
+//		final int indent = 1;
+//		System.out.println("class:" + ontClass.getLocalName());
+//		declaredOntProperties.addAll(ontClass.listDeclaredProperties().toSet());
+//		ontClass.listSuperClasses(true).toSet().forEach(superClass -> {
+//			dumpAllDirectPropertiesForAClass(superClass, declaredOntProperties);
+//		});
+//		System.out.println("class:" + ontClass.getLocalName());
+//	}
 
 	public void calculatePropertiesForClass(OntClass ontClass, final Set<OntProperty> collected) {
 		// System.out.println("calculated for class:" + ontClass.getLocalName());
@@ -233,20 +219,20 @@ public class OntManager {
 		});
 	}
 
-	public Literal createValueAsStringLiteral(String newValue) {
-		return ontologyModel.createTypedLiteral(newValue);
+	public static Literal createValueAsStringLiteral(String newValue) {
+		return OntManager.getOntologyModel().createTypedLiteral(newValue);
 	}
 
 	public static void printSet(Set<?> set, int indent) {
 		set.forEach(elem -> System.out.println(String.join("", Collections.nCopies(indent, "\t")) + elem));
 	}
 
-	public static void printSet(String message, Set set) {
+	public static void printSet(String message, Set<?> set) {
 		System.out.println("Printing " + message);
 		printSet(set, 0);
 	}
 
-	public static void printSet(String message, Set set, int indent) {
+	public static void printSet(String message, Set<?> set, int indent) {
 		System.out.println(message);
 		printSet(set, indent);
 	}
@@ -270,7 +256,7 @@ public class OntManager {
 	}
 
 
-	public static Individual renameNode(Individual resource, String newValue, DefaultMutableTreeNode topStepNode, JTree jStepsTree) {
+	public static Individual renameNode(Individual resource, String newValue, WetProtocolMainPanel wetProtocolMainPanel, boolean fromSteps) {
 		Path tempFile;
 		try {
 			tempFile = Files.createTempFile("wettempfile", ".tmp");
@@ -283,7 +269,7 @@ public class OntManager {
 		System.out.println("temporary file created at:" + file.getAbsolutePath());
 		file.deleteOnExit();
 		Path path = null;
-		saveOntologyAndCoordinates(file, jStepsTree);
+		saveOntologyAndCoordinates(file, wetProtocolMainPanel.getjStepTree());
 		try (FileOutputStream output = new FileOutputStream(file)) {
 			writeOntModelToDisk(output);
 			path = Paths.get(file.getAbsolutePath());
@@ -297,6 +283,9 @@ public class OntManager {
 		OntManager.loadModelFromFileAndResetOntManager(path.toString());// these 2 lines reset the whole model and UI
 		// UiUtils.loadStepsTreeFromModel(topStepNode);
 		Individual newIndividual = OntManager.getOntologyModel().getIndividual(NS + newValue);
+		if(!fromSteps) {//avoids infinite loop TODO
+		wetProtocolMainPanel.initiateOrRefreshTreeModelAndRest();
+		}
 		System.out.println("Rename returned node:" + newIndividual);
 		return newIndividual;// NS + newValue);
 	}
@@ -308,7 +297,7 @@ public class OntManager {
 	public static void saveOntologyAndCoordinates(File file, JTree jStepsTree) {
 		Enumeration<?> preorderEnumeration = ((DefaultMutableTreeNode) jStepsTree.getModel().getRoot()).preorderEnumeration();
 		int verticalDistance = 0;
-		TOP_PROTOCOL_INSTANCE.setPropertyValue(COUNTER_PROPERTY, OntManager.getInstance().getOntologyModel().createTypedLiteral(counter.get()));// will create as int
+		TOP_STEPS_INSTANCE.setPropertyValue(COUNTER_PROPERTY, OntManager.getOntologyModel().createTypedLiteral(counter.get()));// will create as int
 		while (preorderEnumeration.hasMoreElements()) {
 			DefaultMutableTreeNode defaultMutableTreeNode = (DefaultMutableTreeNode) (preorderEnumeration.nextElement());
 			Individual individual = (Individual) (defaultMutableTreeNode.getUserObject());

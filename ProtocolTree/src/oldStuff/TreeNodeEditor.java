@@ -41,6 +41,7 @@ public class TreeNodeEditor extends AbstractCellEditor implements TreeCellEditor
 	}
 
 	private Action createAction(final String actionCommand, String display) {
+		@SuppressWarnings("serial")
 		Action action = new AbstractAction(display) {
 			@Override
 			public void actionPerformed(ActionEvent e) {

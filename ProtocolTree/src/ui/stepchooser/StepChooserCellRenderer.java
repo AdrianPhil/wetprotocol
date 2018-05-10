@@ -4,8 +4,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
-import org.apache.jena.ontology.Individual;
-import org.apache.jena.ontology.OntClass;
 
 import resources.ResourceFinding;
 import ui.UiUtils;

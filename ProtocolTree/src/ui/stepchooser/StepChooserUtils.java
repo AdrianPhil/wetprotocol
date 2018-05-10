@@ -15,7 +15,7 @@ public class StepChooserUtils {
 	
 
 	public static void createEmpyStepNodesToChooseFrom(JTree jTree) {
-		OntClass stepOntClass = OntManager.getInstance().getOntClass("Step");// TODO cache
+		OntClass stepOntClass = OntManager.getOntClass("Step");// TODO cache Step
 		Set<OntClass> stepClasses;
 		if (UiUtils.DEBUG) {
 			stepClasses = OntManager.getInstance().getClassesInSignature();

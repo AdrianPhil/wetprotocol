@@ -1,6 +1,5 @@
 package ui.stepchooser;
 
-import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.jena.ontology.OntClass;
 

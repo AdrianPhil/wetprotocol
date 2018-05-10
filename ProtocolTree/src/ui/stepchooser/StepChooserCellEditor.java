@@ -1,6 +1,5 @@
 package ui.stepchooser;
 
-import static ui.UiUtils.expandTree;
 
 import java.awt.Component;
 
@@ -8,14 +7,9 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellEditor;
 
-import org.apache.jena.ontology.OntClass;
-import org.apache.jena.ontology.OntProperty;
-import org.apache.jena.rdf.model.Literal;
-
-import ont.OntManager;
 import ui.UiUtils;
-import ui.property.PropertyEditorBigPanel.NodeType;
 
+@SuppressWarnings("serial")
 public class StepChooserCellEditor extends AbstractCellEditor implements TreeCellEditor {
 	private EditCellPanel stepChooserNameEditCellPanel;
 	// ClassAndIndividualName classAndIndividualName;

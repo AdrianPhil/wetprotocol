@@ -3,7 +3,6 @@ package resources;
 import javax.swing.*;
 import java.net.URL;
 import java.nio.file.FileSystems;
-import java.nio.file.Path;
 
 public class ResourceFinding {
 	private static ResourceFinding resourceFindingDummyClassSingleton = new ResourceFinding();

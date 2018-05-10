@@ -1,7 +1,6 @@
 package ui.stepchooser;
 
 import ont.OntManager;
-import resources.ResourceFinding;
 import ui.ToolTipJTree;
 import ui.UiUtils;
 import ui.WetProtocolMainPanel;
@@ -12,20 +11,16 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.*;
 
-import org.apache.jena.ontology.Individual;
-import org.apache.jena.ontology.OntClass;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Enumeration;
 
 import static ui.UiUtils.expandTree;
 
+@SuppressWarnings("serial")
 public class StepChooserPanel extends JPanel implements TreeSelectionListener {
 	private JEditorPane htmlPane;
 	// private JButton addNewSiblingNodeButton = new JButton("New Sibling");
@@ -140,7 +135,7 @@ public class StepChooserPanel extends JPanel implements TreeSelectionListener {
 	 */
 	@Override
 	public void valueChanged(TreeSelectionEvent e) {
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) jStepChooserTree.getLastSelectedPathComponent();
+		//DefaultMutableTreeNode node = (DefaultMutableTreeNode) jStepChooserTree.getLastSelectedPathComponent();
 	}
 
 	private void addTreeNodeMouseListeners() {
@@ -166,19 +161,19 @@ public class StepChooserPanel extends JPanel implements TreeSelectionListener {
 	// }
 	// displayURL(helpURL);
 	// }
-	private void displayURL(URL url) {
-		try {
-			if (url != null) {
-				htmlPane.setPage(url);
-			} else { // null url
-				htmlPane.setText("File Not Found");
-				if (UiUtils.DEBUG) {
-					System.out.println("Attempted to display a null URL.");
-				}
-			}
-		} catch (IOException e) {
-			System.err.println("Attempted to read a bad URL: " + url);
-		}
-	}
+//	private void displayURL(URL url) {
+//		try {
+//			if (url != null) {
+//				htmlPane.setPage(url);
+//			} else { // null url
+//				htmlPane.setText("File Not Found");
+//				if (UiUtils.DEBUG) {
+//					System.out.println("Attempted to display a null URL.");
+//				}
+//			}
+//		} catch (IOException e) {
+//			System.err.println("Attempted to read a bad URL: " + url);
+//		}
+//	}
 
 }

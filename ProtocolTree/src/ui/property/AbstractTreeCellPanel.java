@@ -1,21 +1,12 @@
 package ui.property;
 
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
-import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 import org.apache.jena.ontology.Individual;
@@ -28,6 +19,7 @@ import ont.OntManager;
 import resources.ResourceFinding;
 import ui.UiUtils;
 
+@SuppressWarnings("serial")
 public abstract class AbstractTreeCellPanel extends JPanel {
 	protected PropertyAndIndividual propertyAndIndividual;
 	public static final Icon ICON_LEAF_CLASS = UIManager.getIcon("FileChooser.detailsViewIcon");// http://en-human-begin.blogspot.ca/2007/11/javas-icons-by-default.html
@@ -40,7 +32,7 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 	PropertyValueFormattedTextBox valueComponent = new PropertyValueFormattedTextBox("dummy property value");// this seems to generate dummy on escape for JformattedTextField and no change for JText
 	JLabel rangeComponent = new JLabel("dummy range");
 	JLabel domainComponent = new JLabel("dummy domain");
-	JComboBox<WrappedOntResource> individualOrClassChooser = new JComboBox();
+	JComboBox<WrappedOntResource<?>> individualOrClassChooser = new JComboBox<WrappedOntResource<?>>();
 	JLabel debug = new JLabel("debug");
 	public final String SELECT_CLASS_TEXT = "name";
 
@@ -116,6 +108,8 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 			break;
 		case DATA_TYPE_NODE_FOR_LEAF_CLASS:
 			valueComponent.setText("" + (((OntResource) propertyValue).asIndividual().getLocalName()));
+			valueComponent.setForeground(Color.GRAY);
+			valueComponent.setColumns(10);
 			localComponent.setForeground(Color.CYAN);
 			icon.setIcon(EditCellPanel.ICON_LEAF_CLASS);
 			break;
@@ -142,12 +136,12 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 		}
 	}
 
-	private void loadPossibleLeafClassValues(JComboBox individualOrClassChooser2) {
+	private void loadPossibleLeafClassValues(JComboBox<WrappedOntResource<?>> individualOrClassChooser2) {
 		OntProperty ontProperty = propertyAndIndividual.getOntProperty();
 		for (OntClass subclassFromRange : ontProperty.getRange().asClass().listSubClasses(false).toSet()) {
 			// System.out.println("\t\t dealing with range subclass:" + subclassFromRange.getLocalName());
 			if (OntManager.isLeafClass(subclassFromRange)) { // only leaf classes
-				individualOrClassChooser2.addItem(new WrappedOntResource(subclassFromRange));
+				individualOrClassChooser2.addItem(new WrappedOntResource<OntClass>(subclassFromRange));
 			}
 			// DefaultMutableTreeNode newClassChild = new DefaultMutableTreeNode(subclassFromRange);
 			// DefaultMutableTreeNode rangeLevelNode = currentTopNode;
@@ -163,10 +157,10 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 		}
 	}
 
-	private void setSelectedItemByComparing(JComboBox<WrappedOntResource> individualOrClassChooser2, String localName) {
-		ComboBoxModel<WrappedOntResource> model = individualOrClassChooser2.getModel();
+	private void setSelectedItemByComparing(JComboBox<WrappedOntResource<?>> individualOrClassChooser2, String localName) {
+		ComboBoxModel<WrappedOntResource<?>> model = individualOrClassChooser2.getModel();
 		for (int i = 0; i < model.getSize(); i++) {
-			WrappedOntResource elementAt = model.getElementAt(i);
+			WrappedOntResource<?> elementAt = model.getElementAt(i);
 			if (elementAt.toString().equalsIgnoreCase(localName)) {
 				individualOrClassChooser2.setSelectedItem(elementAt);
 				return;
