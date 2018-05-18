@@ -30,19 +30,19 @@ import static ui.UiUtils.*;
 
 @SuppressWarnings("serial")
 public class WetProtocolMainPanel extends JPanel implements TreeSelectionListener {
-	//private URL helpURL;
+	// private URL helpURL;
 	private JButton addNewSiblingNodeButton = new JButton("New Step");
 	private JButton addChildNodeButton = new JButton("New Substep");
 	private JButton deleteChildNodeButton = new JButton("Delete Step");
 	private JButton expandTreeButton = new JButton("Expand Tree");
 	private JButton saveProtocolButton = new JButton("Save Protocol");
+	private JButton saveAsProtocolButton = new JButton("Save Protocol As");
 	private JButton loadProtocolButton = new JButton("Load Protocol");
 	private JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 	private JTree jStepTree;
-
 	public static final int WITH_OF_STEPS_TREE = 400;
 	private final static String FRAME_TITLE = "Wet Protocol";
-	//private DefaultTreeModel stepsTreeModel;
+	// private DefaultTreeModel stepsTreeModel;
 
 	private WetProtocolMainPanel() {
 		super(new GridLayout(1, 1));
@@ -55,8 +55,9 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		treeViewButtonPanel.add(addChildNodeButton);
 		treeViewButtonPanel.add(deleteChildNodeButton);
 		treeViewButtonPanel.add(expandTreeButton);
-		treeViewButtonPanel.add(saveProtocolButton);
 		treeViewButtonPanel.add(loadProtocolButton);
+		treeViewButtonPanel.add(saveProtocolButton);
+		treeViewButtonPanel.add(saveAsProtocolButton);
 		treeViewPanel.add(treeViewButtonPanel, BorderLayout.PAGE_END);
 		// Create the scroll pane and add the tree view panel to it.
 		JScrollPane treeViewScrollPane = new JScrollPane(treeViewPanel);
@@ -86,8 +87,8 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		jStepTree.setExpandsSelectedPaths(true);
 		MouseListener ml = new MouseAdapter() {// right click enters edit mode
 			public void mousePressed(MouseEvent e) {
-				//int selRow = jStepsTree.getRowForLocation(e.getX(), e.getY());
-				//TreePath selPath = jStepsTree.getPathForLocation(e.getX(), e.getY());
+				// int selRow = jStepsTree.getRowForLocation(e.getX(), e.getY());
+				// TreePath selPath = jStepsTree.getPathForLocation(e.getX(), e.getY());
 				if (SwingUtilities.isRightMouseButton(e)) {
 					int row = jStepTree.getRowForLocation(e.getX(), e.getY());
 					TreePath path = jStepTree.getPathForLocation(e.getX(), e.getY());
@@ -149,26 +150,16 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 			expandTree(jStepTree);
 		});
 		saveProtocolButton.addActionListener(e -> {
-			JFileChooser fileChooser = new JFileChooser();
-			fileChooser.setDialogTitle("Select a place and name for saving your owl file");
-			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			FileNameExtensionFilter filter = new FileNameExtensionFilter("Owl files", "owl");
-			fileChooser.addChoosableFileFilter(filter);
-			fileChooser.setCurrentDirectory(new File(ResourceFinding.getOntFileDir()));
-			int retval = fileChooser.showSaveDialog(null);
-			if (retval == JFileChooser.APPROVE_OPTION) {
-				File file = fileChooser.getSelectedFile();
-				if (file == null) {
-					return;
-				}
-				if (FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("owl")) {
-					// filename is OK as-is
-				} else {
-					file = new File(file.toString() + ".owl");
-					// file = new File(file.getParentFile(), FilenameUtils.getBaseName(file.getName())+".xml"); // ALTERNATIVELY: remove the extension (if any) and replace it with ".xml"
-				}
-				OntManager.saveOntologyAndCoordinates(file, jStepTree);
+			if (OntManager.getOwlFileName() != null) {
+				OntManager.saveOntologyAndCoordinates(new File(OntManager.getOwlFileName()), jStepTree);
+			} else {
+				saveAs();
+				UiUtils.getProtocolFrame(this).setTitle(FRAME_TITLE + " " + OntManager.getOwlFileName());
 			}
+		});
+		saveAsProtocolButton.addActionListener(e -> {
+			saveAs();
+			UiUtils.getProtocolFrame(this).setTitle(FRAME_TITLE + " " + OntManager.getOwlFileName());
 		});
 		loadProtocolButton.addActionListener(e -> {
 			JFileChooser fileChooser = new JFileChooser();
@@ -176,7 +167,12 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			FileNameExtensionFilter filter = new FileNameExtensionFilter("Owl files", "owl");
 			fileChooser.addChoosableFileFilter(filter);
-			fileChooser.setCurrentDirectory(new File(ResourceFinding.getOntFileDir()));
+			String fn = OntManager.getOwlFileName();
+			if (fn != null) {
+				fileChooser.setCurrentDirectory(new File(fn).getParentFile());
+			} else {
+				fileChooser.setCurrentDirectory(new File(ResourceFinding.getOntFileDir()));
+			}
 			int retval = fileChooser.showOpenDialog(null);
 			if (retval == JFileChooser.APPROVE_OPTION) {
 				File file = fileChooser.getSelectedFile();
@@ -184,7 +180,13 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 					UiUtils.showDialog(jStepTree, "Cannot open the file");
 					return;
 				}
-				OntManager.loadModelFromFileAndResetOntManager(file.getAbsolutePath());
+				try {
+					OntManager.loadModelFromFileAndResetOntManager(file.getAbsolutePath());
+				} catch (Exception ex) {
+					UiUtils.showDialog(jStepTree, "Cannot parse the file:" + file.getAbsolutePath());
+					return;
+				}
+				OntManager.setOwlFileName(file.toString());
 				UiUtils.getProtocolFrame(this).setTitle(FRAME_TITLE + " " + file.getAbsolutePath());
 				// DefaultTreeModel model = (DefaultTreeModel) jProtocolTree.getModel();
 				// DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
@@ -197,7 +199,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jStepTree.getLastSelectedPathComponent();
 			if (selectedNode.getParent() != null && !selectedNode.isRoot()) {
 				if (selectedNode.getUserObject() instanceof Individual) {
-					((DefaultTreeModel)jStepTree.getModel()).removeNodeFromParent(selectedNode);
+					((DefaultTreeModel) jStepTree.getModel()).removeNodeFromParent(selectedNode);
 					OntManager.getInstance();
 					OntManager.getOntologyModel().removeAll((Resource) selectedNode.getUserObject(), null, null);
 				} else {
@@ -205,6 +207,34 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 				}
 			}
 		});
+	}
+
+	private void saveAs() {
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Select a place and name for saving your owl file");
+		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Owl files", "owl");
+		fileChooser.addChoosableFileFilter(filter);
+		if (OntManager.getOwlFileName() != null) {
+			fileChooser.setCurrentDirectory(new File(OntManager.getOwlFileName()));
+		} else {
+			fileChooser.setCurrentDirectory(new File(ResourceFinding.getOntFileDir()));
+		}
+		int retval = fileChooser.showSaveDialog(null);
+		if (retval == JFileChooser.APPROVE_OPTION) {
+			File file = fileChooser.getSelectedFile();
+			if (file == null) {
+				return;
+			}
+			if (FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("owl")) {
+				// filename is OK as-is
+			} else {
+				file = new File(file.toString() + ".owl");
+				// file = new File(file.getParentFile(), FilenameUtils.getBaseName(file.getName())+".xml"); // ALTERNATIVELY: remove the extension (if any) and replace it with ".xml"
+			}
+			OntManager.saveOntologyAndCoordinates(file, jStepTree);
+			OntManager.setOwlFileName(file.toString());
+		}
 	}
 	// public void addNodeEventListeners() {
 	// // for double click for rename individual
@@ -243,7 +273,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 	private void createNewClassPropertyEditorPanel() {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) jStepTree.getLastSelectedPathComponent();
 		if (node == null) {
-			node =  Utils.getRoot(jStepTree);
+			node = Utils.getRoot(jStepTree);
 		}
 		PropertyEditorBigPanel classPropertyEditorBigPanel = new PropertyEditorBigPanel(node, this);
 		classPropertyEditorBigPanel.setMinimumSize(new Dimension(50, 50));
@@ -255,12 +285,9 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		splitPane.setRightComponent(new JScrollPane(classPropertyEditorBigPanel));
 	}
 
-
-	
 	public JTree getjStepTree() {
 		return jStepTree;
 	}
-
 
 	public static void main(String[] args) {
 		// Schedule a job for the event-dispatching thread:

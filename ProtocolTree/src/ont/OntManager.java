@@ -49,6 +49,7 @@ public class OntManager {
 	private static OntClass STEP_ONT_CLASS;
 	// public static Resource NOTHING_SUBCLASS;
 	public static AtomicInteger counter = new AtomicInteger(0); // todo make sure the counter value is saved to file and loaded when file is loaded
+	private static String fileName;
 	// there still seem to be a problem with NamedIndividual
 	//
 
@@ -103,7 +104,6 @@ public class OntManager {
 		return allSteps;
 	}
 
-
 	// will load in the combo box all existing individuals of the given class
 	// TODO I think this one should be done like the calculateStepIndividuals
 	public static void loadPossibleIndividualValues(JComboBox<WrappedOntResource<?>> individualOrClassChooser, OntClass ontClass) {
@@ -111,8 +111,8 @@ public class OntManager {
 		for (Individual individual : individualsSet) {
 			individualOrClassChooser.addItem(new WrappedOntResource<>(individual));
 		}
-	}	
-	
+	}
+
 	public Set<OntClass> getClassesInSignature() {
 		// used to populate the add step pop-up
 		return ontologyModel.listClasses().toSet();
@@ -123,7 +123,7 @@ public class OntManager {
 	}
 
 	public static Individual createStepIndividual(ClassAndIndividualName classAndIndividualName) {
-		Individual createdIndividual =createIndividual(classAndIndividualName.getName() + counter.incrementAndGet(), classAndIndividualName.getOntClass());
+		Individual createdIndividual = createIndividual(classAndIndividualName.getName() + counter.incrementAndGet(), classAndIndividualName.getOntClass());
 		if (createdIndividual == null) {
 			System.out.println("!!!!!!!!!!!createdIndividual == null");
 		}
@@ -179,36 +179,33 @@ public class OntManager {
 		});
 		// printSet(instance.getPropertiesInIndividual(tinyValueIndividual));
 	}
+	// private void dumpPropertiesForAllClasses() {
+	// Set<OntClass> classesSet = ontologyModel.listClasses().toSet();
+	// final int indent = 1;
+	// classesSet.forEach(ontClass -> {
+	// dumpAllPropertiesForAClass(ontClass);
+	// });
+	// }
+	// public void dumpAllPropertiesForAClass(OntClass ontClass) {
+	// final int indent = 1;
+	// Set<OntProperty> declaredOntProperties = ontClass.listDeclaredProperties().toSet();
+	// ontClass.listSuperClasses(true).toSet().forEach(superClass -> {
+	// dumpAllDirectPropertiesForAClass(superClass, declaredOntProperties);
+	// });
+	// declaredOntProperties.forEach(ontProperty -> {
+	// System.out.println(String.join("", Collections.nCopies(indent, "\t")) + (ontProperty.isObjectProperty() ? "object property:" : "data property:") + ontProperty.getLocalName() + "<" + ontProperty.getRange() + "> of Type:" + ontProperty.getRDFType());
+	// });
+	// }
 
-//	private void dumpPropertiesForAllClasses() {
-//		Set<OntClass> classesSet = ontologyModel.listClasses().toSet();
-//		final int indent = 1;
-//		classesSet.forEach(ontClass -> {
-//			dumpAllPropertiesForAClass(ontClass);
-//		});
-//	}
-
-//	public void dumpAllPropertiesForAClass(OntClass ontClass) {
-//		final int indent = 1;
-//		Set<OntProperty> declaredOntProperties = ontClass.listDeclaredProperties().toSet();
-//		ontClass.listSuperClasses(true).toSet().forEach(superClass -> {
-//			dumpAllDirectPropertiesForAClass(superClass, declaredOntProperties);
-//		});
-//		declaredOntProperties.forEach(ontProperty -> {
-//			System.out.println(String.join("", Collections.nCopies(indent, "\t")) + (ontProperty.isObjectProperty() ? "object property:" : "data property:") + ontProperty.getLocalName() + "<" + ontProperty.getRange() + "> of Type:" + ontProperty.getRDFType());
-//		});
-//	}
-
-//	public void dumpAllDirectPropertiesForAClass(OntClass ontClass, Set<OntProperty> declaredOntProperties) {
-//		final int indent = 1;
-//		System.out.println("class:" + ontClass.getLocalName());
-//		declaredOntProperties.addAll(ontClass.listDeclaredProperties().toSet());
-//		ontClass.listSuperClasses(true).toSet().forEach(superClass -> {
-//			dumpAllDirectPropertiesForAClass(superClass, declaredOntProperties);
-//		});
-//		System.out.println("class:" + ontClass.getLocalName());
-//	}
-
+	// public void dumpAllDirectPropertiesForAClass(OntClass ontClass, Set<OntProperty> declaredOntProperties) {
+	// final int indent = 1;
+	// System.out.println("class:" + ontClass.getLocalName());
+	// declaredOntProperties.addAll(ontClass.listDeclaredProperties().toSet());
+	// ontClass.listSuperClasses(true).toSet().forEach(superClass -> {
+	// dumpAllDirectPropertiesForAClass(superClass, declaredOntProperties);
+	// });
+	// System.out.println("class:" + ontClass.getLocalName());
+	// }
 	public void calculatePropertiesForClass(OntClass ontClass, final Set<OntProperty> collected) {
 		// System.out.println("calculated for class:" + ontClass.getLocalName());
 		collected.addAll(ontologyModel.listAllOntProperties().toSet().stream().filter(dataTypeProperty -> {
@@ -255,7 +252,6 @@ public class OntManager {
 		return ontClass.listSubClasses().toList().isEmpty();
 	}
 
-
 	public static Individual renameNode(Individual resource, String newValue, WetProtocolMainPanel wetProtocolMainPanel, boolean fromSteps) {
 		Path tempFile;
 		try {
@@ -283,8 +279,8 @@ public class OntManager {
 		OntManager.loadModelFromFileAndResetOntManager(path.toString());// these 2 lines reset the whole model and UI
 		// UiUtils.loadStepsTreeFromModel(topStepNode);
 		Individual newIndividual = OntManager.getOntologyModel().getIndividual(NS + newValue);
-		if(!fromSteps) {//avoids infinite loop TODO
-		wetProtocolMainPanel.initiateOrRefreshTreeModelAndRest();
+		if (!fromSteps) {// avoids infinite loop TODO
+			wetProtocolMainPanel.initiateOrRefreshTreeModelAndRest();
 		}
 		System.out.println("Rename returned node:" + newIndividual);
 		return newIndividual;// NS + newValue);
@@ -312,6 +308,14 @@ public class OntManager {
 
 	private static void writeOntModelToDisk(FileOutputStream output) {
 		OntManager.getOntologyModel().write(output, "RDF/XML", null);// OntManager.NS);
+	}
+
+	public static void setOwlFileName(String fileName) {
+		getInstance().fileName = fileName;
+	}
+
+	public static String getOwlFileName() {
+		return fileName;
 	}
 }
 // TODO for some reason it seams that only the top protocol is saved with rdf type as </owl:NamedIndividual> but all the other newly created nodes are saved withe the right class and without rdf t
