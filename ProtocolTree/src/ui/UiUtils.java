@@ -44,7 +44,7 @@ public class UiUtils {
 		// Display the window.
 		stepChooserFrame.pack();
 		JFrame mainFrame = UiUtils.getProtocolFrame(jProtocolTree);
-		stepChooserFrame.setLocation(mainFrame.getX() + mainFrame.getWidth() /2, 0);
+		stepChooserFrame.setLocation(mainFrame.getX() + mainFrame.getWidth() / 2, 0);
 		stepChooserFrame.setVisible(true);
 	}
 
@@ -54,13 +54,22 @@ public class UiUtils {
 		}
 	}
 
-
 	// * this practically does the whole UI if the model was changed*/
 	public static void loadStepsTreeFromModel(JTree jStepsTree) {
-		DefaultMutableTreeNode topStepNode=Utils.getRoot(jStepsTree);
+		DefaultMutableTreeNode topStepNode = Utils.getRoot(jStepsTree);
 		topStepNode.removeAllChildren();
 		List<Individual> list = OntManager.getInstance().calculateStepIndividuals();
-		list.sort((Individual i1, Individual i2) -> i1.getPropertyValue(OntManager.getStepCoordinatesProperty()).asLiteral().getString().compareTo(i2.getPropertyValue(OntManager.getStepCoordinatesProperty()).asLiteral().getString()));
+		list.sort((Individual i1, Individual i2) -> {
+			String[] i1StringCoords = i1.getPropertyValue(OntManager.getStepCoordinatesProperty()).asLiteral().getString().split("\\.");
+			String[] i2StringCoords = i2.getPropertyValue(OntManager.getStepCoordinatesProperty()).asLiteral().getString().split("\\.");
+			int i1ParsedRow = Integer.parseInt(i1StringCoords[0]);
+			int i2ParsedRow = Integer.parseInt(i2StringCoords[0]);
+			if (i1ParsedRow != i2ParsedRow) {
+				return i1ParsedRow-i2ParsedRow;
+			} else {
+				return Integer.parseInt(i1StringCoords[1])-(Integer.parseInt(i2StringCoords[1]));
+			}
+		});
 		DefaultMutableTreeNode lastAddedNode = topStepNode;
 		OntProperty STEP_COORDINATES_PROPERTY = OntManager.getStepCoordinatesProperty();
 		for (int i = 0; i < list.size(); i++) {// skip the top
