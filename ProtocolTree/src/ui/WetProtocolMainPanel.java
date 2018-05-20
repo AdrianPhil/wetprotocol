@@ -38,6 +38,8 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 	private JButton saveProtocolButton = new JButton("Save Protocol");
 	private JButton saveAsProtocolButton = new JButton("Save Protocol As");
 	private JButton loadProtocolButton = new JButton("Load Protocol");
+	private JButton upStepButton = new JButton("Move Up");
+	private JButton downStepButton = new JButton("Move Down");
 	private JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 	private JTree jStepTree;
 	public static final int WITH_OF_STEPS_TREE = 400;
@@ -50,7 +52,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		JPanel treeViewPanel = new JPanel(new BorderLayout());
 		treeViewPanel.add(jStepTree, BorderLayout.PAGE_START);
 		JPanel treeViewButtonPanel = new JPanel();
-		treeViewButtonPanel.setLayout(new GridLayout(2, 1));
+		treeViewButtonPanel.setLayout(new GridLayout(3, 1));
 		treeViewButtonPanel.add(addNewSiblingNodeButton);
 		treeViewButtonPanel.add(addChildNodeButton);
 		treeViewButtonPanel.add(deleteChildNodeButton);
@@ -58,6 +60,8 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		treeViewButtonPanel.add(loadProtocolButton);
 		treeViewButtonPanel.add(saveProtocolButton);
 		treeViewButtonPanel.add(saveAsProtocolButton);
+		treeViewButtonPanel.add(upStepButton);
+		treeViewButtonPanel.add(downStepButton);
 		treeViewPanel.add(treeViewButtonPanel, BorderLayout.PAGE_END);
 		// Create the scroll pane and add the tree view panel to it.
 		JScrollPane treeViewScrollPane = new JScrollPane(treeViewPanel);
@@ -200,10 +204,55 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 			if (selectedNode.getParent() != null && !selectedNode.isRoot()) {
 				if (selectedNode.getUserObject() instanceof Individual) {
 					((DefaultTreeModel) jStepTree.getModel()).removeNodeFromParent(selectedNode);
+					// xox
 					OntManager.getInstance();
 					OntManager.getOntologyModel().removeAll((Resource) selectedNode.getUserObject(), null, null);
 				} else {
 					UiUtils.showDialog(this, "Could not remove node. Not an instance of an Individual");
+				}
+			}
+		});
+		upStepButton.addActionListener(e -> {
+			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jStepTree.getLastSelectedPathComponent();
+			if (selectedNode != null && !selectedNode.isRoot()) {
+				if (selectedNode.getUserObject() instanceof Individual) {
+					DefaultTreeModel defaultTreeModel = (DefaultTreeModel) jStepTree.getModel();
+					MutableTreeNode parent = (MutableTreeNode) selectedNode.getParent();
+					int selectedNodeIndexInParent = selectedNode.getIndex(parent);
+					defaultTreeModel.removeNodeFromParent(selectedNode);
+					if (selectedNodeIndexInParent != 0) {
+						defaultTreeModel.insertNodeInto(selectedNode, parent, selectedNodeIndexInParent - 1);
+					} else {
+						MutableTreeNode grandParent = (MutableTreeNode) parent.getParent();
+						if (grandParent != null) {
+							defaultTreeModel.insertNodeInto(selectedNode, grandParent, parent.getIndex(grandParent) - 1);
+						}
+					}
+					jStepTree.setSelectionPath( new TreePath( selectedNode.getPath() ) );
+				} else {
+					UiUtils.showDialog(this, "Could not move node up. Not an instance of an Individual");
+				}
+			}
+		});
+		downStepButton.addActionListener(e -> {
+			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jStepTree.getLastSelectedPathComponent();
+			if (selectedNode != null && !selectedNode.isRoot()) {
+				if (selectedNode.getUserObject() instanceof Individual) {
+					DefaultTreeModel defaultTreeModel = (DefaultTreeModel) jStepTree.getModel();
+					MutableTreeNode parent = (MutableTreeNode) selectedNode.getParent();
+					int selectedNodeIndexInParent = selectedNode.getIndex(parent);
+					defaultTreeModel.removeNodeFromParent(selectedNode);
+					if (selectedNodeIndexInParent != parent.getChildCount()) {//not the last one
+						defaultTreeModel.insertNodeInto(selectedNode, parent, selectedNodeIndexInParent + 1);
+					} else {
+						MutableTreeNode grandParent = (MutableTreeNode) parent.getParent();
+						if (grandParent != null) {
+							defaultTreeModel.insertNodeInto(selectedNode, grandParent, parent.getIndex(grandParent) + 1);
+						}
+					}
+					jStepTree.setSelectionPath( new TreePath( selectedNode.getPath() ) );
+				} else {
+					UiUtils.showDialog(this, "Could not move node down. Not an instance of an Individual");
 				}
 			}
 		});
