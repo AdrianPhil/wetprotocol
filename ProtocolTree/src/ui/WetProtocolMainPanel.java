@@ -218,14 +218,15 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 				if (selectedNode.getUserObject() instanceof Individual) {
 					DefaultTreeModel defaultTreeModel = (DefaultTreeModel) jStepTree.getModel();
 					MutableTreeNode parent = (MutableTreeNode) selectedNode.getParent();
-					int selectedNodeIndexInParent = selectedNode.getIndex(parent);
+					int selectedNodeIndexInParent = parent.getIndex(selectedNode);
 					defaultTreeModel.removeNodeFromParent(selectedNode);
-					if (selectedNodeIndexInParent != 0) {
+					if (selectedNodeIndexInParent >=1) {
 						defaultTreeModel.insertNodeInto(selectedNode, parent, selectedNodeIndexInParent - 1);
 					} else {
 						MutableTreeNode grandParent = (MutableTreeNode) parent.getParent();
 						if (grandParent != null) {
-							defaultTreeModel.insertNodeInto(selectedNode, grandParent, parent.getIndex(grandParent) - 1);
+							int selectedNodeParentIndexInGrandParent = grandParent.getIndex(parent);
+							defaultTreeModel.insertNodeInto(selectedNode, grandParent, selectedNodeParentIndexInGrandParent-1);
 						}
 					}
 					jStepTree.setSelectionPath( new TreePath( selectedNode.getPath() ) );
@@ -240,7 +241,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 				if (selectedNode.getUserObject() instanceof Individual) {
 					DefaultTreeModel defaultTreeModel = (DefaultTreeModel) jStepTree.getModel();
 					MutableTreeNode parent = (MutableTreeNode) selectedNode.getParent();
-					int selectedNodeIndexInParent = selectedNode.getIndex(parent);
+					int selectedNodeIndexInParent = parent.getIndex(selectedNode);
 					defaultTreeModel.removeNodeFromParent(selectedNode);
 					if (selectedNodeIndexInParent != parent.getChildCount()) {//not the last one
 						defaultTreeModel.insertNodeInto(selectedNode, parent, selectedNodeIndexInParent + 1);
