@@ -85,8 +85,8 @@
     </rdfs:subClassOf>
   </owl:Class>
   <owl:Class rdf:about="http://www.wet.protocol#OrganicCompound">
-    <owl:disjointWith rdf:resource="http://www.wet.protocol#Reagent"/>
     <rdfs:subClassOf rdf:resource="http://www.wet.protocol#Liquid"/>
+    <owl:disjointWith rdf:resource="http://www.wet.protocol#Reagent"/>
   </owl:Class>
   <owl:Class rdf:about="http://www.wet.protocol#Plasmid">
     <rdfs:subClassOf rdf:resource="http://www.wet.protocol#OrganicCompound"/>
@@ -131,304 +131,298 @@
     <rdfs:subClassOf rdf:resource="http://www.wet.protocol#MovableObject"/>
   </owl:Class>
   <owl:ObjectProperty rdf:about="http://www.wet.protocol#provisionedObject">
-    <rdfs:range rdf:resource="http://www.wet.protocol#MovableObject"/>
     <rdfs:domain rdf:resource="http://www.wet.protocol#Provision"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#MovableObject"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="http://www.wet.protocol#volumetricContainerVolume">
-    <rdfs:range rdf:resource="http://www.wet.protocol#Volume"/>
     <rdfs:domain rdf:resource="http://www.wet.protocol#VolumetricContainer"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#Volume"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="http://www.wet.protocol#temperatureControlledStoreTemperature">
-    <rdfs:range rdf:resource="http://www.wet.protocol#Temperature"/>
-    <rdfs:domain rdf:resource="http://www.wet.protocol#TemperatureControlledStore"/>
     <rdfs:subPropertyOf>
       <owl:ObjectProperty rdf:about="http://www.wet.protocol#incubateTime"/>
     </rdfs:subPropertyOf>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#TemperatureControlledStore"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#Temperature"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="http://www.wet.protocol#content">
-    <rdfs:range rdf:resource="http://www.wet.protocol#Liquid"/>
-    <rdfs:domain rdf:resource="http://www.wet.protocol#Container"/>
     <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Container"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#Liquid"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="http://www.wet.protocol#steps">
-    <rdfs:range rdf:resource="http://www.wet.protocol#Step"/>
     <rdfs:domain rdf:resource="http://www.wet.protocol#Transfer"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#Step"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="http://www.wet.protocol#moveDestination">
-    <rdfs:range rdf:resource="http://www.wet.protocol#Place"/>
-    <rdfs:domain rdf:resource="http://www.wet.protocol#Move"/>
     <rdfs:subPropertyOf>
       <owl:ObjectProperty rdf:about="http://www.wet.protocol#preexisting"/>
     </rdfs:subPropertyOf>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Move"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#Place"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="http://www.wet.protocol#pipette">
-    <rdfs:range rdf:resource="http://www.wet.protocol#Pipette"/>
-    <rdfs:domain rdf:resource="http://www.wet.protocol#PipetteRelease"/>
     <rdfs:domain rdf:resource="http://www.wet.protocol#PipetteAspiration"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#PipetteRelease"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#Pipette"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="http://www.wet.protocol#pipetteAspirationVolume">
-    <rdfs:range rdf:resource="http://www.wet.protocol#Volume"/>
     <rdfs:domain rdf:resource="http://www.wet.protocol#PipetteAspiration"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#Volume"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="http://www.wet.protocol#pipetteReleaseVolume">
-    <rdfs:range rdf:resource="http://www.wet.protocol#Volume"/>
     <rdfs:domain rdf:resource="http://www.wet.protocol#PipetteRelease"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#Volume"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="http://www.wet.protocol#provisionAndPlaceWhere">
-    <rdfs:range rdf:resource="http://www.wet.protocol#Place"/>
-    <rdfs:domain rdf:resource="http://www.wet.protocol#ProvisionAndPlace"/>
     <rdfs:subPropertyOf rdf:resource="http://www.wet.protocol#preexisting"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#ProvisionAndPlace"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#Place"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="http://www.wet.protocol#moveSource">
-    <rdfs:range rdf:resource="http://www.wet.protocol#Place"/>
-    <rdfs:domain rdf:resource="http://www.wet.protocol#Move"/>
     <rdfs:subPropertyOf rdf:resource="http://www.wet.protocol#preexisting"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Move"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#Place"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="http://www.wet.protocol#incubateTime">
-    <rdfs:range rdf:resource="http://www.wet.protocol#Time"/>
     <rdfs:domain rdf:resource="http://www.wet.protocol#Incubate"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#Time"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="http://www.wet.protocol#liquidVolume">
-    <rdfs:range rdf:resource="http://www.wet.protocol#Volume"/>
     <rdfs:domain rdf:resource="http://www.wet.protocol#Liquid"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#Volume"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="http://www.wet.protocol#minimumVolume">
-    <rdfs:range rdf:resource="http://www.wet.protocol#Volume"/>
-    <rdfs:domain rdf:resource="http://www.wet.protocol#Pipette"/>
     <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Pipette"/>
+    <rdfs:range rdf:resource="http://www.wet.protocol#Volume"/>
   </owl:ObjectProperty>
   <owl:DatatypeProperty rdf:about="http://www.wet.protocol#stepCoordinatesProperty">
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:about="http://www.wet.protocol#dummyClassDataProperty">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     <rdfs:domain rdf:resource="http://www.wet.protocol#DummyClass"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:about="http://www.wet.protocol#quantityValue">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
-    <rdfs:domain rdf:resource="http://www.wet.protocol#Quantity"/>
     <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Quantity"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:about="http://www.wet.protocol#centrifugeTubeRackColumnsCount">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     <rdfs:domain rdf:resource="http://www.wet.protocol#CentifugeTubeRack"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:about="http://www.wet.protocol#plasmidName">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <rdfs:domain rdf:resource="http://www.wet.protocol#Plasmid"/>
     <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Plasmid"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:about="http://www.wet.protocol#manufacturer">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <rdfs:domain rdf:resource="http://www.wet.protocol#Store"/>
-    <rdfs:domain rdf:resource="http://www.wet.protocol#Container"/>
     <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Container"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Store"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:about="http://www.wet.protocol#quantityUnit">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <rdfs:domain rdf:resource="http://www.wet.protocol#Quantity"/>
     <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Quantity"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:about="http://www.wet.protocol#pipetteRackHookCount">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     <rdfs:domain rdf:resource="http://www.wet.protocol#PipetteRack"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:about="http://www.wet.protocol#phasePurpose">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <rdfs:domain rdf:resource="http://www.wet.protocol#Phase"/>
     <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Phase"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:about="http://www.wet.protocol#fasta">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <rdfs:domain rdf:resource="http://www.wet.protocol#Dna"/>
     <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Dna"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:about="http://www.wet.protocol#quantityMultiplication">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     <rdfs:domain rdf:resource="http://www.wet.protocol#Quantity"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:about="http://www.wet.protocol#protocolCounter">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     <rdfs:domain rdf:resource="http://www.wet.protocol#Protocol"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:about="http://www.wet.protocol#centrifugeTubeRackRowsCount">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
-    <rdfs:domain rdf:resource="http://www.wet.protocol#CentifugeTubeRack"/>
     <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#CentifugeTubeRack"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:about="http://www.wet.protocol#protocolVersion">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <rdfs:domain rdf:resource="http://www.wet.protocol#Protocol"/>
     <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    <rdfs:domain rdf:resource="http://www.wet.protocol#Protocol"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <www:ProvisionAndPlace rdf:about="http://www.wet.protocol#provisionAndPlaceCentrifugeTubeRack13">
-    <rdfs:label>Label:provisionAndPlace13</rdfs:label>
-    <www:provisionAndPlaceWhere>
-      <www:Bench rdf:about="http://www.wet.protocol#bench3">
-        <rdfs:label>Label:bench3</rdfs:label>
-        <www:manufacturer>mb</www:manufacturer>
-      </www:Bench>
-    </www:provisionAndPlaceWhere>
+    <www:stepCoordinatesProperty>5.2</www:stepCoordinatesProperty>
     <www:provisionedObject>
       <www:CentifugeTubeRack rdf:about="http://www.wet.protocol#centifugeTubeRack14">
-        <rdfs:label>Label:centifugeTubeRack14</rdfs:label>
-        <www:centrifugeTubeRackRowsCount>12</www:centrifugeTubeRackRowsCount>
-        <www:centrifugeTubeRackColumnsCount>8</www:centrifugeTubeRackColumnsCount>
         <www:manufacturer>crm</www:manufacturer>
+        <www:centrifugeTubeRackColumnsCount>8</www:centrifugeTubeRackColumnsCount>
+        <www:centrifugeTubeRackRowsCount>12</www:centrifugeTubeRackRowsCount>
+        <rdfs:label>Label:centifugeTubeRack14</rdfs:label>
       </www:CentifugeTubeRack>
     </www:provisionedObject>
-    <www:stepCoordinatesProperty>5.2</www:stepCoordinatesProperty>
+    <www:provisionAndPlaceWhere>
+      <www:Bench rdf:about="http://www.wet.protocol#bench3">
+        <www:manufacturer>mb</www:manufacturer>
+        <rdfs:label>Label:bench3</rdfs:label>
+      </www:Bench>
+    </www:provisionAndPlaceWhere>
+    <rdfs:label>Label:provisionAndPlace13</rdfs:label>
   </www:ProvisionAndPlace>
   <www:Phase rdf:about="http://www.wet.protocol#transform28">
-    <rdfs:label>Label:transform28</rdfs:label>
-    <www:stepCoordinatesProperty>12.1</www:stepCoordinatesProperty>
     <www:stepCoordinatesProperty>13.1</www:stepCoordinatesProperty>
+    <www:stepCoordinatesProperty>12.1</www:stepCoordinatesProperty>
+    <rdfs:label>Label:transform28</rdfs:label>
   </www:Phase>
+  <www:Volume rdf:about="http://www.wet.protocol#newLeafIndividual40_ofClass_Volume">
+    <rdfs:label>Label:newLeafIndividual40_ofClass_Volume</rdfs:label>
+  </www:Volume>
   <www:ProvisionAndPlace rdf:about="http://www.wet.protocol#provisionAndPlaceStopEnzimeCt16">
-    <www:provisionAndPlaceWhere rdf:resource="http://www.wet.protocol#centifugeTubeRack14"/>
+    <www:stepCoordinatesProperty>8.2</www:stepCoordinatesProperty>
+    <rdfs:label>Label:provisionAndPlaceStopEnzimeCt16</rdfs:label>
     <www:provisionedObject>
       <www:CentrifugeTube rdf:about="http://www.wet.protocol#centrifugeTubeStopEnzimeCt21">
-        <www:manufacturer>mct</www:manufacturer>
-        <www:content>
-          <www:Enzime rdf:about="http://www.wet.protocol#enzimeStop23">
-            <www:liquidVolume>
-              <www:Volume rdf:about="http://www.wet.protocol#newLeafIndividual24_ofClass_Volume">
-                <www:quantityUnit>liter</www:quantityUnit>
-                <www:quantityValue>30</www:quantityValue>
-                <www:quantityMultiplication>-6</www:quantityMultiplication>
-                <rdfs:label>Label:newLeafIndividual24_ofClass_Volume</rdfs:label>
-              </www:Volume>
-            </www:liquidVolume>
-            <rdfs:label>Label:enzimeStop23</rdfs:label>
-          </www:Enzime>
-        </www:content>
+        <rdfs:label>Label:centrifugeTubeStopEnzimeCt21</rdfs:label>
         <www:volumetricContainerVolume>
           <www:Volume rdf:about="http://www.wet.protocol#newLeafIndividual22_ofClass_Volume">
-            <www:quantityUnit>liter</www:quantityUnit>
-            <www:quantityValue>15</www:quantityValue>
-            <www:quantityMultiplication>-4</www:quantityMultiplication>
             <rdfs:label>Label:newLeafIndividual22_ofClass_Volume</rdfs:label>
+            <www:quantityMultiplication>-4</www:quantityMultiplication>
+            <www:quantityValue>15</www:quantityValue>
+            <www:quantityUnit>liter</www:quantityUnit>
           </www:Volume>
         </www:volumetricContainerVolume>
-        <rdfs:label>Label:centrifugeTubeStopEnzimeCt21</rdfs:label>
-      </www:CentrifugeTube>
-    </www:provisionedObject>
-    <rdfs:label>Label:provisionAndPlaceStopEnzimeCt16</rdfs:label>
-    <www:stepCoordinatesProperty>8.2</www:stepCoordinatesProperty>
-  </www:ProvisionAndPlace>
-  <www:Provision rdf:about="http://www.wet.protocol#provisionFridge4">
-    <rdfs:label>Label:provisionFridge4</rdfs:label>
-    <www:provisionedObject>
-      <www:TemperatureControlledStore rdf:about="http://www.wet.protocol#temperatureControlledStore5">
-        <www:manufacturer>mf</www:manufacturer>
-        <www:temperatureControlledStoreTemperature>
-          <www:Temperature rdf:about="http://www.wet.protocol#newLeafIndividual6_ofClass_Temperature">
-            <www:quantityUnit>c</www:quantityUnit>
-            <www:quantityValue>-4</www:quantityValue>
-            <www:quantityMultiplication>1</www:quantityMultiplication>
-            <rdfs:label>Label:newLeafIndividual6_ofClass_Temperature</rdfs:label>
-          </www:Temperature>
-        </www:temperatureControlledStoreTemperature>
-        <rdfs:label>Label:temperatureControlledStore5</rdfs:label>
-      </www:TemperatureControlledStore>
-    </www:provisionedObject>
-    <www:stepCoordinatesProperty>3.2</www:stepCoordinatesProperty>
-  </www:Provision>
-  <www:Phase rdf:about="http://www.wet.protocol#setup1">
-    <rdfs:label>Label:setup1</rdfs:label>
-    <www:phasePurpose>setup</www:phasePurpose>
-    <www:stepCoordinatesProperty>1.1</www:stepCoordinatesProperty>
-  </www:Phase>
-  <www:Phase rdf:about="http://www.wet.protocol#restrictionDigestOfRecipientPlasmid">
-    <www:stepCoordinatesProperty>11.2</www:stepCoordinatesProperty>
-    <rdfs:label>Label:phase31</rdfs:label>
-  </www:Phase>
-  <www:ProvisionAndPlace rdf:about="http://www.wet.protocol#provisionAndPlaceStartEnzimeCt15">
-    <www:provisionAndPlaceWhere rdf:resource="http://www.wet.protocol#centifugeTubeRack14"/>
-    <www:provisionedObject>
-      <www:CentrifugeTube rdf:about="http://www.wet.protocol#centrifugeTubeStartEzimeCt17">
-        <www:manufacturer>mct</www:manufacturer>
         <www:content>
-          <www:Enzime rdf:about="http://www.wet.protocol#enzime19">
+          <www:Enzime rdf:about="http://www.wet.protocol#enzimeStop23">
+            <rdfs:label>Label:enzimeStop23</rdfs:label>
             <www:liquidVolume>
-              <www:Volume rdf:about="http://www.wet.protocol#newLeafIndividual20_ofClass_Volume">
+              <www:Volume rdf:about="http://www.wet.protocol#newLeafIndividual24_ofClass_Volume">
+                <rdfs:label>Label:newLeafIndividual24_ofClass_Volume</rdfs:label>
                 <www:quantityMultiplication>-6</www:quantityMultiplication>
-                <www:quantityValue>20</www:quantityValue>
+                <www:quantityValue>30</www:quantityValue>
                 <www:quantityUnit>liter</www:quantityUnit>
-                <rdfs:label>Label:newLeafIndividual20_ofClass_Volume</rdfs:label>
               </www:Volume>
             </www:liquidVolume>
-            <rdfs:label>Label:enzime19</rdfs:label>
           </www:Enzime>
         </www:content>
-        <www:volumetricContainerVolume>
-          <www:Volume rdf:about="http://www.wet.protocol#newLeafIndividual18_ofClass_Volume">
-            <www:quantityUnit>liter</www:quantityUnit>
-            <www:quantityMultiplication>-4</www:quantityMultiplication>
-            <www:quantityValue>15</www:quantityValue>
-            <rdfs:label>Label:newLeafIndividual18_ofClass_Volume</rdfs:label>
-          </www:Volume>
-        </www:volumetricContainerVolume>
-        <rdfs:label>Label:centrifugeTubeStartEzimeCt17</rdfs:label>
+        <www:manufacturer>mct</www:manufacturer>
       </www:CentrifugeTube>
     </www:provisionedObject>
-    <rdfs:label>Label:provisionAndPlaceStartEnzimeCt15</rdfs:label>
-    <www:stepCoordinatesProperty>7.2</www:stepCoordinatesProperty>
+    <www:provisionAndPlaceWhere rdf:resource="http://www.wet.protocol#centifugeTubeRack14"/>
   </www:ProvisionAndPlace>
-  <www:ProvisionAndPlace rdf:about="http://www.wet.protocol#provisionAndPlacePipette9">
-    <rdfs:label>Label:provisionAndPlacePipette9</rdfs:label>
+  <www:Provision rdf:about="http://www.wet.protocol#provisionFridge4">
+    <www:stepCoordinatesProperty>3.2</www:stepCoordinatesProperty>
     <www:provisionedObject>
-      <www:Pipette rdf:about="http://www.wet.protocol#pipette10">
-        <rdfs:label>Label:pipette10</rdfs:label>
+      <www:TemperatureControlledStore rdf:about="http://www.wet.protocol#temperatureControlledStore5">
+        <rdfs:label>Label:temperatureControlledStore5</rdfs:label>
+        <www:temperatureControlledStoreTemperature>
+          <www:Temperature rdf:about="http://www.wet.protocol#newLeafIndividual6_ofClass_Temperature">
+            <rdfs:label>Label:newLeafIndividual6_ofClass_Temperature</rdfs:label>
+            <www:quantityMultiplication>1</www:quantityMultiplication>
+            <www:quantityValue>-4</www:quantityValue>
+            <www:quantityUnit>c</www:quantityUnit>
+          </www:Temperature>
+        </www:temperatureControlledStoreTemperature>
+        <www:manufacturer>mf</www:manufacturer>
+      </www:TemperatureControlledStore>
+    </www:provisionedObject>
+    <rdfs:label>Label:provisionFridge4</rdfs:label>
+  </www:Provision>
+  <www:Phase rdf:about="http://www.wet.protocol#setup1">
+    <www:stepCoordinatesProperty>1.1</www:stepCoordinatesProperty>
+    <www:phasePurpose>setup</www:phasePurpose>
+    <rdfs:label>Label:setup1</rdfs:label>
+  </www:Phase>
+  <www:Phase rdf:about="http://www.wet.protocol#restrictionDigestOfRecipientPlasmid">
+    <rdfs:label>Label:phase31</rdfs:label>
+    <www:stepCoordinatesProperty>11.2</www:stepCoordinatesProperty>
+    <www:stepCoordinatesProperty>12.2</www:stepCoordinatesProperty>
+    <www:stepCoordinatesProperty>13.2</www:stepCoordinatesProperty>
+  </www:Phase>
+  <www:ProvisionAndPlace rdf:about="http://www.wet.protocol#provisionAndPlaceStartEnzimeCt15">
+    <www:stepCoordinatesProperty>7.2</www:stepCoordinatesProperty>
+    <rdfs:label>Label:provisionAndPlaceStartEnzimeCt15</rdfs:label>
+    <www:provisionedObject>
+      <www:CentrifugeTube rdf:about="http://www.wet.protocol#centrifugeTubeStartEzimeCt17">
+        <rdfs:label>Label:centrifugeTubeStartEzimeCt17</rdfs:label>
         <www:volumetricContainerVolume>
-          <www:Volume rdf:about="http://www.wet.protocol#newLeafIndividual11_ofClass_Volume">
-            <rdfs:label>Label:newLeafIndividual11_ofClass_Volume</rdfs:label>
-            <www:quantityValue>200</www:quantityValue>
-            <www:quantityMultiplication>-6</www:quantityMultiplication>
+          <www:Volume rdf:about="http://www.wet.protocol#newLeafIndividual18_ofClass_Volume">
+            <rdfs:label>Label:newLeafIndividual18_ofClass_Volume</rdfs:label>
+            <www:quantityValue>15</www:quantityValue>
+            <www:quantityMultiplication>-4</www:quantityMultiplication>
             <www:quantityUnit>liter</www:quantityUnit>
           </www:Volume>
         </www:volumetricContainerVolume>
-        <www:minimumVolume>
-          <www:Volume rdf:about="http://www.wet.protocol#newLeafIndividual12_ofClass_Volume">
-            <rdfs:label>Label:newLeafIndividual12_ofClass_Volume</rdfs:label>
-            <www:quantityMultiplication>-6</www:quantityMultiplication>
-            <www:quantityValue>20</www:quantityValue>
-            <www:quantityUnit>liter</www:quantityUnit>
-          </www:Volume>
-        </www:minimumVolume>
-        <www:manufacturer>mp</www:manufacturer>
-      </www:Pipette>
+        <www:content>
+          <www:Enzime rdf:about="http://www.wet.protocol#enzime19">
+            <rdfs:label>Label:enzime19</rdfs:label>
+            <www:liquidVolume>
+              <www:Volume rdf:about="http://www.wet.protocol#newLeafIndividual20_ofClass_Volume">
+                <rdfs:label>Label:newLeafIndividual20_ofClass_Volume</rdfs:label>
+                <www:quantityUnit>liter</www:quantityUnit>
+                <www:quantityValue>20</www:quantityValue>
+                <www:quantityMultiplication>-6</www:quantityMultiplication>
+              </www:Volume>
+            </www:liquidVolume>
+          </www:Enzime>
+        </www:content>
+        <www:manufacturer>mct</www:manufacturer>
+      </www:CentrifugeTube>
     </www:provisionedObject>
+    <www:provisionAndPlaceWhere rdf:resource="http://www.wet.protocol#centifugeTubeRack14"/>
+  </www:ProvisionAndPlace>
+  <www:ProvisionAndPlace rdf:about="http://www.wet.protocol#provisionAndPlacePipette9">
+    <www:stepCoordinatesProperty>6.2</www:stepCoordinatesProperty>
     <www:provisionAndPlaceWhere>
       <www:PipetteRack rdf:about="http://www.wet.protocol#pipetteRack8">
-        <rdfs:label>Label:pipetteRack8</rdfs:label>
-        <www:manufacturer>mpr</www:manufacturer>
         <www:pipetteRackHookCount>8</www:pipetteRackHookCount>
+        <www:manufacturer>mpr</www:manufacturer>
+        <rdfs:label>Label:pipetteRack8</rdfs:label>
       </www:PipetteRack>
     </www:provisionAndPlaceWhere>
-    <www:stepCoordinatesProperty>6.2</www:stepCoordinatesProperty>
+    <www:provisionedObject>
+      <www:Pipette rdf:about="http://www.wet.protocol#pipette10">
+        <www:manufacturer>mp</www:manufacturer>
+        <www:minimumVolume>
+          <www:Volume rdf:about="http://www.wet.protocol#newLeafIndividual12_ofClass_Volume">
+            <www:quantityUnit>liter</www:quantityUnit>
+            <www:quantityValue>20</www:quantityValue>
+            <www:quantityMultiplication>-6</www:quantityMultiplication>
+            <rdfs:label>Label:newLeafIndividual12_ofClass_Volume</rdfs:label>
+          </www:Volume>
+        </www:minimumVolume>
+        <www:volumetricContainerVolume>
+          <www:Volume rdf:about="http://www.wet.protocol#newLeafIndividual11_ofClass_Volume">
+            <www:quantityUnit>liter</www:quantityUnit>
+            <www:quantityMultiplication>-6</www:quantityMultiplication>
+            <www:quantityValue>200</www:quantityValue>
+            <rdfs:label>Label:newLeafIndividual11_ofClass_Volume</rdfs:label>
+          </www:Volume>
+        </www:volumetricContainerVolume>
+        <rdfs:label>Label:pipette10</rdfs:label>
+      </www:Pipette>
+    </www:provisionedObject>
+    <rdfs:label>Label:provisionAndPlacePipette9</rdfs:label>
   </www:ProvisionAndPlace>
   <www:Phase rdf:about="http://www.wet.protocol#restrictionDigestOfDonorPlasmid30">
-    <rdfs:label>Label:restrictionDigestOfDonorPlasmid30</rdfs:label>
     <www:stepCoordinatesProperty>10.2</www:stepCoordinatesProperty>
+    <rdfs:label>Label:restrictionDigestOfDonorPlasmid30</rdfs:label>
   </www:Phase>
   <www:ProvisionAndPlace rdf:about="http://www.wet.protocol#provisionAndPlacePipetteStand7">
-    <rdfs:label>Label:provisionAndPlacePipetteStand7</rdfs:label>
-    <www:provisionedObject rdf:resource="http://www.wet.protocol#pipetteRack8"/>
-    <www:provisionAndPlaceWhere rdf:resource="http://www.wet.protocol#bench3"/>
     <www:stepCoordinatesProperty>4.2</www:stepCoordinatesProperty>
+    <www:provisionAndPlaceWhere rdf:resource="http://www.wet.protocol#bench3"/>
+    <www:provisionedObject rdf:resource="http://www.wet.protocol#pipetteRack8"/>
+    <rdfs:label>Label:provisionAndPlacePipetteStand7</rdfs:label>
   </www:ProvisionAndPlace>
-  <www:Protocol rdf:about="http://www.wet.protocol#topProtocolInstance">
-    <www:protocolCounter rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >31</www:protocolCounter>
-    <www:stepCoordinatesProperty>0.0</www:stepCoordinatesProperty>
-    <www:protocolVersion>Version 0.1 https://www.addgene.org/protocols/subcloning/</www:protocolVersion>
-  </www:Protocol>
-  <www:Phase rdf:about="http://www.wet.protocol#ligateInsertIntoVector27">
-    <rdfs:label>Label:ligateInsertIntoVector27</rdfs:label>
-    <www:stepCoordinatesProperty>11.1</www:stepCoordinatesProperty>
-    <www:stepCoordinatesProperty>12.1</www:stepCoordinatesProperty>
-  </www:Phase>
   <owl:AllDisjointClasses>
     <owl:members rdf:parseType="Collection">
       <owl:Class rdf:about="http://www.wet.protocol#CentifugeTubeRack"/>
@@ -436,25 +430,37 @@
       <owl:Class rdf:about="http://www.wet.protocol#Volume"/>
     </owl:members>
   </owl:AllDisjointClasses>
-  <www:Provision rdf:about="http://www.wet.protocol#provisionBench2">
-    <rdfs:label>Label:provisionBench2</rdfs:label>
-    <www:provisionedObject rdf:resource="http://www.wet.protocol#bench3"/>
-    <www:stepCoordinatesProperty>2.2</www:stepCoordinatesProperty>
-  </www:Provision>
-  <www:Phase rdf:about="http://www.wet.protocol#dnaPurification26">
-    <rdfs:label>Label:DnaPurification26</rdfs:label>
-    <www:stepCoordinatesProperty>10.1</www:stepCoordinatesProperty>
+  <www:Protocol rdf:about="http://www.wet.protocol#topProtocolInstance">
+    <www:protocolCounter rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >41</www:protocolCounter>
+    <www:stepCoordinatesProperty>0.0</www:stepCoordinatesProperty>
+    <www:protocolVersion>Version 0.1 https://www.addgene.org/protocols/subcloning/</www:protocolVersion>
+  </www:Protocol>
+  <www:Phase rdf:about="http://www.wet.protocol#ligateInsertIntoVector27">
+    <www:stepCoordinatesProperty>12.1</www:stepCoordinatesProperty>
     <www:stepCoordinatesProperty>11.1</www:stepCoordinatesProperty>
+    <rdfs:label>Label:ligateInsertIntoVector27</rdfs:label>
   </www:Phase>
-  <www:Phase rdf:about="http://www.wet.protocol#isolateFinishedPlasmid29">
-    <rdfs:label>Label:isolateFinishedPlasmid29</rdfs:label>
-    <www:stepCoordinatesProperty>13.1</www:stepCoordinatesProperty>
-    <www:stepCoordinatesProperty>14.1</www:stepCoordinatesProperty>
+  <www:Provision rdf:about="http://www.wet.protocol#provisionBench2">
+    <www:stepCoordinatesProperty>2.2</www:stepCoordinatesProperty>
+    <www:provisionedObject rdf:resource="http://www.wet.protocol#bench3"/>
+    <rdfs:label>Label:provisionBench2</rdfs:label>
+  </www:Provision>
+  <www:Volume rdf:about="http://www.wet.protocol#newLeafIndividual36_ofClass_Volume">
+    <rdfs:label>Label:newLeafIndividual36_ofClass_Volume</rdfs:label>
+  </www:Volume>
+  <www:Phase rdf:about="http://www.wet.protocol#dnaPurification26">
+    <www:stepCoordinatesProperty>11.1</www:stepCoordinatesProperty>
+    <www:stepCoordinatesProperty>10.1</www:stepCoordinatesProperty>
+    <rdfs:label>Label:DnaPurification26</rdfs:label>
   </www:Phase>
-  <www:Phase rdf:about="http://www.wet.protocol#dnaDigestion25">
-    <rdfs:label>Label:DnaDigestion25</rdfs:label>
-    <www:stepCoordinatesProperty>9.1</www:stepCoordinatesProperty>
-  </www:Phase>
+  <www:Volume rdf:about="http://www.wet.protocol#newLeafIndividual41_ofClass_Volume">
+    <rdfs:label>Label:newLeafIndividual41_ofClass_Volume</rdfs:label>
+  </www:Volume>
+  <www:PipetteAspiration rdf:about="http://www.wet.protocol#pipetteAspirationOfStartEnzime35">
+    <rdfs:label>Label:pipetteAspirationOfStartEnzime35</rdfs:label>
+    <www:stepCoordinatesProperty>12.3</www:stepCoordinatesProperty>
+  </www:PipetteAspiration>
   <owl:AllDisjointClasses>
     <owl:members rdf:parseType="Collection">
       <owl:Class rdf:about="http://www.wet.protocol#Dna"/>
@@ -462,4 +468,45 @@
       <owl:Class rdf:about="http://www.wet.protocol#Plasmid"/>
     </owl:members>
   </owl:AllDisjointClasses>
+  <www:Pipette rdf:about="http://www.wet.protocol#newLeafIndividual37_ofClass_Pipette">
+    <www:minimumVolume>
+      <www:Volume rdf:about="http://www.wet.protocol#newLeafIndividual39_ofClass_Volume">
+        <rdfs:label>Label:newLeafIndividual39_ofClass_Volume</rdfs:label>
+      </www:Volume>
+    </www:minimumVolume>
+    <www:volumetricContainerVolume>
+      <www:Volume rdf:about="http://www.wet.protocol#newLeafIndividual38_ofClass_Volume">
+        <rdfs:label>Label:newLeafIndividual38_ofClass_Volume</rdfs:label>
+      </www:Volume>
+    </www:volumetricContainerVolume>
+    <rdfs:label>Label:newLeafIndividual37_ofClass_Pipette</rdfs:label>
+  </www:Pipette>
+  <www:ProvisionAndPlace rdf:about="http://www.wet.protocol#provisionAndPlaceMainCentrifugeTube32">
+    <rdfs:label>Label:provisionAndPlaceMainCentrifugeTube32</rdfs:label>
+    <www:provisionedObject>
+      <www:CentrifugeTube rdf:about="http://www.wet.protocol#restrictionDigestTube33">
+        <rdfs:label>Label:restrictionDigestTube33</rdfs:label>
+        <www:volumetricContainerVolume>
+          <www:Volume rdf:about="http://www.wet.protocol#newLeafIndividual34_ofClass_Volume">
+            <rdfs:label>Label:newLeafIndividual34_ofClass_Volume</rdfs:label>
+            <www:quantityValue>1.5</www:quantityValue>
+            <www:quantityMultiplication>-3</www:quantityMultiplication>
+            <www:quantityUnit>liter</www:quantityUnit>
+          </www:Volume>
+        </www:volumetricContainerVolume>
+        <www:manufacturer>eppendorf</www:manufacturer>
+      </www:CentrifugeTube>
+    </www:provisionedObject>
+    <www:provisionAndPlaceWhere rdf:resource="http://www.wet.protocol#centifugeTubeRack14"/>
+    <www:stepCoordinatesProperty>11.3</www:stepCoordinatesProperty>
+  </www:ProvisionAndPlace>
+  <www:Phase rdf:about="http://www.wet.protocol#isolateFinishedPlasmid29">
+    <www:stepCoordinatesProperty>14.1</www:stepCoordinatesProperty>
+    <www:stepCoordinatesProperty>13.1</www:stepCoordinatesProperty>
+    <rdfs:label>Label:isolateFinishedPlasmid29</rdfs:label>
+  </www:Phase>
+  <www:Phase rdf:about="http://www.wet.protocol#dnaDigestion25">
+    <www:stepCoordinatesProperty>9.1</www:stepCoordinatesProperty>
+    <rdfs:label>Label:DnaDigestion25</rdfs:label>
+  </www:Phase>
 </rdf:RDF>

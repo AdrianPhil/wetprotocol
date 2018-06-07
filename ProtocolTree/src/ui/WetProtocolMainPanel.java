@@ -212,7 +212,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 				}
 			}
 		});
-		https://stackoverflow.com/questions/4588109/drag-and-drop-nodes-in-jtree?rq=1
+		//https://stackoverflow.com/questions/4588109/drag-and-drop-nodes-in-jtree?rq=1
 		upStepButton.addActionListener(e -> {
 			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jStepTree.getLastSelectedPathComponent();
 			if (selectedNode != null && !selectedNode.isRoot()) {
