@@ -1,0 +1,419 @@
+@prefix : <http://www.semanticweb.org/ad/ontologies/2018/3/untitled-ontology-6#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix www: <http://www.wet.protocol#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.wet.protocol> .
+
+<http://www.wet.protocol> rdf:type owl:Ontology .
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  http://www.wet.protocol#content
+www:content rdf:type owl:ObjectProperty ;
+            rdfs:subPropertyOf owl:topObjectProperty ;
+            rdfs:domain www:Container ;
+            rdfs:range www:Liquid .
+
+
+###  http://www.wet.protocol#incubateTime
+www:incubateTime rdf:type owl:ObjectProperty ;
+                 rdfs:domain www:Incubate ;
+                 rdfs:range www:Time .
+
+
+###  http://www.wet.protocol#liquidVolume
+www:liquidVolume rdf:type owl:ObjectProperty ;
+                 rdfs:domain www:Liquid ;
+                 rdfs:range www:Volume .
+
+
+###  http://www.wet.protocol#minimumVolume
+www:minimumVolume rdf:type owl:ObjectProperty ;
+                  rdfs:subPropertyOf owl:topObjectProperty ;
+                  rdfs:domain www:Pipette ;
+                  rdfs:range www:Volume .
+
+
+###  http://www.wet.protocol#moveDestination
+www:moveDestination rdf:type owl:ObjectProperty ;
+                    rdfs:subPropertyOf www:preexisting ;
+                    rdfs:domain www:Move ;
+                    rdfs:range www:Place .
+
+
+###  http://www.wet.protocol#moveSource
+www:moveSource rdf:type owl:ObjectProperty ;
+               rdfs:subPropertyOf www:preexisting ;
+               rdfs:domain www:Move ;
+               rdfs:range www:Place .
+
+
+###  http://www.wet.protocol#pipette
+www:pipette rdf:type owl:ObjectProperty ;
+            rdfs:domain www:PipetteAspiration ,
+                        www:PipetteRelease ;
+            rdfs:range www:Pipette .
+
+
+###  http://www.wet.protocol#pipetteAspirationVolume
+www:pipetteAspirationVolume rdf:type owl:ObjectProperty ;
+                            rdfs:domain www:PipetteAspiration ;
+                            rdfs:range www:Volume .
+
+
+###  http://www.wet.protocol#pipetteReleaseVolume
+www:pipetteReleaseVolume rdf:type owl:ObjectProperty ;
+                         rdfs:domain www:PipetteRelease ;
+                         rdfs:range www:Volume .
+
+
+###  http://www.wet.protocol#preexisting
+www:preexisting rdf:type owl:ObjectProperty .
+
+
+###  http://www.wet.protocol#provisionAndPlaceWhere
+www:provisionAndPlaceWhere rdf:type owl:ObjectProperty ;
+                           rdfs:subPropertyOf www:preexisting ;
+                           rdfs:domain www:ProvisionAndPlace ;
+                           rdfs:range www:Place .
+
+
+###  http://www.wet.protocol#provisionedObject
+www:provisionedObject rdf:type owl:ObjectProperty ;
+                      rdfs:domain www:Provision ;
+                      rdfs:range www:MovableObject .
+
+
+###  http://www.wet.protocol#steps
+www:steps rdf:type owl:ObjectProperty ;
+          rdfs:domain www:Transfer ;
+          rdfs:range www:Step .
+
+
+###  http://www.wet.protocol#temperatureControlledStoreTemperature
+www:temperatureControlledStoreTemperature rdf:type owl:ObjectProperty ;
+                                          rdfs:subPropertyOf www:incubateTime ;
+                                          rdfs:domain www:TemperatureControlledStore ;
+                                          rdfs:range www:Temperature .
+
+
+###  http://www.wet.protocol#volumetricContainerVolume
+www:volumetricContainerVolume rdf:type owl:ObjectProperty ;
+                              rdfs:domain www:VolumetricContainer ;
+                              rdfs:range www:Volume .
+
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  http://www.wet.protocol#centrifugeTubeRackColumnsCount
+www:centrifugeTubeRackColumnsCount rdf:type owl:DatatypeProperty ;
+                                   rdfs:domain www:CentifugeTubeRack ;
+                                   rdfs:range xsd:int .
+
+
+###  http://www.wet.protocol#centrifugeTubeRackRowsCount
+www:centrifugeTubeRackRowsCount rdf:type owl:DatatypeProperty ;
+                                rdfs:subPropertyOf owl:topDataProperty ;
+                                rdfs:domain www:CentifugeTubeRack ;
+                                rdfs:range xsd:int .
+
+
+###  http://www.wet.protocol#dummyClassDataProperty
+www:dummyClassDataProperty rdf:type owl:DatatypeProperty ;
+                           rdfs:domain www:DummyClass ;
+                           rdfs:range xsd:string .
+
+
+###  http://www.wet.protocol#fasta
+www:fasta rdf:type owl:DatatypeProperty ;
+          rdfs:subPropertyOf owl:topDataProperty ;
+          rdfs:domain www:Dna ;
+          rdfs:range xsd:string .
+
+
+###  http://www.wet.protocol#manufacturer
+www:manufacturer rdf:type owl:DatatypeProperty ;
+                 rdfs:subPropertyOf owl:topDataProperty ;
+                 rdfs:domain www:Container ,
+                             www:Store ;
+                 rdfs:range xsd:string .
+
+
+###  http://www.wet.protocol#phasePurpose
+www:phasePurpose rdf:type owl:DatatypeProperty ;
+                 rdfs:subPropertyOf owl:topDataProperty ;
+                 rdfs:domain www:Phase ;
+                 rdfs:range xsd:string .
+
+
+###  http://www.wet.protocol#pipetteRackHookCount
+www:pipetteRackHookCount rdf:type owl:DatatypeProperty ;
+                         rdfs:domain www:PipetteRack ;
+                         rdfs:range xsd:int .
+
+
+###  http://www.wet.protocol#plasmidName
+www:plasmidName rdf:type owl:DatatypeProperty ;
+                rdfs:subPropertyOf owl:topDataProperty ;
+                rdfs:domain www:Plasmid ;
+                rdfs:range xsd:string .
+
+
+###  http://www.wet.protocol#protocolCounter
+www:protocolCounter rdf:type owl:DatatypeProperty ;
+                    rdfs:domain www:Protocol ;
+                    rdfs:range xsd:int .
+
+
+###  http://www.wet.protocol#protocolVersion
+www:protocolVersion rdf:type owl:DatatypeProperty ;
+                    rdfs:subPropertyOf owl:topDataProperty ;
+                    rdfs:domain www:Protocol ;
+                    rdfs:range xsd:string .
+
+
+###  http://www.wet.protocol#quantityMultiplication
+www:quantityMultiplication rdf:type owl:DatatypeProperty ;
+                           rdfs:domain www:Quantity ;
+                           rdfs:range xsd:int .
+
+
+###  http://www.wet.protocol#quantityUnit
+www:quantityUnit rdf:type owl:DatatypeProperty ;
+                 rdfs:subPropertyOf owl:topDataProperty ;
+                 rdfs:domain www:Quantity ;
+                 rdfs:range xsd:string .
+
+
+###  http://www.wet.protocol#quantityValue
+www:quantityValue rdf:type owl:DatatypeProperty ;
+                  rdfs:subPropertyOf owl:topDataProperty ;
+                  rdfs:domain www:Quantity ;
+                  rdfs:range xsd:decimal .
+
+
+###  http://www.wet.protocol#stepCoordinatesProperty
+www:stepCoordinatesProperty rdf:type owl:DatatypeProperty ;
+                            rdfs:range xsd:string .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://www.wet.protocol#Bench
+www:Bench rdf:type owl:Class ;
+          rdfs:subClassOf www:Store .
+
+
+###  http://www.wet.protocol#CentifugeTubeRack
+www:CentifugeTubeRack rdf:type owl:Class ;
+                      rdfs:subClassOf www:Container .
+
+
+###  http://www.wet.protocol#CentrifugeTube
+www:CentrifugeTube rdf:type owl:Class ;
+                   rdfs:subClassOf www:VolumetricContainer .
+
+
+###  http://www.wet.protocol#Container
+www:Container rdf:type owl:Class ;
+              rdfs:subClassOf www:Equipment .
+
+
+###  http://www.wet.protocol#Dna
+www:Dna rdf:type owl:Class ;
+        rdfs:subClassOf www:OrganicCompound .
+
+
+###  http://www.wet.protocol#DummyClass
+www:DummyClass rdf:type owl:Class .
+
+
+###  http://www.wet.protocol#Enzime
+www:Enzime rdf:type owl:Class ;
+           rdfs:subClassOf www:OrganicCompound .
+
+
+###  http://www.wet.protocol#Equipment
+www:Equipment rdf:type owl:Class ;
+              rdfs:subClassOf www:MovableObject .
+
+
+###  http://www.wet.protocol#Incubate
+www:Incubate rdf:type owl:Class ;
+             rdfs:subClassOf www:Step .
+
+
+###  http://www.wet.protocol#Liquid
+www:Liquid rdf:type owl:Class ;
+           rdfs:subClassOf www:MovableObject .
+
+
+###  http://www.wet.protocol#MovableObject
+www:MovableObject rdf:type owl:Class ;
+                  rdfs:subClassOf www:Place .
+
+
+###  http://www.wet.protocol#Move
+www:Move rdf:type owl:Class ;
+         rdfs:subClassOf www:Step .
+
+
+###  http://www.wet.protocol#NonLiquid
+www:NonLiquid rdf:type owl:Class ;
+              rdfs:subClassOf www:MovableObject .
+
+
+###  http://www.wet.protocol#OrganicCompound
+www:OrganicCompound rdf:type owl:Class ;
+                    rdfs:subClassOf www:Liquid ;
+                    owl:disjointWith www:Reagent .
+
+
+###  http://www.wet.protocol#Phase
+www:Phase rdf:type owl:Class ;
+          rdfs:subClassOf www:Step .
+
+
+###  http://www.wet.protocol#Pipette
+www:Pipette rdf:type owl:Class ;
+            rdfs:subClassOf www:VolumetricContainer .
+
+
+###  http://www.wet.protocol#PipetteAspiration
+www:PipetteAspiration rdf:type owl:Class ;
+                      rdfs:subClassOf www:Step .
+
+
+###  http://www.wet.protocol#PipetteRack
+www:PipetteRack rdf:type owl:Class ;
+                rdfs:subClassOf www:Container .
+
+
+###  http://www.wet.protocol#PipetteRelease
+www:PipetteRelease rdf:type owl:Class ;
+                   rdfs:subClassOf www:Step .
+
+
+###  http://www.wet.protocol#Place
+www:Place rdf:type owl:Class .
+
+
+###  http://www.wet.protocol#Plasmid
+www:Plasmid rdf:type owl:Class ;
+            rdfs:subClassOf www:OrganicCompound .
+
+
+###  http://www.wet.protocol#Protocol
+www:Protocol rdf:type owl:Class .
+
+
+###  http://www.wet.protocol#Provision
+www:Provision rdf:type owl:Class ;
+              rdfs:subClassOf www:Step .
+
+
+###  http://www.wet.protocol#ProvisionAndPlace
+www:ProvisionAndPlace rdf:type owl:Class ;
+                      rdfs:subClassOf www:Provision .
+
+
+###  http://www.wet.protocol#Quantity
+www:Quantity rdf:type owl:Class .
+
+
+###  http://www.wet.protocol#Reagent
+www:Reagent rdf:type owl:Class ;
+            rdfs:subClassOf www:Liquid .
+
+
+###  http://www.wet.protocol#Step
+www:Step rdf:type owl:Class .
+
+
+###  http://www.wet.protocol#Store
+www:Store rdf:type owl:Class ;
+          rdfs:subClassOf www:MovableObject .
+
+
+###  http://www.wet.protocol#Supplier
+www:Supplier rdf:type owl:Class ;
+             rdfs:subClassOf www:Place .
+
+
+###  http://www.wet.protocol#Temperature
+www:Temperature rdf:type owl:Class ;
+                rdfs:subClassOf www:Quantity .
+
+
+###  http://www.wet.protocol#TemperatureControlledStore
+www:TemperatureControlledStore rdf:type owl:Class ;
+                               rdfs:subClassOf www:Store .
+
+
+###  http://www.wet.protocol#TestTube
+www:TestTube rdf:type owl:Class ;
+             rdfs:subClassOf www:VolumetricContainer .
+
+
+###  http://www.wet.protocol#Time
+www:Time rdf:type owl:Class ;
+         rdfs:subClassOf www:Quantity .
+
+
+###  http://www.wet.protocol#Transfer
+www:Transfer rdf:type owl:Class ;
+             rdfs:subClassOf www:Step .
+
+
+###  http://www.wet.protocol#Volume
+www:Volume rdf:type owl:Class ;
+           rdfs:subClassOf www:Quantity .
+
+
+###  http://www.wet.protocol#VolumetricContainer
+www:VolumetricContainer rdf:type owl:Class ;
+                        rdfs:subClassOf www:Container .
+
+
+#################################################################
+#    Individuals
+#################################################################
+
+###  http://www.wet.protocol#topProtocolInstance
+www:topProtocolInstance rdf:type owl:NamedIndividual ,
+                                 www:Protocol ;
+                        www:protocolCounter "0"^^xsd:int ;
+                        www:protocolVersion "Version 0.1"^^xsd:string ;
+                        www:stepCoordinatesProperty "0.0" .
+
+
+#################################################################
+#    General axioms
+#################################################################
+
+[ rdf:type owl:AllDisjointClasses ;
+  owl:members ( www:CentifugeTubeRack
+                www:Temperature
+                www:Volume
+              )
+] .
+
+
+[ rdf:type owl:AllDisjointClasses ;
+  owl:members ( www:Dna
+                www:Enzime
+                www:Plasmid
+              )
+] .
+
+
+###  Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi

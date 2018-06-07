@@ -1,0 +1,10 @@
+On the biosample page 
+I could see some buttons for CRUD operations like:
+    add new biosample on the biosamples page
+    add child after a sample is selected. That would pop up a dialog with only the selected bioType fields.
+    delete selected sample
+    
+    
+At this point selecting a sample/right click and Add Child yields an error dialong with no text
+    
+It would be good if we could make sure a specific biotype can know what are children acceptable biotypes. Accept only...

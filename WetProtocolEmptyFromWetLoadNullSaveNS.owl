@@ -261,6 +261,13 @@
     <rdfs:domain rdf:resource="http://www.wet.protocol#Protocol"/>
     <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
   </owl:DatatypeProperty>
+  <www:Protocol rdf:about="http://www.wet.protocol#topProtocolInstance">
+    <www:protocolCounter rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >0</www:protocolCounter>
+    <www:protocolVersion>Version 0.1</www:protocolVersion>
+    <www:stepCoordinatesProperty>0.0</www:stepCoordinatesProperty>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </www:Protocol>
   <owl:AllDisjointClasses>
     <owl:members rdf:parseType="Collection">
       <owl:Class rdf:about="http://www.wet.protocol#CentifugeTubeRack"/>
@@ -268,40 +275,6 @@
       <owl:Class rdf:about="http://www.wet.protocol#Volume"/>
     </owl:members>
   </owl:AllDisjointClasses>
-  <www:Protocol rdf:about="http://www.wet.protocol#topProtocolInstance">
-    <www:protocolCounter rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >6</www:protocolCounter>
-    <www:protocolVersion>Version 0.1</www:protocolVersion>
-    <www:stepCoordinatesProperty>0.0</www:stepCoordinatesProperty>
-  </www:Protocol>
-  <www:Provision rdf:about="http://www.wet.protocol#provisionBench2">
-    <www:stepCoordinatesProperty>2.2</www:stepCoordinatesProperty>
-    <www:provisionedObject>
-      <www:Bench rdf:about="http://www.wet.protocol#bench3">
-        <rdfs:label>Label:bench3</rdfs:label>
-        <www:manufacturer>mb</www:manufacturer>
-      </www:Bench>
-    </www:provisionedObject>
-    <rdfs:label>Label:provisionBench2</rdfs:label>
-  </www:Provision>
-  <www:Provision rdf:about="http://www.wet.protocol#provisionFridge4">
-    <www:stepCoordinatesProperty>3.2</www:stepCoordinatesProperty>
-    <www:provisionedObject>
-      <www:TemperatureControlledStore rdf:about="http://www.wet.protocol#temperatureControlledStore5">
-        <www:manufacturer>mf</www:manufacturer>
-        <www:temperatureControlledStoreTemperature>
-          <www:Temperature rdf:about="http://www.wet.protocol#newLeafIndividual6_ofClass_Temperature">
-            <www:quantityUnit>c</www:quantityUnit>
-            <www:quantityValue>-4</www:quantityValue>
-            <www:quantityMultiplication>1</www:quantityMultiplication>
-            <rdfs:label>Label:newLeafIndividual6_ofClass_Temperature</rdfs:label>
-          </www:Temperature>
-        </www:temperatureControlledStoreTemperature>
-        <rdfs:label>Label:temperatureControlledStore5</rdfs:label>
-      </www:TemperatureControlledStore>
-    </www:provisionedObject>
-    <rdfs:label>Label:provisionFridge4</rdfs:label>
-  </www:Provision>
   <owl:AllDisjointClasses>
     <owl:members rdf:parseType="Collection">
       <owl:Class rdf:about="http://www.wet.protocol#Dna"/>
@@ -309,9 +282,4 @@
       <owl:Class rdf:about="http://www.wet.protocol#Plasmid"/>
     </owl:members>
   </owl:AllDisjointClasses>
-  <www:Phase rdf:about="http://www.wet.protocol#setup1">
-    <www:stepCoordinatesProperty>1.1</www:stepCoordinatesProperty>
-    <www:phasePurpose>setup</www:phasePurpose>
-    <rdfs:label>Label:setup1</rdfs:label>
-  </www:Phase>
 </rdf:RDF>
