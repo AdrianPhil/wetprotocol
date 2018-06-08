@@ -1,8 +1,13 @@
 package ont;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -50,6 +55,7 @@ public class OntManager {
 	// public static Resource NOTHING_SUBCLASS;
 	public static AtomicInteger counter = new AtomicInteger(0); // todo make sure the counter value is saved to file and loaded when file is loaded
 	private static String fileName;
+	final static String NAMED_INDIVIDUAL_LINE = "<rdf:type rdf:resource=\"http://www.w3.org/2002/07/owl#NamedIndividual\"/>";
 	// there still seem to be a problem with NamedIndividual
 	//
 
@@ -65,7 +71,8 @@ public class OntManager {
 		instance = new OntManager();
 		ontologyModel = null;
 		ontologyModel = ModelFactory.createOntologyModel(); // OntModelSpec.OWL_LITE_MEM);//OntModelSpec.OWL_MEM);// OntModelSpec.OWL_LITE_MEM);// "" isfull? hierarchy reasoner; OWL_MEM
-		ontologyModel.read(pathOfOntFileToLoad, "RDF/XML");
+		Reader ontFileReader = stripNamedIndividual(pathOfOntFileToLoad);
+		ontologyModel.read(ontFileReader, "RDF/XML");
 		//
 		// ontologyModel.setStrictMode(true);
 		System.out.println("after loding the ontology the individuals are:" + OntManager.getOntologyModel().listIndividuals().toList());
@@ -78,6 +85,25 @@ public class OntManager {
 		//
 		STEP_COORDINATES_PROPERTY = (ontologyModel.getOntProperty(NS + "stepCoordinatesProperty"));
 		return instance;
+	}
+
+	/** This is needed as every time we use Proteje it seems to change the types to NamedIndividual instead of the correct type which is in the opening tag of the element.
+	 * To correct that we remove all the rdf:NamedIndividual so the parser takes the type information from the openeing tag.
+	 * kind of old style but maybe working */
+	public static StringReader stripNamedIndividual(String pathOfOntFileToLoad) {
+		try {
+			File inputFile = new File(pathOfOntFileToLoad);
+			StringWriter cleaned = new StringWriter();
+			Files.lines(inputFile.toPath()).filter(line -> !line.contains(NAMED_INDIVIDUAL_LINE)).forEach(goodLine->cleaned.append(goodLine));
+			//System.out.println("cleaned:"+cleaned.toString());
+			cleaned.flush();
+			cleaned.close();
+			//System.out.println("cleaned:"+cleaned.toString());
+			return new StringReader(cleaned.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 	}
 
 	public Set<OntProperty> calculateHierarchicalPropertiesForAClass(OntClass ontClass) {
@@ -98,7 +124,7 @@ public class OntManager {
 		for (Individual ind : allIndividuals) {
 			if (ind.getOntClass().hasSuperClass(STEP_ONT_CLASS)) {
 				allSteps.add(ind);
-				System.out.println("found step individual:" + ind);
+				//System.out.println("found step individual:" + ind);
 			}
 		}
 		return allSteps;

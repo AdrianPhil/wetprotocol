@@ -56,6 +56,7 @@ public class UiUtils {
 
 	// * this practically does the whole UI if the model was changed*/
 	public static void loadStepsTreeFromModel(JTree jStepsTree) {
+		System.out.println("Load Steps UI Tree from Model");
 		DefaultMutableTreeNode topStepNode = Utils.getRoot(jStepsTree);
 		topStepNode.removeAllChildren();
 		List<Individual> list = OntManager.getInstance().calculateStepIndividuals();
@@ -72,7 +73,7 @@ public class UiUtils {
 		});
 		DefaultMutableTreeNode lastAddedNode = topStepNode;
 		OntProperty STEP_COORDINATES_PROPERTY = OntManager.getStepCoordinatesProperty();
-		for (int i = 0; i < list.size(); i++) {// skip the top
+		for (int i = 0; i < list.size(); i++) {// skip the top ?
 			Individual step = list.get(i);
 			NodeCoordinates nodeLocation = new NodeCoordinates(step);
 			step.removeAll(STEP_COORDINATES_PROPERTY);// clean up saved coordinates from the memory model once the tree is reassembled

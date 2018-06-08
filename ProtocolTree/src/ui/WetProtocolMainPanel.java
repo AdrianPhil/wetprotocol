@@ -34,12 +34,10 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 	private JButton addNewSiblingNodeButton = new JButton("New Step");
 	private JButton addChildNodeButton = new JButton("New Substep");
 	private JButton deleteChildNodeButton = new JButton("Delete Step");
-	private JButton expandTreeButton = new JButton("Expand Tree");
 	private JButton saveProtocolButton = new JButton("Save Protocol");
-	private JButton saveAsProtocolButton = new JButton("Save Protocol As");
 	private JButton loadProtocolButton = new JButton("Load Protocol");
-	private JButton upStepButton = new JButton("Move Up");
-	private JButton downStepButton = new JButton("Move Down");
+	private JButton saveAsProtocolButton = new JButton("Save Protocol As");
+	private JButton expandTreeButton = new JButton("Expand Tree");
 	private JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 	private JTree jStepTree;
 	public static final int WITH_OF_STEPS_TREE = 400;
@@ -52,21 +50,22 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		JPanel treeViewPanel = new JPanel(new BorderLayout());
 		treeViewPanel.add(jStepTree, BorderLayout.PAGE_START);
 		JPanel treeViewButtonPanel = new JPanel();
-		treeViewButtonPanel.setLayout(new GridLayout(3, 1));
+		treeViewButtonPanel.setLayout(new GridLayout(3, 1)); //columns ,rows
 		treeViewButtonPanel.add(addNewSiblingNodeButton);
 		treeViewButtonPanel.add(addChildNodeButton);
 		treeViewButtonPanel.add(deleteChildNodeButton);
-		treeViewButtonPanel.add(expandTreeButton);
 		treeViewButtonPanel.add(loadProtocolButton);
 		treeViewButtonPanel.add(saveProtocolButton);
 		treeViewButtonPanel.add(saveAsProtocolButton);
-		treeViewButtonPanel.add(upStepButton);
-		treeViewButtonPanel.add(downStepButton);
-		treeViewPanel.add(treeViewButtonPanel, BorderLayout.PAGE_END);
+		treeViewButtonPanel.add(expandTreeButton);
 		// Create the scroll pane and add the tree view panel to it.
 		JScrollPane treeViewScrollPane = new JScrollPane(treeViewPanel);
+		// create a left panel with treeViewScollPane on top and buttons on bottom
+		JPanel leftPanelWithScrollableTreeAndButtonPanel = new JPanel(new BorderLayout());
+		leftPanelWithScrollableTreeAndButtonPanel.add(treeViewScrollPane, BorderLayout.CENTER);
+		leftPanelWithScrollableTreeAndButtonPanel.add(treeViewButtonPanel, BorderLayout.PAGE_END);
 		// Add the scroll panes to a split pane.
-		splitPane.setLeftComponent(treeViewScrollPane);
+		splitPane.setLeftComponent(leftPanelWithScrollableTreeAndButtonPanel);
 		createNewClassPropertyEditorPanel();
 		treeViewScrollPane.setMinimumSize(new Dimension(100, 50));
 		treeViewScrollPane.setPreferredSize(new Dimension(WITH_OF_STEPS_TREE, 50));
@@ -212,52 +211,6 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 					OntManager.getOntologyModel().removeAll((Resource) selectedNode.getUserObject(), null, null);
 				} else {
 					UiUtils.showDialog(this, "Could not remove node. Not an instance of an Individual");
-				}
-			}
-		});
-		//https://stackoverflow.com/questions/4588109/drag-and-drop-nodes-in-jtree?rq=1
-		upStepButton.addActionListener(e -> {
-			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jStepTree.getLastSelectedPathComponent();
-			if (selectedNode != null && !selectedNode.isRoot()) {
-				if (selectedNode.getUserObject() instanceof Individual) {
-					DefaultTreeModel defaultTreeModel = (DefaultTreeModel) jStepTree.getModel();
-					MutableTreeNode parent = (MutableTreeNode) selectedNode.getParent();
-					int selectedNodeIndexInParent = parent.getIndex(selectedNode);
-					defaultTreeModel.removeNodeFromParent(selectedNode);
-					if (selectedNodeIndexInParent >=1) {
-						defaultTreeModel.insertNodeInto(selectedNode, parent, selectedNodeIndexInParent - 1);
-					} else {
-						MutableTreeNode grandParent = (MutableTreeNode) parent.getParent();
-						if (grandParent != null) {
-							int selectedNodeParentIndexInGrandParent = grandParent.getIndex(parent);
-							defaultTreeModel.insertNodeInto(selectedNode, grandParent, selectedNodeParentIndexInGrandParent-1);
-						}
-					}
-					jStepTree.setSelectionPath( new TreePath( selectedNode.getPath() ) );
-				} else {
-					UiUtils.showDialog(this, "Could not move node up. Not an instance of an Individual");
-				}
-			}
-		});
-		downStepButton.addActionListener(e -> {
-			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jStepTree.getLastSelectedPathComponent();
-			if (selectedNode != null && !selectedNode.isRoot()) {
-				if (selectedNode.getUserObject() instanceof Individual) {
-					DefaultTreeModel defaultTreeModel = (DefaultTreeModel) jStepTree.getModel();
-					MutableTreeNode parent = (MutableTreeNode) selectedNode.getParent();
-					int selectedNodeIndexInParent = parent.getIndex(selectedNode);
-					defaultTreeModel.removeNodeFromParent(selectedNode);
-					if (selectedNodeIndexInParent != parent.getChildCount()) {//not the last one
-						defaultTreeModel.insertNodeInto(selectedNode, parent, selectedNodeIndexInParent + 1);
-					} else {
-						MutableTreeNode grandParent = (MutableTreeNode) parent.getParent();
-						if (grandParent != null) {
-							defaultTreeModel.insertNodeInto(selectedNode, grandParent, parent.getIndex(grandParent) + 1);
-						}
-					}
-					jStepTree.setSelectionPath( new TreePath( selectedNode.getPath() ) );
-				} else {
-					UiUtils.showDialog(this, "Could not move node down. Not an instance of an Individual");
 				}
 			}
 		});
