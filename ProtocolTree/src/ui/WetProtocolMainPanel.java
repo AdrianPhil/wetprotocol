@@ -84,7 +84,10 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 
 	private void initiateTreeAndTreeModel() {
 		jStepTree = new ToolTipJTree();
-		jStepTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		jStepTree.getSelectionModel().setSelectionMode(TreeSelectionModel.CONTIGUOUS_TREE_SELECTION);//was single tree selection
+		jStepTree.setDragEnabled(true);
+		jStepTree.setDropMode(DropMode.ON_OR_INSERT);
+		jStepTree.setTransferHandler(new TreeTransferHandler());
 		ToolTipManager.sharedInstance().registerComponent(jStepTree);
 		jStepTree.setShowsRootHandles(true);
 		initiateOrRefreshTreeModelAndRest();
