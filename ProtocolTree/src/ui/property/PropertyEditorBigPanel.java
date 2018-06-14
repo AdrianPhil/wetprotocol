@@ -62,33 +62,37 @@ public class PropertyEditorBigPanel extends JPanel implements TreeSelectionListe
 		treeViewPanel.add(jPropertyAndIndividualTree, BorderLayout.PAGE_START);
 		JPanel treeViewButtonPanel = new JPanel();
 		// treeViewButtonPanel.add(addNewSiblingNodeButton);
-		treeViewButtonPanel.add(okButton);
-		treeViewButtonPanel.add(expandTreeButton);
 		treeViewPanel.add(treeViewButtonPanel, BorderLayout.PAGE_END);
+		//
+		JPanel buttonPanel=new JPanel();
+		buttonPanel.add(okButton );
+		buttonPanel.add(expandTreeButton);
+		//
 		// Create the scroll pane and add the tree view panel to it.
-		JScrollPane treeView = new JScrollPane(treeViewPanel);
+		JScrollPane treeViewScrollPane = new JScrollPane(treeViewPanel);
+		JPanel treeViewAndButtonsPanel=new JPanel(new BorderLayout());
+		treeViewAndButtonsPanel.add(treeViewScrollPane, BorderLayout.CENTER);
+		treeViewAndButtonsPanel.add(buttonPanel,  BorderLayout.SOUTH);		
+		//
 		// Create the HTML viewing pane.
 		htmlPane = new JEditorPane();
 		htmlPane.setEditable(true);
 		htmlPane.setText("Properties for Individual:" + individual.getLocalName());// todo show the getComment with .setPage
 		// initHelp();
-		JScrollPane htmlView = new JScrollPane(htmlPane);
-		treeView.setPreferredSize(new Dimension(400, 300));
+		JScrollPane htmlViewPane = new JScrollPane(htmlPane);
+		treeViewScrollPane.setPreferredSize(new Dimension(400, 600));
 		// Add the split pane to this panel.
 		//////////////
 		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		splitPane.setTopComponent(treeView);
-		splitPane.setBottomComponent(htmlView);
-		Dimension minimumSize = new Dimension(100, 50);
-		htmlView.setMinimumSize(minimumSize);
-		treeView.setMinimumSize(minimumSize);
-		splitPane.setDividerLocation(400); // XXX: ignored in some releases
-		// of Swing. bug 4101306
-		// workaround for bug 4101306:
+		splitPane.setTopComponent(treeViewAndButtonsPanel);
+		splitPane.setBottomComponent(htmlViewPane);
+		treeViewScrollPane.setMinimumSize(new Dimension(100, 430));//this is the one and it seelms that below is ignored
+		htmlViewPane.setMinimumSize(new Dimension(100, 14));
+		//
 		splitPane.setPreferredSize(new Dimension(400, 600));
 		// Add the split pane to this panel.
 		add(splitPane);
-		AddTreeButtonListeners(treeView);
+		addTreeButtonListeners(treeViewScrollPane);
 	}
 
 	private void initiateTree() {
@@ -107,7 +111,7 @@ public class PropertyEditorBigPanel extends JPanel implements TreeSelectionListe
 		addTreeNodeMouseListeners();
 	}
 
-	private void AddTreeButtonListeners(Component splitPane) {
+	private void addTreeButtonListeners(Component splitPane) {
 		okButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
