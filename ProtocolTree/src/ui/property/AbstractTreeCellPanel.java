@@ -17,7 +17,7 @@ import org.apache.jena.rdf.model.RDFNode;
 
 import ont.OntManager;
 import resources.ResourceFinding;
-import ui.UiUtils;
+import uiutil.UiUtils;
 
 @SuppressWarnings("serial")
 public abstract class AbstractTreeCellPanel extends JPanel {
@@ -29,7 +29,7 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 	static final ImageIcon ICON_CHOICE_SUBCLASS = ResourceFinding.createImageIcon("icons/page_white_ruby.png");
 	JLabel icon = new JLabel("");
 	JLabel localComponent = new JLabel("dummy local");
-	PropertyValueFormattedTextBox valueComponent = new PropertyValueFormattedTextBox("dummy property value");// this seems to generate dummy on escape for JformattedTextField and no change for JText
+	PropertyValueFormattedTextBox valueComponent = new PropertyValueFormattedTextBox();// this seems to generate dummy on escape for JformattedTextField and no change for JText
 	JLabel rangeComponent = new JLabel("dummy range");
 	JLabel domainComponent = new JLabel("dummy domain");
 	JComboBox<WrappedOntResource<?>> individualOrClassChooser = new JComboBox<WrappedOntResource<?>>();
@@ -43,14 +43,14 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 		RDFNode propertyValue = propertyAndIndividual.getIndividual().getPropertyValue(propertyAndIndividual.getOntProperty());
 		if (propertyValue != null) {
 			if (propertyValue.isLiteral()) {
-				valueComponent.setText(propertyValue.asLiteral().getValue().toString());
+				valueComponent.setValue(propertyValue.asLiteral().getValue().toString());
 				// System.out.println("in Abstract Cell Panel constructor setting the valueComponent to:"+valueComponent.getText());
 			} else if (propertyValue.isResource()) {
-				valueComponent.setText(propertyValue.asResource().getLocalName());
+				valueComponent.setValue(propertyValue.asResource().getLocalName());
 				// System.out.println("in Abstract Cell Panel constructor setting the valueComponent to:"+valueComponent.getText());
 			}
 		} else {
-			valueComponent.setText("-");
+			valueComponent.setValue("-");
 			// System.out.println("in Abstract Cell Panel constructor setting the valueComponent to:"+valueComponent.getText());
 		}
 		individualOrClassChooser.setMaximumRowCount(200);
@@ -80,7 +80,7 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 		RDFNode propertyValue = propertyAndIndividual.getIndividual().getPropertyValue(ontProperty);
 		switch (propertyAndIndividual.getNodeType()) {// todo check order to avoid weird side effects
 		case LITERAL_NODE:
-			valueComponent.setText(propertyValue != null ? "" + propertyValue.asLiteral().getValue() : "-");// todo this should extract the type and the value properly and attach the formatter
+			valueComponent.setValue(propertyValue != null ? "" + propertyValue.asLiteral().getValue() : "-");// todo this should extract the type and the value properly and attach the formatter
 			// use getDataType to set the type
 			localComponent.setForeground(Color.GREEN);
 			icon.setIcon(EditCellPanel.ICON_LITERAL);
@@ -89,10 +89,10 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 			OntManager.loadPossibleIndividualValues(individualOrClassChooser, ontProperty.getRange().asClass());
 			if (propertyValue != null) {// individual already created
 				Individual individual = ((OntResource) propertyValue).asIndividual();
-				valueComponent.setText(individual.getLocalName());
+				valueComponent.setValue(individual.getLocalName());
 				setSelectedItemByComparing(individualOrClassChooser, individual.getLocalName());
 			} else {
-				valueComponent.setText("please select an existing object from the combo box");
+				valueComponent.setValue("please select an existing object from the combo box");
 			}
 			localComponent.setForeground(Color.PINK);
 			individualOrClassChooser.setVisible(true);
@@ -107,7 +107,7 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 			icon.setIcon(EditCellPanel.ICON_PREEXISTING_OBJECT);
 			break;
 		case DATA_TYPE_NODE_FOR_LEAF_CLASS:
-			valueComponent.setText("" + (((OntResource) propertyValue).asIndividual().getLocalName()));
+			valueComponent.setValue("" + (((OntResource) propertyValue).asIndividual().getLocalName()));
 			valueComponent.setForeground(Color.GRAY);
 			valueComponent.setColumns(10);
 			localComponent.setForeground(Color.CYAN);
@@ -118,11 +118,11 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 			loadPossibleLeafClassValues(individualOrClassChooser);
 			if (propertyValue != null) {// individual already created
 				String localName = "" + ((OntResource) propertyValue).asIndividual().getLocalName();
-				valueComponent.setText(localName);
+				valueComponent.setValue(localName);
 				setSelectedItemByComparing(individualOrClassChooser, ((OntResource) propertyValue).asIndividual().getOntClass().getLocalName());
 				// we need to keep going down in here as long as it's populated
 			} else {
-				valueComponent.setText(SELECT_CLASS_TEXT);
+				valueComponent.setValue(SELECT_CLASS_TEXT);
 			}
 			localComponent.setForeground(Color.RED);
 			individualOrClassChooser.setVisible(true);

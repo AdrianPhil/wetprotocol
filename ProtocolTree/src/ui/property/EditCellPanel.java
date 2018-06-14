@@ -17,8 +17,8 @@ import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.RDFNode;
 
 import ont.OntManager;
-import ui.UiUtils;
 import ui.property.PropertyEditorBigPanel.NodeType;
+import uiutil.UiUtils;
 import utils.Utils;
 
 @SuppressWarnings("serial")

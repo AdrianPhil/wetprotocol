@@ -8,9 +8,8 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellEditor;
 
-
-import ui.UiUtils;
-import ui.WetProtocolMainPanel;
+import uimain.WetProtocolMainPanel;
+import uiutil.UiUtils;
 
 @SuppressWarnings("serial")
 public class CellEditor extends AbstractCellEditor implements TreeCellEditor {

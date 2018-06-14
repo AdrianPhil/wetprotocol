@@ -5,7 +5,8 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
 import org.apache.jena.ontology.OntClass;
-import ui.UiUtils;
+
+import uiutil.UiUtils;
 
 import java.awt.Color;
 import java.awt.Component;

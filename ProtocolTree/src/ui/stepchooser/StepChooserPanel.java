@@ -1,24 +1,23 @@
 package ui.stepchooser;
 
 import ont.OntManager;
-import ui.ToolTipJTree;
-import ui.UiUtils;
-import ui.WetProtocolMainPanel;
-import ui.WetProtocolMainPanel.WhereToAddStepNode;
+import uimain.WetProtocolMainPanel;
+import uimain.WetProtocolMainPanel.WhereToAddStepNode;
+import uiutil.ToolTipJTree;
+import uiutil.UiUtils;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.*;
 
+import static uiutil.UiUtils.expandTree;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
-import static ui.UiUtils.expandTree;
 
 @SuppressWarnings("serial")
 public class StepChooserPanel extends JPanel implements TreeSelectionListener {

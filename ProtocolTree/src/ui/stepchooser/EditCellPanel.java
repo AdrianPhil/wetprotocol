@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import ui.OntResourceNameFormattedTextBox;
+import uiutil.OntResourceNameFormattedTextBox;
 import utils.Utils;
 
 @SuppressWarnings("serial")
@@ -20,7 +20,7 @@ public class EditCellPanel extends JPanel implements PropertyChangeListener {
 	final DefaultMutableTreeNode theNode;
 	JLabel icon = new JLabel("");
 	JLabel classNameComponent = new JLabel();
-	JTextField editableValueComponent = new OntResourceNameFormattedTextBox("DummyValue");
+	JTextField editableValueComponent = new OntResourceNameFormattedTextBox();
 
 	public EditCellPanel(ClassAndIndividualName classAndIndividualName, DefaultMutableTreeNode theNode) {
 		this.classAndIndividualName = classAndIndividualName;

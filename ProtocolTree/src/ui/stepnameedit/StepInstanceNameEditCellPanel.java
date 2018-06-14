@@ -12,15 +12,15 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.jena.ontology.Individual;
 import ont.OntManager;
-import ui.OntResourceNameFormattedTextBox;
-import ui.WetProtocolMainPanel;
+import uimain.WetProtocolMainPanel;
+import uiutil.OntResourceNameFormattedTextBox;
 
 @SuppressWarnings("serial")
 public class StepInstanceNameEditCellPanel extends JPanel implements PropertyChangeListener {
 	//private JButton saveButton;
 	private final DefaultMutableTreeNode individualNode;
 	private final JLabel icon = new JLabel("");
-	private final JFormattedTextField valueComponent = new OntResourceNameFormattedTextBox("dummy value 2");
+	private final JFormattedTextField valueComponent = new OntResourceNameFormattedTextBox();
 	private final WetProtocolMainPanel wetProtocolMainPanel;// only for rename
 
 	public StepInstanceNameEditCellPanel(Individual individual, DefaultMutableTreeNode individualNode, WetProtocolMainPanel wetProtocolMainPanel) {

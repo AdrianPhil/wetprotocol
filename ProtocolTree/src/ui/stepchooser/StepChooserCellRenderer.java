@@ -6,7 +6,7 @@ import javax.swing.tree.TreeCellRenderer;
 
 
 import resources.ResourceFinding;
-import ui.UiUtils;
+import uiutil.UiUtils;
 
 import java.awt.Color;
 import java.awt.Component;

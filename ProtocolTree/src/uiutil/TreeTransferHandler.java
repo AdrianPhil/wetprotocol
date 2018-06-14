@@ -1,4 +1,4 @@
-package ui;
+package uiutil;
 
 import java.awt.datatransfer.*;
 import java.util.*;
@@ -7,7 +7,7 @@ import javax.swing.*;
 import javax.swing.tree.*;
 
 
-class TreeTransferHandler extends TransferHandler {
+public class TreeTransferHandler extends TransferHandler {
 	DataFlavor nodesFlavor;
 	DataFlavor[] flavors = new DataFlavor[1];
 	DefaultMutableTreeNode[] nodesToRemove;

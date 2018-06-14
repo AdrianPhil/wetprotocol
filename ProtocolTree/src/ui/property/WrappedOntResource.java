@@ -4,7 +4,7 @@ import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntResource;
 
-import ui.UiUtils;
+import uiutil.UiUtils;
 
 public class WrappedOntResource<T extends OntResource>  {
 

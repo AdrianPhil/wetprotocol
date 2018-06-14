@@ -9,7 +9,7 @@ import javax.swing.tree.DefaultTreeModel;
 import org.apache.jena.ontology.OntClass;
 
 import ont.OntManager;
-import ui.UiUtils;
+import uiutil.UiUtils;
 
 public class StepChooserUtils {
 	

@@ -8,17 +8,19 @@ import java.util.regex.Pattern;
 
 import javax.swing.JFormattedTextField;
 import javax.swing.text.DefaultFormatter;
+import javax.swing.text.InternationalFormatter;
+
+import uiutil.AbstractProtocolFormattedTextBox;
 
 @SuppressWarnings("serial")
-public class PropertyValueFormattedTextBox extends JFormattedTextField {
+public class PropertyValueFormattedTextBox extends AbstractProtocolFormattedTextBox {
 	Pattern pattern = Pattern.compile(".*]*"); // starts with letter followed by letter, digit or - w allows some chars too!!!
 	boolean customText;
 
-	public PropertyValueFormattedTextBox(String text) {
-		super(text);
+	public PropertyValueFormattedTextBox() {
 		setColumns(20);
 		setFocusLostBehavior(JFormattedTextField.COMMIT_OR_REVERT);
-		setFormatter(new DefaultFormatter() {
+		setFormatter(new InternationalFormatter() {
 			@Override
 			public Object stringToValue(String text) throws ParseException {
 				setAllowsInvalid(false);// very important
@@ -30,6 +32,7 @@ public class PropertyValueFormattedTextBox extends JFormattedTextField {
 					throw new ParseException("The name format did not match. This exception will be eaten by the text field", 0);
 				}
 			}
+
 		});
 		//
 		//
@@ -44,4 +47,5 @@ public class PropertyValueFormattedTextBox extends JFormattedTextField {
 	public boolean isCustomText() {
 		return customText;
 	}
+
 }

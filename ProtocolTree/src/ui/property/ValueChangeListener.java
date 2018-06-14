@@ -9,6 +9,6 @@ public class ValueChangeListener implements PropertyChangeListener {
 //		if (saveButton != null) {
 //			saveButton.setEnabled(true);
 //		}
-		System.out.println("value changed in one of the panels:" + evt);
+//		System.out.println("value changed in one of the panels:" + evt);
 	}
 }

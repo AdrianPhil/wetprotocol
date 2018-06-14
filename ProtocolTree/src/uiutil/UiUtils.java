@@ -1,8 +1,9 @@
-package ui;
+package uiutil;
 
 import ont.OntManager;
-import ui.WetProtocolMainPanel.WhereToAddStepNode;
 import ui.stepchooser.StepChooserPanel;
+import uimain.WetProtocolMainPanel;
+import uimain.WetProtocolMainPanel.WhereToAddStepNode;
 import utils.Utils;
 
 import org.apache.jena.ontology.Individual;

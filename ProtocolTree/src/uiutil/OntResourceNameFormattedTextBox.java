@@ -1,4 +1,4 @@
-package ui;
+package uiutil;
 
 import java.text.ParseException;
 import java.util.regex.Matcher;
@@ -6,16 +6,17 @@ import java.util.regex.Pattern;
 
 import javax.swing.JFormattedTextField;
 import javax.swing.text.DefaultFormatter;
+import javax.swing.text.InternationalFormatter;
 
 @SuppressWarnings("serial")
-public class OntResourceNameFormattedTextBox extends JFormattedTextField {
+/** used for individual names both in the step tree and in the properties for enclosed object */
+public class OntResourceNameFormattedTextBox extends AbstractProtocolFormattedTextBox {
 	Pattern pattern = Pattern.compile("\\p{Alpha}[\\w\\d-_]*"); // starts with letter followed by letter, digit or - w allows some chars too!!!
 
-	public OntResourceNameFormattedTextBox(String text) {
-		super(text);
+	public OntResourceNameFormattedTextBox() {
 		setColumns(25);
 		setFocusLostBehavior(JFormattedTextField.COMMIT_OR_REVERT);
-		setFormatter(new DefaultFormatter() {
+		setFormatter(new InternationalFormatter() {
 			@Override
 			public Object stringToValue(String text) throws ParseException {
 				setAllowsInvalid(false);// very important

@@ -2,9 +2,9 @@ package ui.property;
 
 //root nodes) after tree.setRootVisible(false) call tree.setShowsRootHandles(true).
 import ont.OntManager;
-import ui.ToolTipJTree;
-import ui.UiUtils;
-import ui.WetProtocolMainPanel;
+import uimain.WetProtocolMainPanel;
+import uiutil.ToolTipJTree;
+import uiutil.UiUtils;
 
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
@@ -16,14 +16,15 @@ import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.*;
+
+import static uiutil.UiUtils.expandTree;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Set;
-
-import static ui.UiUtils.expandTree;
 
 @SuppressWarnings("serial")
 public class PropertyEditorBigPanel extends JPanel implements TreeSelectionListener {

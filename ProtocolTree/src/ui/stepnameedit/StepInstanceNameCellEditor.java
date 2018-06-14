@@ -9,8 +9,8 @@ import javax.swing.tree.TreeCellEditor;
 
 import org.apache.jena.ontology.Individual;
 
-import ui.UiUtils;
-import ui.WetProtocolMainPanel;
+import uimain.WetProtocolMainPanel;
+import uiutil.UiUtils;
 
 @SuppressWarnings("serial")
 public class StepInstanceNameCellEditor extends AbstractCellEditor implements TreeCellEditor {

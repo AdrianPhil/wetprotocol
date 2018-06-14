@@ -1,9 +1,13 @@
-package ui;
+package uimain;
 
 import resources.ResourceFinding;
 import ui.property.PropertyEditorBigPanel;
 import ui.stepnameedit.StepInstanceCellRenderer;
 import ui.stepnameedit.StepInstanceNameCellEditor;
+import uiutil.OntResourceNameFormattedTextBox;
+import uiutil.ToolTipJTree;
+import uiutil.TreeTransferHandler;
+import uiutil.UiUtils;
 import utils.Utils;
 
 import javax.swing.*;
@@ -21,12 +25,12 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import static uiutil.UiUtils.*;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-
-import static ui.UiUtils.*;
 
 @SuppressWarnings("serial")
 public class WetProtocolMainPanel extends JPanel implements TreeSelectionListener {
@@ -58,6 +62,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		treeViewButtonPanel.add(saveProtocolButton);
 		treeViewButtonPanel.add(saveAsProtocolButton);
 		treeViewButtonPanel.add(expandTreeButton);
+		treeViewButtonPanel.add(	 new OntResourceNameFormattedTextBox());
 		// Create the scroll pane and add the tree view panel to it.
 		JScrollPane treeViewScrollPane = new JScrollPane(treeViewPanel);
 		// create a left panel with treeViewScollPane on top and buttons on bottom

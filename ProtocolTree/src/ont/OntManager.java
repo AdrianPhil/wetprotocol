@@ -34,10 +34,10 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Statement;
 
 import resources.ResourceFinding;
-import ui.UiUtils;
-import ui.WetProtocolMainPanel;
 import ui.property.WrappedOntResource;
 import ui.stepchooser.ClassAndIndividualName;
+import uimain.WetProtocolMainPanel;
+import uiutil.UiUtils;
 
 public class OntManager {
 	private static OntManager instance;

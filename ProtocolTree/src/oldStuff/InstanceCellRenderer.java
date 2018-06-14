@@ -7,7 +7,7 @@ import javax.swing.tree.TreeCellRenderer;
 import org.apache.jena.ontology.Individual;
 
 import resources.ResourceFinding;
-import ui.UiUtils;
+import uiutil.UiUtils;
 
 import java.awt.Color;
 import java.awt.Component;
