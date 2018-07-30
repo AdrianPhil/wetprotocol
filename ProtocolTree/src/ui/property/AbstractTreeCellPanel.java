@@ -7,7 +7,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.UIManager;
+import javax.swing.text.JTextComponent;
 
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
@@ -17,6 +19,8 @@ import org.apache.jena.rdf.model.RDFNode;
 
 import ont.OntManager;
 import resources.ResourceFinding;
+import uiutil.AbstractProtocolFormattedTextBox;
+import uiutil.UITextValueInterface;
 import uiutil.UiUtils;
 
 @SuppressWarnings("serial")
@@ -29,20 +33,28 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 	static final ImageIcon ICON_CHOICE_SUBCLASS = ResourceFinding.createImageIcon("icons/page_white_ruby.png");
 	JLabel icon = new JLabel("");
 	JLabel localComponent = new JLabel("dummy local");
-	PropertyValueFormattedTextBox valueComponent = new PropertyValueFormattedTextBox();// this seems to generate dummy on escape for JformattedTextField and no change for JText
 	JLabel rangeComponent = new JLabel("dummy range");
 	JLabel domainComponent = new JLabel("dummy domain");
 	JComboBox<WrappedOntResource<?>> individualOrClassChooser = new JComboBox<WrappedOntResource<?>>();
 	JLabel debug = new JLabel("debug");
 	public final String SELECT_CLASS_TEXT = "name";
+	UITextValueInterface valueComponent;
 
 	public AbstractTreeCellPanel(PropertyAndIndividual propertyAndIndividual) {
 		this.propertyAndIndividual = propertyAndIndividual;
 		debug.setText("individual:" + propertyAndIndividual.getIndividual().getLocalName());
+		if ("text".equals(propertyAndIndividual.getOntProperty().getRange().getLocalName().toString())) {
+			valueComponent = new PropertyValueTextArea();// for large comments
+		} else {
+			valueComponent = new PropertyValueFormattedTextBox();// this seems to generate dummy on escape for JformattedTextField and no change for JText
+		}
 		valueComponent.addPropertyChangeListener("value", new ValueChangeListener());// TODO not necessary?
 		RDFNode propertyValue = propertyAndIndividual.getIndividual().getPropertyValue(propertyAndIndividual.getOntProperty());
 		if (propertyValue != null) {
 			if (propertyValue.isLiteral()) {
+				if ("text".equals(propertyAndIndividual.getOntProperty().getRange().getLocalName().toString())) {
+					System.out.println("fond a text property for prop:" + propertyValue);
+				}
 				valueComponent.setValue(propertyValue.asLiteral().getValue().toString());
 				// System.out.println("in Abstract Cell Panel constructor setting the valueComponent to:"+valueComponent.getText());
 			} else if (propertyValue.isResource()) {
@@ -69,7 +81,7 @@ public abstract class AbstractTreeCellPanel extends JPanel {
 		add(icon);
 		add(localComponent);
 		valueComponent.setEditable(false);
-		add(valueComponent);
+		valueComponent.addToContainer(this);
 		add(individualOrClassChooser);
 		add(rangeComponent);
 		add(domainComponent);

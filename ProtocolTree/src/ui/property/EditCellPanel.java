@@ -173,7 +173,7 @@ public class EditCellPanel extends AbstractTreeCellPanel {
 					WrappedOntResource<?> selectedProperty = (WrappedOntResource<?>) (individualOrClassChooser.getSelectedItem());
 					OntResource wrappedResource = ((WrappedOntResource<?>) individualOrClassChooser.getSelectedItem()).getWrappedResource();
 					if (wrappedResource instanceof OntClass) {
-						valueComponent.setText(Utils.createNiceIdividualName((OntClass) wrappedResource, valueComponent));
+						valueComponent.setValue(Utils.createNiceIdividualName((OntClass) wrappedResource, valueComponent));
 					}
 					System.out.println("selected:" + selectedProperty);
 				}

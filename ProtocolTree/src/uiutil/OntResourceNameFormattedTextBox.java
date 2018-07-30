@@ -1,5 +1,6 @@
 package uiutil;
 
+import java.awt.Container;
 import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,5 +30,11 @@ public class OntResourceNameFormattedTextBox extends AbstractProtocolFormattedTe
 				}
 			}
 		});
+	}
+
+	@Override
+	public void addToContainer(Container container) {
+		container.add(this);
+		
 	}
 }

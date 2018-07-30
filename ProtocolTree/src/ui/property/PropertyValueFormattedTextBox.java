@@ -1,5 +1,6 @@
 package ui.property;
 
+import java.awt.Container;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.ParseException;
@@ -7,7 +8,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.JFormattedTextField;
-import javax.swing.text.DefaultFormatter;
 import javax.swing.text.InternationalFormatter;
 
 import uiutil.AbstractProtocolFormattedTextBox;
@@ -46,6 +46,11 @@ public class PropertyValueFormattedTextBox extends AbstractProtocolFormattedText
 
 	public boolean isCustomText() {
 		return customText;
+	}
+
+	@Override
+	public void addToContainer(Container container) {
+		container.add(this);		
 	}
 
 }

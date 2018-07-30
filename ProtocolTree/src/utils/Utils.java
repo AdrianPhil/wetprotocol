@@ -7,10 +7,11 @@ import javax.swing.tree.DefaultTreeModel;
 import org.apache.jena.ontology.OntClass;
 
 import ui.property.PropertyValueFormattedTextBox;
+import uiutil.UITextValueInterface;
 
 public class Utils {
 
-	public static String createNiceIdividualName(OntClass ontClass, PropertyValueFormattedTextBox valueComponent) {
+	public static String createNiceIdividualName(OntClass ontClass, UITextValueInterface valueComponent) {
 		if (valueComponent.isCustomText()) {
 			return valueComponent.getText();
 		} else {
