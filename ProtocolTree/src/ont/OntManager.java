@@ -151,7 +151,7 @@ public class OntManager {
 	public static Individual createStepIndividual(ClassAndIndividualName classAndIndividualName) {
 		Individual createdIndividual = createIndividual(classAndIndividualName.getName() + counter.incrementAndGet(), classAndIndividualName.getOntClass());
 		if (createdIndividual == null) {
-			System.out.println("!!!!!!!!!!!createdIndividual == null");
+			UiUtils.showDialog(null, "Error: createdIndividual == null");
 		}
 		createdIndividual.addLabel("Label:" + createdIndividual.getLocalName(), null);
 		return createdIndividual;
@@ -160,7 +160,7 @@ public class OntManager {
 	public static Individual createNewIndividualOfSelectedClass(OntClass ontClass, String prefix) {
 		Individual createdIndividual = createIndividual(prefix + counter.incrementAndGet(), ontClass);
 		if (createdIndividual == null) {
-			System.out.println();
+			UiUtils.showDialog(null, "Error: createdIndividual == null");
 		}
 		createdIndividual.addLabel("Label:" + createdIndividual.getLocalName(), null);
 		return createdIndividual;
@@ -169,7 +169,7 @@ public class OntManager {
 	public static Individual createLeafIndividual(OntClass ontClass, String prefix) {// for the leaf individuals
 		Individual createdIndividual = createIndividual(prefix + counter.incrementAndGet() + "_ofClass_" + ontClass.getLocalName(), ontClass);
 		if (createdIndividual == null) {
-			System.out.println();
+			UiUtils.showDialog(null, "Error: createdIndividual == null");
 		}
 		createdIndividual.addLabel("Label:" + createdIndividual.getLocalName(), null);
 		return createdIndividual;
@@ -180,7 +180,26 @@ public class OntManager {
 		Individual createdIndividual = OntManager.getOntologyModel().createIndividual(NS + instanceName, ontClass);
 		return createdIndividual;
 	}
-
+//** unnecessary
+//	public static Individual createClonedStepIndividual(ClassAndIndividualName classAndIndividualName) {
+//		Individual createdIndividual = createIndividual(classAndIndividualName.getName() + counter.incrementAndGet()+ "cloned", classAndIndividualName.getOntClass());
+//		if (createdIndividual == null) {
+//			UiUtils.showDialog(null, "Error: createdIndividual == null");
+//		}
+//		createdIndividual.addLabel("Label:" + createdIndividual.getLocalName(), null);
+//		return createdIndividual;
+//	}
+//	
+	
+	public static Individual createClonedStepIndividual( String IndividualName, OntClass ontClass) {
+		Individual createdIndividual = createIndividual(IndividualName +  "cloned", ontClass);
+		if (createdIndividual == null) {
+			UiUtils.showDialog(null, "Error: createdIndividual == null");
+		}
+		createdIndividual.addLabel("Label:" + createdIndividual.getLocalName(), null);
+		return createdIndividual;
+	}
+	
 	public static OntClass getOntClass(String clazz) {
 		return OntManager.getOntologyModel().getOntClass(NS + clazz);
 	}
@@ -320,7 +339,7 @@ public class OntManager {
 		Enumeration<?> preorderEnumeration = ((DefaultMutableTreeNode) jStepsTree.getModel().getRoot()).preorderEnumeration();
 		int verticalDistance = 0;
 		TOP_STEPS_INSTANCE.setPropertyValue(COUNTER_PROPERTY, OntManager.getOntologyModel().createTypedLiteral(counter.get()));// will create as int
-		while (preorderEnumeration.hasMoreElements()) {
+		while (preorderEnumeration.hasMoreElements()) {// just add the order as hardcoded value of the ontology node
 			DefaultMutableTreeNode defaultMutableTreeNode = (DefaultMutableTreeNode) (preorderEnumeration.nextElement());
 			Individual individual = (Individual) (defaultMutableTreeNode.getUserObject());
 			individual.addLiteral(OntManager.getStepCoordinatesProperty(), verticalDistance++ + "." + defaultMutableTreeNode.getLevel());

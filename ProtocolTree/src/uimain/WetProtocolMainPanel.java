@@ -54,7 +54,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		JPanel treeViewPanel = new JPanel(new BorderLayout());
 		treeViewPanel.add(jStepTree, BorderLayout.PAGE_START);
 		JPanel treeViewButtonPanel = new JPanel();
-		treeViewButtonPanel.setLayout(new GridLayout(3, 1)); //columns ,rows
+		treeViewButtonPanel.setLayout(new GridLayout(3, 1)); // columns ,rows
 		treeViewButtonPanel.add(addNewSiblingNodeButton);
 		treeViewButtonPanel.add(addChildNodeButton);
 		treeViewButtonPanel.add(deleteChildNodeButton);
@@ -62,7 +62,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		treeViewButtonPanel.add(saveProtocolButton);
 		treeViewButtonPanel.add(saveAsProtocolButton);
 		treeViewButtonPanel.add(expandTreeButton);
-		treeViewButtonPanel.add(	 new OntResourceNameFormattedTextBox());
+		treeViewButtonPanel.add(new OntResourceNameFormattedTextBox());
 		// Create the scroll pane and add the tree view panel to it.
 		JScrollPane treeViewScrollPane = new JScrollPane(treeViewPanel);
 		// create a left panel with treeViewScollPane on top and buttons on bottom
@@ -88,7 +88,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 
 	private void initiateTreeAndTreeModel() {
 		jStepTree = new ToolTipJTree();
-		jStepTree.getSelectionModel().setSelectionMode(TreeSelectionModel.CONTIGUOUS_TREE_SELECTION);//was single tree selection
+		jStepTree.getSelectionModel().setSelectionMode(TreeSelectionModel.CONTIGUOUS_TREE_SELECTION);// was single tree selection
 		jStepTree.setDragEnabled(true);
 		jStepTree.setDropMode(DropMode.ON_OR_INSERT);
 		jStepTree.setTransferHandler(new TreeTransferHandler());
@@ -101,6 +101,8 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 				// int selRow = jStepsTree.getRowForLocation(e.getX(), e.getY());
 				// TreePath selPath = jStepsTree.getPathForLocation(e.getX(), e.getY());
 				if (SwingUtilities.isRightMouseButton(e)) {
+					// pop up the context sensitive menu
+					myPopUpMenu(e);
 					int row = jStepTree.getRowForLocation(e.getX(), e.getY());
 					TreePath path = jStepTree.getPathForLocation(e.getX(), e.getY());
 					if (row != -1) {
@@ -111,10 +113,28 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 					}
 				}
 			}
+
+			private void myPopUpMenu(MouseEvent e) {
+				int x = e.getX();
+				int y = e.getY();
+				JTree tree = (JTree) e.getSource();
+				TreePath path = tree.getPathForLocation(x, y);
+				if (path == null)
+					return;
+				tree.setSelectionPath(path);
+				DefaultMutableTreeNode obj = (DefaultMutableTreeNode) path.getLastPathComponent();
+				String label = "popup: " + obj.getUserObject().toString();
+				JPopupMenu popup = new JPopupMenu();
+				popup.add(new JMenuItem("edit "+label));
+				popup.add(new JMenuItem("clone"+label));
+				popup.show(tree, x, y);
+				
+			}
 		};
 		// jProtocolTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "startEditing");//also need to jProtocolTree.setEditable(true);
 		jStepTree.addMouseListener(ml);
 	}
+
 
 	public void initiateOrRefreshTreeModelAndRest() {
 		OntManager.getInstance();// loads the seeded ontology model or the initial one if not already seeded
