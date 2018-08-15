@@ -11,6 +11,8 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.*;
 
+import org.apache.jena.ontology.Individual;
+
 import static uiutil.UiUtils.expandTree;
 
 import java.awt.*;
@@ -28,15 +30,15 @@ public class StepChooserPanel extends JPanel implements TreeSelectionListener {
 	// Create the nodes.
 	// private DefaultMutableTreeNode protocolTreeParentNode;
 	// most below could be cached
-	private final JTree jProtocolTree;
+	private final JTree jStepTree;
 	private final WhereToAddStepNode whereToAddStepNode;
 	private DefaultTreeModel stepChooserTreeModel = new DefaultTreeModel(new DefaultMutableTreeNode("Please choose a step"));
 	private JTree jStepChooserTree = new ToolTipJTree(stepChooserTreeModel);
-	StepChooserCellEditor cellEditor ;//important for stop editing but I can do it by configuration too
+	StepChooserCellEditor cellEditor;// important for stop editing but I can do it by configuration too
 
-	public StepChooserPanel(JTree jProtocolTree, WhereToAddStepNode whereToAddStepNode) {
+	public StepChooserPanel(JTree jStepTree, WhereToAddStepNode whereToAddStepNode) {
 		super(new GridLayout(1, 1));
-		this.jProtocolTree = jProtocolTree;
+		this.jStepTree = jStepTree;
 		this.whereToAddStepNode = whereToAddStepNode;
 		initiateTree();
 		JPanel treeViewPanel = new JPanel(new BorderLayout());
@@ -84,7 +86,7 @@ public class StepChooserPanel extends JPanel implements TreeSelectionListener {
 		cellEditor = new StepChooserCellEditor();
 		jStepChooserTree.setCellEditor(cellEditor);
 		jStepChooserTree.setEditable(true);
-		jStepChooserTree.setInvokesStopCellEditing(true);//keep the changes when focus is lost
+		jStepChooserTree.setInvokesStopCellEditing(true);// keep the changes when focus is lost
 		// Listen for when the selection changes.
 		jStepChooserTree.addTreeSelectionListener(this);
 		addTreeNodeMouseListeners();
@@ -93,7 +95,7 @@ public class StepChooserPanel extends JPanel implements TreeSelectionListener {
 	private void addTreeButtonListeners(Component splitPane) {
 		okButton.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {				
+			public void actionPerformed(ActionEvent e) {
 				classChosenResponse(splitPane);
 			}
 		});
@@ -102,6 +104,7 @@ public class StepChooserPanel extends JPanel implements TreeSelectionListener {
 		});
 	}
 
+	/** adds either child or sibling */
 	private void classChosenResponse(Component splitPane) {
 		System.out.println("Demanded stop cell editing!!!");
 		cellEditor.stopCellEditing();
@@ -111,22 +114,38 @@ public class StepChooserPanel extends JPanel implements TreeSelectionListener {
 			return;
 		}
 		// TreeNode root = selectedClassNode.getRoot();
-		DefaultMutableTreeNode selectedStepNode = (DefaultMutableTreeNode) jProtocolTree.getLastSelectedPathComponent();
-		DefaultMutableTreeNode newChildStepNode = new DefaultMutableTreeNode
-				(OntManager.createStepIndividual((ClassAndIndividualName) selectedClassNode.getUserObject() ));
+		DefaultMutableTreeNode selectedStepNode = (DefaultMutableTreeNode) jStepTree.getLastSelectedPathComponent();
+		DefaultMutableTreeNode newStepNode = new DefaultMutableTreeNode(OntManager.createStepIndividual((ClassAndIndividualName) selectedClassNode.getUserObject()));
 		if (whereToAddStepNode == WetProtocolMainPanel.WhereToAddStepNode.NEW_CHILD_STEP_NODE) {// insert a child
-			selectedStepNode.insert(newChildStepNode, selectedStepNode.getChildCount());// insert as last child
+			selectedStepNode.insert(newStepNode, selectedStepNode.getChildCount());// insert as last child
 			// DefaultMutableTreeNode insertedChild = (DefaultMutableTreeNode) selectedStepNode.getChildAt(selectedStepNode.getChildCount() - 1);
 			// jProtocolTree.expandPath(new TreePath(protocolTreeParentNode.getPath()));
-			jProtocolTree.setSelectionPath(new TreePath(newChildStepNode.getPath()));// select it
+			jStepTree.setSelectionPath(new TreePath(newStepNode.getPath()));// select it
 		} else {// insert sibling after the selected one
 			int childIndex = selectedStepNode.getParent().getIndex(selectedStepNode) + 1;
-			((DefaultMutableTreeNode) selectedStepNode.getParent()).insert(newChildStepNode, childIndex);
+			((DefaultMutableTreeNode) selectedStepNode.getParent()).insert(newStepNode, childIndex);
 			// DefaultMutableTreeNode addedChild = (DefaultMutableTreeNode) selectedStepNode.getParent().getChildAt(childIndex);
-			jProtocolTree.setSelectionPath(new TreePath(newChildStepNode.getPath()));// select it
+			jStepTree.setSelectionPath(new TreePath(newStepNode.getPath()));// select it
+			WetProtocolMainPanel.copyNodeAction(newStepNode,jStepTree);
 		}
-		jProtocolTree.updateUI();
+		jStepTree.updateUI();
 		((JFrame) StepChooserPanel.this.getTopLevelAncestor()).dispose();
+	}
+
+	/** this needs to be mode in the main from right click handle menu */
+	// @Nullable
+	public DefaultMutableTreeNode cloneNode(DefaultMutableTreeNode node) {
+		Object userStoredObject = node.getUserObject();
+		if (userStoredObject == null || !(userStoredObject instanceof ClassAndIndividualName)) {
+			UiUtils.showDialog(null, "Selected node seems to be empty");
+			return null;
+		}
+		ClassAndIndividualName userObject = (ClassAndIndividualName) userStoredObject;
+		DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(userObject.clone());
+		for (int iChildren = node.getChildCount(), i = 0; i < iChildren; i++) {
+			newNode.add((DefaultMutableTreeNode) cloneNode((DefaultMutableTreeNode) node.getChildAt(i)));
+		}
+		return newNode;
 	}
 
 	/**
@@ -134,7 +153,7 @@ public class StepChooserPanel extends JPanel implements TreeSelectionListener {
 	 */
 	@Override
 	public void valueChanged(TreeSelectionEvent e) {
-		//DefaultMutableTreeNode node = (DefaultMutableTreeNode) jStepChooserTree.getLastSelectedPathComponent();
+		// DefaultMutableTreeNode node = (DefaultMutableTreeNode) jStepChooserTree.getLastSelectedPathComponent();
 	}
 
 	private void addTreeNodeMouseListeners() {
@@ -150,7 +169,6 @@ public class StepChooserPanel extends JPanel implements TreeSelectionListener {
 			}
 		});
 	}
-
 	// private void initHelp() {
 	// String s = "TreeDemoHelp.html";
 	// if (helpURL == null) {
@@ -160,19 +178,18 @@ public class StepChooserPanel extends JPanel implements TreeSelectionListener {
 	// }
 	// displayURL(helpURL);
 	// }
-//	private void displayURL(URL url) {
-//		try {
-//			if (url != null) {
-//				htmlPane.setPage(url);
-//			} else { // null url
-//				htmlPane.setText("File Not Found");
-//				if (UiUtils.DEBUG) {
-//					System.out.println("Attempted to display a null URL.");
-//				}
-//			}
-//		} catch (IOException e) {
-//			System.err.println("Attempted to read a bad URL: " + url);
-//		}
-//	}
-
+	// private void displayURL(URL url) {
+	// try {
+	// if (url != null) {
+	// htmlPane.setPage(url);
+	// } else { // null url
+	// htmlPane.setText("File Not Found");
+	// if (UiUtils.DEBUG) {
+	// System.out.println("Attempted to display a null URL.");
+	// }
+	// }
+	// } catch (IOException e) {
+	// System.err.println("Attempted to read a bad URL: " + url);
+	// }
+	// }
 }

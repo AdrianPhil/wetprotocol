@@ -28,6 +28,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import static uiutil.UiUtils.*;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -54,7 +56,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		JPanel treeViewPanel = new JPanel(new BorderLayout());
 		treeViewPanel.add(jStepTree, BorderLayout.PAGE_START);
 		JPanel treeViewButtonPanel = new JPanel();
-		treeViewButtonPanel.setLayout(new GridLayout(3, 1)); //columns ,rows
+		treeViewButtonPanel.setLayout(new GridLayout(3, 1)); // columns ,rows
 		treeViewButtonPanel.add(addNewSiblingNodeButton);
 		treeViewButtonPanel.add(addChildNodeButton);
 		treeViewButtonPanel.add(deleteChildNodeButton);
@@ -62,7 +64,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		treeViewButtonPanel.add(saveProtocolButton);
 		treeViewButtonPanel.add(saveAsProtocolButton);
 		treeViewButtonPanel.add(expandTreeButton);
-		treeViewButtonPanel.add(	 new OntResourceNameFormattedTextBox());
+		treeViewButtonPanel.add(new OntResourceNameFormattedTextBox());
 		// Create the scroll pane and add the tree view panel to it.
 		JScrollPane treeViewScrollPane = new JScrollPane(treeViewPanel);
 		// create a left panel with treeViewScollPane on top and buttons on bottom
@@ -88,7 +90,7 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 
 	private void initiateTreeAndTreeModel() {
 		jStepTree = new ToolTipJTree();
-		jStepTree.getSelectionModel().setSelectionMode(TreeSelectionModel.CONTIGUOUS_TREE_SELECTION);//was single tree selection
+		jStepTree.getSelectionModel().setSelectionMode(TreeSelectionModel.CONTIGUOUS_TREE_SELECTION);// was single tree selection
 		jStepTree.setDragEnabled(true);
 		jStepTree.setDropMode(DropMode.ON_OR_INSERT);
 		jStepTree.setTransferHandler(new TreeTransferHandler());
@@ -96,24 +98,51 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		jStepTree.setShowsRootHandles(true);
 		initiateOrRefreshTreeModelAndRest();
 		jStepTree.setExpandsSelectedPaths(true);
-		MouseListener ml = new MouseAdapter() {// right click enters edit mode
+		MouseListener popupListener = new MouseAdapter() {// right click enters edit mode
 			public void mousePressed(MouseEvent e) {
 				// int selRow = jStepsTree.getRowForLocation(e.getX(), e.getY());
 				// TreePath selPath = jStepsTree.getPathForLocation(e.getX(), e.getY());
 				if (SwingUtilities.isRightMouseButton(e)) {
-					int row = jStepTree.getRowForLocation(e.getX(), e.getY());
-					TreePath path = jStepTree.getPathForLocation(e.getX(), e.getY());
-					if (row != -1) {
-						// if (e.getClickCount() == 1) {
-						jStepTree.setEditable(true);
-						jStepTree.startEditingAtPath(path);
-						// }
+					// pop up the context sensitive menu
+					int x = e.getX();
+					int y = e.getY();
+					TreePath path = jStepTree.getPathForLocation(x, y);
+					if (path == null)
+						return;
+					jStepTree.setSelectionPath(path);
+					DefaultMutableTreeNode selectedStepNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+					JPopupMenu popup = new JPopupMenu();
+					JMenuItem editMenuItem = new JMenuItem("Edit");
+					editMenuItem.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent event) {
+							int row = jStepTree.getRowForLocation(e.getX(), e.getY());
+							TreePath path = jStepTree.getPathForLocation(e.getX(), e.getY());
+							if (row != -1) {
+								// if (e.getClickCount() == 1) {
+								jStepTree.setEditable(true); // editing action starts here
+								jStepTree.startEditingAtPath(path);
+							}
+						}
+					});
+					popup.add(editMenuItem);
+					Object selectedIndividual = selectedStepNode.getUserObject();
+					if (selectedIndividual instanceof Individual) {
+						JMenuItem cloneMenuItem = new JMenuItem("Copy " + ((Individual) selectedIndividual).getLocalName());
+						popup.add(cloneMenuItem);
+						cloneMenuItem.addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent event) {
+								copyNodeAction(selectedStepNode, jStepTree);
+							}
+						});
 					}
+					popup.show(jStepTree, x, y);
 				}
 			}
 		};
 		// jProtocolTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "startEditing");//also need to jProtocolTree.setEditable(true);
-		jStepTree.addMouseListener(ml);
+		jStepTree.addMouseListener(popupListener);
 	}
 
 	public void initiateOrRefreshTreeModelAndRest() {
@@ -219,6 +248,17 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 				}
 			}
 		});
+	}
+
+	// todo this should not be static and does not need the steptree passed
+	public static void copyNodeAction(DefaultMutableTreeNode selectedStepNode, JTree jStepTree) {
+		// clone or copy stuff
+		Individual individual = (Individual) (selectedStepNode.getUserObject());
+		DefaultMutableTreeNode newClonedStepNode = new DefaultMutableTreeNode(OntManager.createClonedStepIndividual("XXXX" + individual.getLocalName(), individual.getOntClass()));
+		((DefaultMutableTreeNode) selectedStepNode.getParent()).insert(newClonedStepNode, selectedStepNode.getParent().getIndex(selectedStepNode) + 1);
+		// DefaultMutableTreeNode addedChild = (DefaultMutableTreeNode) selectedStepNode.getParent().getChildAt(childIndex);
+		jStepTree.setSelectionPath(new TreePath(newClonedStepNode.getPath()));// select it
+		//////////////////// end clone part
 	}
 
 	private void saveAs() {

@@ -1,9 +1,8 @@
 package ui.stepchooser;
 
-
 import org.apache.jena.ontology.OntClass;
 
-public class ClassAndIndividualName {
+public class ClassAndIndividualName implements Cloneable {
 	OntClass ontClass;
 	String name;
 
@@ -25,7 +24,7 @@ public class ClassAndIndividualName {
 	}
 
 	public void setName(String text) {
-		name=text;
+		name = text;
 	}
 
 	public String getName() {
@@ -35,5 +34,16 @@ public class ClassAndIndividualName {
 	@Override
 	public String toString() {
 		return "ClassAndIndividualName [ontClass=" + ontClass + ", name=" + name + "]";
+	}
+
+	@Override
+	protected Object clone() {
+		try {
+			return super.clone();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Cloning issue", e);
+			// return null;
+		}
 	}
 }
