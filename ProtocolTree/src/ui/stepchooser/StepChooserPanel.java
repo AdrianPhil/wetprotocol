@@ -126,7 +126,6 @@ public class StepChooserPanel extends JPanel implements TreeSelectionListener {
 			((DefaultMutableTreeNode) selectedStepNode.getParent()).insert(newStepNode, childIndex);
 			// DefaultMutableTreeNode addedChild = (DefaultMutableTreeNode) selectedStepNode.getParent().getChildAt(childIndex);
 			jStepTree.setSelectionPath(new TreePath(newStepNode.getPath()));// select it
-			WetProtocolMainPanel.copyNodeAction(newStepNode,jStepTree);
 		}
 		jStepTree.updateUI();
 		((JFrame) StepChooserPanel.this.getTopLevelAncestor()).dispose();

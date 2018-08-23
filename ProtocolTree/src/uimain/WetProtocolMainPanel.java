@@ -99,42 +99,31 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		initiateOrRefreshTreeModelAndRest();
 		jStepTree.setExpandsSelectedPaths(true);
 		MouseListener popupListener = new MouseAdapter() {// right click enters edit mode
-			public void mousePressed(MouseEvent e) {
-				// int selRow = jStepsTree.getRowForLocation(e.getX(), e.getY());
-				// TreePath selPath = jStepsTree.getPathForLocation(e.getX(), e.getY());
+			public void mousePressed(MouseEvent e) {// need to go low level to get the selected path for the selected node
+				int selRow = jStepTree.getRowForLocation(e.getX(), e.getY());
+				if (selRow == -1)
+					return;// --------------->
+				TreePath selPath = jStepTree.getPathForLocation(e.getX(), e.getY());// todo probably we could check the path instead of row =-1
 				if (SwingUtilities.isRightMouseButton(e)) {
 					// pop up the context sensitive menu
 					int x = e.getX();
 					int y = e.getY();
-					TreePath path = jStepTree.getPathForLocation(x, y);
-					if (path == null)
+					if (selPath == null)
 						return;
-					jStepTree.setSelectionPath(path);
-					DefaultMutableTreeNode selectedStepNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+					jStepTree.setSelectionPath(selPath);
+					DefaultMutableTreeNode selectedStepNode = (DefaultMutableTreeNode) selPath.getLastPathComponent();
 					JPopupMenu popup = new JPopupMenu();
 					JMenuItem editMenuItem = new JMenuItem("Edit");
-					editMenuItem.addActionListener(new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent event) {
-							int row = jStepTree.getRowForLocation(e.getX(), e.getY());
-							TreePath path = jStepTree.getPathForLocation(e.getX(), e.getY());
-							if (row != -1) {
-								// if (e.getClickCount() == 1) {
-								jStepTree.setEditable(true); // editing action starts here
-								jStepTree.startEditingAtPath(path);
-							}
-						}
+					editMenuItem.addActionListener((ignoredEvent) -> {
+						editNodeAction(selPath);
 					});
 					popup.add(editMenuItem);
 					Object selectedIndividual = selectedStepNode.getUserObject();
 					if (selectedIndividual instanceof Individual) {
 						JMenuItem cloneMenuItem = new JMenuItem("Copy " + ((Individual) selectedIndividual).getLocalName());
 						popup.add(cloneMenuItem);
-						cloneMenuItem.addActionListener(new ActionListener() {
-							@Override
-							public void actionPerformed(ActionEvent event) {
-								copyNodeAction(selectedStepNode, jStepTree);
-							}
+						cloneMenuItem.addActionListener((ignoredEvent) -> {
+							copyNodeAction(selectedStepNode, jStepTree);
 						});
 					}
 					popup.show(jStepTree, x, y);
@@ -193,12 +182,12 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 			if (OntManager.getOwlFileName() != null) {
 				OntManager.saveOntologyAndCoordinates(new File(OntManager.getOwlFileName()), jStepTree);
 			} else {
-				saveAs();
+				saveAsAction();
 				UiUtils.getProtocolFrame(this).setTitle(FRAME_TITLE + " " + OntManager.getOwlFileName());
 			}
 		});
 		saveAsProtocolButton.addActionListener(e -> {
-			saveAs();
+			saveAsAction();
 			UiUtils.getProtocolFrame(this).setTitle(FRAME_TITLE + " " + OntManager.getOwlFileName());
 		});
 		loadProtocolButton.addActionListener(e -> {
@@ -250,18 +239,23 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		});
 	}
 
-	// todo this should not be static and does not need the steptree passed
-	public static void copyNodeAction(DefaultMutableTreeNode selectedStepNode, JTree jStepTree) {
+	private void editNodeAction(TreePath path) {
+		// if (e.getClickCount() == 1) {
+		jStepTree.setEditable(true); // editing action starts here
+		jStepTree.startEditingAtPath(path);
+	}
+
+	private  void copyNodeAction(DefaultMutableTreeNode selectedStepNode, JTree jStepTree) {
 		// clone or copy stuff
 		Individual individual = (Individual) (selectedStepNode.getUserObject());
 		DefaultMutableTreeNode newClonedStepNode = new DefaultMutableTreeNode(OntManager.createClonedStepIndividual("XXXX" + individual.getLocalName(), individual.getOntClass()));
 		((DefaultMutableTreeNode) selectedStepNode.getParent()).insert(newClonedStepNode, selectedStepNode.getParent().getIndex(selectedStepNode) + 1);
 		// DefaultMutableTreeNode addedChild = (DefaultMutableTreeNode) selectedStepNode.getParent().getChildAt(childIndex);
 		jStepTree.setSelectionPath(new TreePath(newClonedStepNode.getPath()));// select it
-		//////////////////// end clone part
+		jStepTree.updateUI();
 	}
 
-	private void saveAs() {
+	private void saveAsAction() {
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setDialogTitle("Select a place and name for saving your owl file");
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
