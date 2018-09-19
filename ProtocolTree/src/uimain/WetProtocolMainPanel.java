@@ -106,28 +106,38 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 				TreePath selPath = jStepTree.getPathForLocation(e.getX(), e.getY());// todo probably we could check the path instead of row =-1
 				if (SwingUtilities.isRightMouseButton(e)) {
 					// pop up the context sensitive menu
-					int x = e.getX();
-					int y = e.getY();
-					if (selPath == null)
-						return;
-					jStepTree.setSelectionPath(selPath);
-					DefaultMutableTreeNode selectedStepNode = (DefaultMutableTreeNode) selPath.getLastPathComponent();
-					JPopupMenu popup = new JPopupMenu();
-					JMenuItem editMenuItem = new JMenuItem("Edit");
-					editMenuItem.addActionListener((ignoredEvent) -> {
-						editNodeAction(selPath);
-					});
-					popup.add(editMenuItem);
-					Object selectedIndividual = selectedStepNode.getUserObject();
-					if (selectedIndividual instanceof Individual) {
-						JMenuItem cloneMenuItem = new JMenuItem("Copy " + ((Individual) selectedIndividual).getLocalName());
-						popup.add(cloneMenuItem);
-						cloneMenuItem.addActionListener((ignoredEvent) -> {
-							copyNodeAction(selectedStepNode, jStepTree);
-						});
-					}
-					popup.show(jStepTree, x, y);
+					myPopUpMenu(e);
 				}
+			}
+
+			private void myPopUpMenu(MouseEvent e) {
+				TreePath selPath = jStepTree.getPathForLocation(e.getX(), e.getY());// todo probably we could check the path instead of row =-1
+				jStepTree.setSelectionPath(selPath);
+				DefaultMutableTreeNode selectedStepNode = (DefaultMutableTreeNode) selPath.getLastPathComponent();
+				Object selectedIndividual = selectedStepNode.getUserObject();
+				if (!(selectedIndividual instanceof Individual)) {
+					return;
+				}
+				int x = e.getX();
+				int y = e.getY();
+				JTree tree = (JTree) e.getSource();
+				TreePath path = tree.getPathForLocation(x, y);
+				if (path == null)
+					return;
+				tree.setSelectionPath(path);
+				JPopupMenu popup = new JPopupMenu();
+				JMenuItem editMenuItem = new JMenuItem("edit " + ((Individual) selectedIndividual).getLocalName());
+				editMenuItem.addActionListener((ignoredEvent) -> {
+					editNodeAction(selPath);
+				});
+				popup.add(editMenuItem);
+				JMenuItem cloneMenuItem = new JMenuItem("copy " + ((Individual) selectedIndividual).getLocalName());
+				popup.add(cloneMenuItem);
+				cloneMenuItem.addActionListener((ignoredEvent) -> {
+					copyNodeAction(selectedStepNode, jStepTree);
+				});
+				//
+				popup.show(tree, x, y);
 			}
 		};
 		// jProtocolTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "startEditing");//also need to jProtocolTree.setEditable(true);
@@ -243,12 +253,13 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		// if (e.getClickCount() == 1) {
 		jStepTree.setEditable(true); // editing action starts here
 		jStepTree.startEditingAtPath(path);
+		
 	}
 
-	private  void copyNodeAction(DefaultMutableTreeNode selectedStepNode, JTree jStepTree) {
+	private void copyNodeAction(DefaultMutableTreeNode selectedStepNode, JTree jStepTree) {
 		// clone or copy stuff
 		Individual individual = (Individual) (selectedStepNode.getUserObject());
-		DefaultMutableTreeNode newClonedStepNode = new DefaultMutableTreeNode(OntManager.createClonedStepIndividual("XXXX" + individual.getLocalName(), individual.getOntClass()));
+		DefaultMutableTreeNode newClonedStepNode = new DefaultMutableTreeNode(OntManager.createClonedStepIndividual(individual.getLocalName(), individual.getOntClass()));
 		((DefaultMutableTreeNode) selectedStepNode.getParent()).insert(newClonedStepNode, selectedStepNode.getParent().getIndex(selectedStepNode) + 1);
 		// DefaultMutableTreeNode addedChild = (DefaultMutableTreeNode) selectedStepNode.getParent().getChildAt(childIndex);
 		jStepTree.setSelectionPath(new TreePath(newClonedStepNode.getPath()));// select it
