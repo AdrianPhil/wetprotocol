@@ -110,6 +110,111 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 				}
 			}
 
+			public void initiateOrRefreshTreeModelAndRest() {
+				OntManager.getInstance();// loads the seeded ontology model or the initial one if not already seeded
+				DefaultTreeModel stepsTreeModel = new DefaultTreeModel(new DefaultMutableTreeNode(OntManager.getTopStepsInstance()));// todo we might not need this
+				jStepTree.setModel(stepsTreeModel);
+				// protocolTreeModel.reload(root);//maybe not necessary
+				UiUtils.loadStepsTreeFromModel(jStepTree);
+				expandTree(jStepTree);
+				// Enable tool tips.
+				jStepTree.setCellRenderer(new StepInstanceCellRenderer(jStepTree));// no need to change to WetProtocolMainPanel because is not stored
+				jStepTree.setCellEditor(new StepInstanceNameCellEditor(this));
+				jStepTree.setInvokesStopCellEditing(true);// keep the changes when focus is lost
+				// jProtocolTree.setEditable(true);
+				// jProtocolTree.setEditable(true);
+				// Listen for when the selection changes.
+				jStepTree.addTreeSelectionListener(this);
+				jStepTree.setSelectionRow(0);// select root and this should refresh the ClassPropertyEditorPanel
+			}
+
+			private void AddTreeButtonListeners(JSplitPane splitPane) {
+				DefaultMutableTreeNode root = (DefaultMutableTreeNode) jStepTree.getModel().getRoot();
+				addNewSiblingNodeButton.addActionListener(e -> {
+					// display/center the jDialog when the button is pressed
+					DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jStepTree.getLastSelectedPathComponent();
+					if (selectedNode == null) {
+						TreeModel model = jStepTree.getModel();
+						if (model.getChildCount(root) == 0) {// empty model
+							jStepTree.setSelectionRow(0);
+						} else {
+							selectedNode = (DefaultMutableTreeNode) model.getChild(root, model.getChildCount(root) - 1);// add sibling to last root
+						}
+					}
+					DefaultMutableTreeNode parent = (DefaultMutableTreeNode) selectedNode.getParent();
+					if (parent == null) {
+						UiUtils.showDialog(splitPane, "Can not add a sibling to root");
+						return;
+					}
+					UiUtils.showStepChooserGuiAndCreateNewStepTree(WhereToAddStepNode.NEW_SIBBLING_STEP_NODE, jStepTree);// this will update the protocol tree model
+				});
+				addChildNodeButton.addActionListener(e -> {
+					UiUtils.showStepChooserGuiAndCreateNewStepTree(WhereToAddStepNode.NEW_CHILD_STEP_NODE, jStepTree);// this will update the protocol tree model
+				});
+				expandTreeButton.addActionListener(e -> {
+					expandTree(jStepTree);
+				});
+				saveProtocolButton.addActionListener(e -> {
+					if (OntManager.getOwlFileName() != null) {
+						OntManager.saveOntologyAndCoordinates(new File(OntManager.getOwlFileName()), jStepTree);
+					} else {
+						saveAsAction();
+						UiUtils.getProtocolFrame(this).setTitle(FRAME_TITLE + " " + OntManager.getOwlFileName());
+					}
+				});
+				saveAsProtocolButton.addActionListener(e -> {
+					saveAsAction();
+					UiUtils.getProtocolFrame(this).setTitle(FRAME_TITLE + " " + OntManager.getOwlFileName());
+				});
+				loadProtocolButton.addActionListener(e -> {
+					JFileChooser fileChooser = new JFileChooser();
+					fileChooser.setDialogTitle("Select an owl file");
+					fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+					FileNameExtensionFilter filter = new FileNameExtensionFilter("Owl files", "owl");
+					fileChooser.addChoosableFileFilter(filter);
+					String fn = OntManager.getOwlFileName();
+					if (fn != null) {
+						fileChooser.setCurrentDirectory(new File(fn).getParentFile());
+					} else {
+						fileChooser.setCurrentDirectory(new File(ResourceFinding.getOntFileDir()));
+					}
+					int retval = fileChooser.showOpenDialog(null);
+					if (retval == JFileChooser.APPROVE_OPTION) {
+						File file = fileChooser.getSelectedFile();
+						if (file == null) {
+							UiUtils.showDialog(jStepTree, "Cannot open the file");
+							return;
+						}
+						try {
+							OntManager.loadModelFromFileAndResetOntManager(file.getAbsolutePath());
+						} catch (Exception ex) {
+							UiUtils.showDialog(jStepTree, "Cannot parse the file:" + file.getAbsolutePath());
+							return;
+						}
+						OntManager.setOwlFileName(file.toString());
+						UiUtils.getProtocolFrame(this).setTitle(FRAME_TITLE + " " + file.getAbsolutePath());
+						// DefaultTreeModel model = (DefaultTreeModel) jProtocolTree.getModel();
+						// DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
+						// model.reload(root);//maybe not necessary
+						initiateOrRefreshTreeModelAndRest();
+						// System.out.println(OntManager.getOntologyModel().listIndividuals().toList());
+					}
+				});
+				deleteChildNodeButton.addActionListener(e -> {
+					DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jStepTree.getLastSelectedPathComponent();
+					if (selectedNode.getParent() != null && !selectedNode.isRoot()) {
+						if (selectedNode.getUserObject() instanceof Individual) {
+							((DefaultTreeModel) jStepTree.getModel()).removeNodeFromParent(selectedNode);
+							// xox
+							OntManager.getInstance();
+							OntManager.getOntologyModel().removeAll((Resource) selectedNode.getUserObject(), null, null);
+						} else {
+							UiUtils.showDialog(this, "Could not remove node. Not an instance of an Individual");
+						}
+					}
+				});
+			}
+
 			private void myPopUpMenu(MouseEvent e) {
 				TreePath selPath = jStepTree.getPathForLocation(e.getX(), e.getY());// todo probably we could check the path instead of row =-1
 				jStepTree.setSelectionPath(selPath);
@@ -144,116 +249,10 @@ public class WetProtocolMainPanel extends JPanel implements TreeSelectionListene
 		jStepTree.addMouseListener(popupListener);
 	}
 
-	public void initiateOrRefreshTreeModelAndRest() {
-		OntManager.getInstance();// loads the seeded ontology model or the initial one if not already seeded
-		DefaultTreeModel stepsTreeModel = new DefaultTreeModel(new DefaultMutableTreeNode(OntManager.getTopStepsInstance()));// todo we might not need this
-		jStepTree.setModel(stepsTreeModel);
-		// protocolTreeModel.reload(root);//maybe not necessary
-		UiUtils.loadStepsTreeFromModel(jStepTree);
-		expandTree(jStepTree);
-		// Enable tool tips.
-		jStepTree.setCellRenderer(new StepInstanceCellRenderer(jStepTree));// no need to change to WetProtocolMainPanel because is not stored
-		jStepTree.setCellEditor(new StepInstanceNameCellEditor(this));
-		jStepTree.setInvokesStopCellEditing(true);// keep the changes when focus is lost
-		// jProtocolTree.setEditable(true);
-		// jProtocolTree.setEditable(true);
-		// Listen for when the selection changes.
-		jStepTree.addTreeSelectionListener(this);
-		jStepTree.setSelectionRow(0);// select root and this should refresh the ClassPropertyEditorPanel
-	}
-
-	private void AddTreeButtonListeners(JSplitPane splitPane) {
-		DefaultMutableTreeNode root = (DefaultMutableTreeNode) jStepTree.getModel().getRoot();
-		addNewSiblingNodeButton.addActionListener(e -> {
-			// display/center the jDialog when the button is pressed
-			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jStepTree.getLastSelectedPathComponent();
-			if (selectedNode == null) {
-				TreeModel model = jStepTree.getModel();
-				if (model.getChildCount(root) == 0) {// empty model
-					jStepTree.setSelectionRow(0);
-				} else {
-					selectedNode = (DefaultMutableTreeNode) model.getChild(root, model.getChildCount(root) - 1);// add sibling to last root
-				}
-			}
-			DefaultMutableTreeNode parent = (DefaultMutableTreeNode) selectedNode.getParent();
-			if (parent == null) {
-				UiUtils.showDialog(splitPane, "Can not add a sibling to root");
-				return;
-			}
-			UiUtils.showStepChooserGuiAndCreateNewStepTree(WhereToAddStepNode.NEW_SIBBLING_STEP_NODE, jStepTree);// this will update the protocol tree model
-		});
-		addChildNodeButton.addActionListener(e -> {
-			UiUtils.showStepChooserGuiAndCreateNewStepTree(WhereToAddStepNode.NEW_CHILD_STEP_NODE, jStepTree);// this will update the protocol tree model
-		});
-		expandTreeButton.addActionListener(e -> {
-			expandTree(jStepTree);
-		});
-		saveProtocolButton.addActionListener(e -> {
-			if (OntManager.getOwlFileName() != null) {
-				OntManager.saveOntologyAndCoordinates(new File(OntManager.getOwlFileName()), jStepTree);
-			} else {
-				saveAsAction();
-				UiUtils.getProtocolFrame(this).setTitle(FRAME_TITLE + " " + OntManager.getOwlFileName());
-			}
-		});
-		saveAsProtocolButton.addActionListener(e -> {
-			saveAsAction();
-			UiUtils.getProtocolFrame(this).setTitle(FRAME_TITLE + " " + OntManager.getOwlFileName());
-		});
-		loadProtocolButton.addActionListener(e -> {
-			JFileChooser fileChooser = new JFileChooser();
-			fileChooser.setDialogTitle("Select an owl file");
-			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			FileNameExtensionFilter filter = new FileNameExtensionFilter("Owl files", "owl");
-			fileChooser.addChoosableFileFilter(filter);
-			String fn = OntManager.getOwlFileName();
-			if (fn != null) {
-				fileChooser.setCurrentDirectory(new File(fn).getParentFile());
-			} else {
-				fileChooser.setCurrentDirectory(new File(ResourceFinding.getOntFileDir()));
-			}
-			int retval = fileChooser.showOpenDialog(null);
-			if (retval == JFileChooser.APPROVE_OPTION) {
-				File file = fileChooser.getSelectedFile();
-				if (file == null) {
-					UiUtils.showDialog(jStepTree, "Cannot open the file");
-					return;
-				}
-				try {
-					OntManager.loadModelFromFileAndResetOntManager(file.getAbsolutePath());
-				} catch (Exception ex) {
-					UiUtils.showDialog(jStepTree, "Cannot parse the file:" + file.getAbsolutePath());
-					return;
-				}
-				OntManager.setOwlFileName(file.toString());
-				UiUtils.getProtocolFrame(this).setTitle(FRAME_TITLE + " " + file.getAbsolutePath());
-				// DefaultTreeModel model = (DefaultTreeModel) jProtocolTree.getModel();
-				// DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
-				// model.reload(root);//maybe not necessary
-				initiateOrRefreshTreeModelAndRest();
-				// System.out.println(OntManager.getOntologyModel().listIndividuals().toList());
-			}
-		});
-		deleteChildNodeButton.addActionListener(e -> {
-			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jStepTree.getLastSelectedPathComponent();
-			if (selectedNode.getParent() != null && !selectedNode.isRoot()) {
-				if (selectedNode.getUserObject() instanceof Individual) {
-					((DefaultTreeModel) jStepTree.getModel()).removeNodeFromParent(selectedNode);
-					// xox
-					OntManager.getInstance();
-					OntManager.getOntologyModel().removeAll((Resource) selectedNode.getUserObject(), null, null);
-				} else {
-					UiUtils.showDialog(this, "Could not remove node. Not an instance of an Individual");
-				}
-			}
-		});
-	}
-
 	private void editNodeAction(TreePath path) {
 		// if (e.getClickCount() == 1) {
 		jStepTree.setEditable(true); // editing action starts here
 		jStepTree.startEditingAtPath(path);
-		
 	}
 
 	private void copyNodeAction(DefaultMutableTreeNode selectedStepNode, JTree jStepTree) {
